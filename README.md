@@ -55,6 +55,7 @@ vercel
 ```
 
 Follow prompts:
+
 - Set up and deploy? **Yes**
 - Which scope? **Your account**
 - Link to existing project? **No**
@@ -81,6 +82,7 @@ vercel --prod
 ## 💰 Costs
 
 **Vercel FREE Plan:**
+
 - ✅ Unlimited websites
 - ✅ Automatic HTTPS
 - ✅ Global CDN
@@ -168,4 +170,3 @@ vercel --prod
 ---
 
 **Your website will be live in 5 minutes!** 🎉
-
