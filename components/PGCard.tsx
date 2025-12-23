@@ -1,20 +1,28 @@
+'use client';
+
 import { PGListing } from '@/types';
 import { MapPin, Star, Users, Utensils, Home } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface PGCardProps {
   listing: PGListing;
-  onViewDetails?: (listing: PGListing) => void;
 }
 
-export default function PGCard({ listing, onViewDetails }: PGCardProps) {
+export default function PGCard({ listing }: PGCardProps) {
+  const router = useRouter();
+
   const handleViewDetails = () => {
-    // If listing has a source link, open it in new tab
-    if ((listing as any).sourceLink && (listing as any).sourceLink !== '#') {
-      window.open((listing as any).sourceLink, '_blank');
-    } else {
-      // Otherwise call the onViewDetails callback
-      onViewDetails?.(listing);
+    // Save listing to localStorage for quick access
+    const cachedListings = localStorage.getItem('pgListings');
+    const allListings = cachedListings ? JSON.parse(cachedListings) : [];
+    const exists = allListings.find((l: PGListing) => l.id === listing.id);
+    if (!exists) {
+      allListings.push(listing);
+      localStorage.setItem('pgListings', JSON.stringify(allListings));
     }
+    
+    // Navigate to detail page
+    router.push(`/listing/${listing.id}`);
   };
 
   return (
@@ -48,7 +56,7 @@ export default function PGCard({ listing, onViewDetails }: PGCardProps) {
         {/* Available Rooms Badge */}
         <div className="absolute top-3 right-3">
           <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-            {listing.availableRooms} rooms available
+            {listing.availableRooms || 0} rooms available
           </span>
         </div>
       </div>
@@ -62,7 +70,7 @@ export default function PGCard({ listing, onViewDetails }: PGCardProps) {
           </h3>
           <div className="flex items-start gap-1 text-gray-600 text-sm">
             <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            <span className="line-clamp-1">{listing.nearbyLandmark}, {listing.city}</span>
+            <span className="line-clamp-1">{listing.nearbyLandmark || listing.address || listing.city}</span>
           </div>
         </div>
         
@@ -71,18 +79,18 @@ export default function PGCard({ listing, onViewDetails }: PGCardProps) {
           <div>
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold text-blue-600">
-                ₹{listing.rent.toLocaleString('en-IN')}
+                ₹{(listing.rent || 0).toLocaleString('en-IN')}
               </span>
               <span className="text-gray-500 text-sm">/mo</span>
             </div>
             <span className="text-xs text-gray-500">
-              + ₹{listing.securityDeposit.toLocaleString('en-IN')} deposit
+              + ₹{(listing.securityDeposit || 0).toLocaleString('en-IN')} deposit
             </span>
           </div>
           <div className="flex items-center gap-1 bg-yellow-50 px-3 py-1.5 rounded-lg">
             <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-            <span className="font-semibold text-gray-800">{listing.rating}</span>
-            <span className="text-xs text-gray-500">({listing.reviewCount})</span>
+            <span className="font-semibold text-gray-800">{listing.rating || 4.0}</span>
+            <span className="text-xs text-gray-500">({listing.reviewCount || 0})</span>
           </div>
         </div>
         
@@ -90,14 +98,14 @@ export default function PGCard({ listing, onViewDetails }: PGCardProps) {
         <div className="flex flex-wrap gap-2 mb-4">
           <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium flex items-center gap-1">
             <Users className="w-3.5 h-3.5" />
-            {listing.sharingOption} Sharing
+            {listing.sharingOption || 1} Sharing
           </span>
           <span className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
             listing.preferredGender === 'Male' ? 'bg-blue-50 text-blue-700' : 
             listing.preferredGender === 'Female' ? 'bg-pink-50 text-pink-700' : 
             'bg-purple-50 text-purple-700'
           }`}>
-            {listing.preferredGender}
+            {listing.preferredGender || 'Any'}
           </span>
           {listing.foodIncluded && (
             <span className="px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-sm font-medium flex items-center gap-1">
@@ -110,7 +118,7 @@ export default function PGCard({ listing, onViewDetails }: PGCardProps) {
         {/* Amenities */}
         <div className="mb-4">
           <div className="flex flex-wrap gap-1.5">
-            {listing.amenities.slice(0, 4).map((amenity, index) => (
+            {(listing.amenities || []).slice(0, 4).map((amenity, index) => (
               <span 
                 key={index}
                 className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded"
@@ -118,9 +126,9 @@ export default function PGCard({ listing, onViewDetails }: PGCardProps) {
                 {amenity}
               </span>
             ))}
-            {listing.amenities.length > 4 && (
+            {(listing.amenities || []).length > 4 && (
               <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">
-                +{listing.amenities.length - 4} more
+                +{(listing.amenities || []).length - 4} more
               </span>
             )}
           </div>
@@ -129,14 +137,9 @@ export default function PGCard({ listing, onViewDetails }: PGCardProps) {
         {/* Action Button */}
         <button 
           onClick={handleViewDetails}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors duration-200 shadow-sm hover:shadow-md"
         >
           View Details
-          {(listing as any).sourceLink && (listing as any).sourceLink !== '#' && (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          )}
         </button>
       </div>
     </div>

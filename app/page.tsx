@@ -4,10 +4,14 @@ import { useState, useEffect } from 'react';
 import { PGListing } from '@/types';
 import PGCard from '@/components/PGCard';
 import SearchFilters from '@/components/SearchFilters';
-import { Home, Users, DollarSign } from 'lucide-react';
+import { Home, Users, DollarSign, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const LISTINGS_PER_PAGE = 21;
 
 export default function HomePage() {
   const [listings, setListings] = useState<PGListing[]>([]);
+  const [allListings, setAllListings] = useState<PGListing[]>([]); // Store all listings
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [selectedListing, setSelectedListing] = useState<PGListing | null>(null);
   const [isRealData, setIsRealData] = useState(false);
@@ -17,8 +21,40 @@ export default function HomePage() {
     fetchListings();
   }, []);
 
+  // Update displayed listings when page changes
+  useEffect(() => {
+    updateDisplayedListings();
+  }, [currentPage, allListings]);
+
+  const updateDisplayedListings = () => {
+    const startIndex = (currentPage - 1) * LISTINGS_PER_PAGE;
+    const endIndex = startIndex + LISTINGS_PER_PAGE;
+    setListings(allListings.slice(startIndex, endIndex));
+  };
+
+  const totalPages = Math.ceil(allListings.length / LISTINGS_PER_PAGE);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
   const fetchListings = async (filters?: any) => {
     setLoading(true);
+    setCurrentPage(1); // Reset to first page on new search
     try {
       // 100% FREE SEARCH - No API keys, No credit card!
       // Scrapes public websites in real-time
@@ -35,6 +71,9 @@ export default function HomePage() {
       
       if (data.success) {
         let filteredListings = data.data;
+        
+        // Save all listings to localStorage for detail page access
+        localStorage.setItem('pgListings', JSON.stringify(filteredListings));
         
         // Track if this is real or mock data
         setIsRealData(data.isRealData || false);
@@ -58,7 +97,8 @@ export default function HomePage() {
           }
         }
         
-        setListings(filteredListings);
+        setAllListings(filteredListings); // Store all listings
+        // updateDisplayedListings will be called by useEffect
       }
     } catch (error) {
       console.error('Error fetching listings:', error);
@@ -90,10 +130,13 @@ export default function HomePage() {
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-6">
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Home</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Listings</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">About</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Contact</a>
+            <a href="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Home</a>
+            <a href="/add-listing" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Advertisement
+            </a>
           </nav>
         </div>
       </header>
@@ -117,42 +160,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="text-center p-8 bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Home className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-semibold mb-3">Verified Properties</h3>
-            <p className="text-gray-600">All PG listings are verified for your safety and peace of mind</p>
-          </div>
-          
-          <div className="text-center p-8 bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-semibold mb-3">Community Living</h3>
-            <p className="text-gray-600">Connect with like-minded people and build lasting friendships</p>
-          </div>
-          
-          <div className="text-center p-8 bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <DollarSign className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-semibold mb-3">Affordable Pricing</h3>
-            <p className="text-gray-600">Find quality accommodations that fit your budget</p>
-          </div>
-        </div>
-      </section>
-
       {/* Listings Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-3xl font-bold text-gray-800">
-              {listings.length > 0 ? `${listings.length} PG Listings Found` : 'Featured PG Listings'}
+              {allListings.length > 0 ? `${allListings.length} PG Listings Found` : 'Featured PG Listings'}
             </h2>
+            {allListings.length > LISTINGS_PER_PAGE && (
+              <p className="text-gray-600 mt-1">
+                Showing {((currentPage - 1) * LISTINGS_PER_PAGE) + 1} - {Math.min(currentPage * LISTINGS_PER_PAGE, allListings.length)} of {allListings.length}
+              </p>
+            )}
             {dataSource && (
               <div className="mt-2 flex items-center gap-2">
                 {isRealData ? (
@@ -184,7 +203,6 @@ export default function HomePage() {
                   <PGCard 
                     key={listing.id} 
                     listing={listing}
-                    onViewDetails={handleViewDetails}
                   />
                 ))}
               </div>
@@ -196,6 +214,56 @@ export default function HomePage() {
               </div>
             )}
           </>
+        )}
+
+        {/* Pagination */}
+        {!loading && allListings.length > LISTINGS_PER_PAGE && (
+          <div className="mt-12 flex justify-center items-center gap-4">
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                currentPage === 1
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg'
+              }`}
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Previous
+            </button>
+
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => {
+                    setCurrentPage(pageNum);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`w-10 h-10 rounded-lg font-semibold transition-all ${
+                    currentPage === pageNum
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                currentPage === totalPages
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg'
+              }`}
+            >
+              Next
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         )}
       </section>
 
@@ -209,6 +277,52 @@ export default function HomePage() {
           <button className="px-10 py-4 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-xl">
             List Your Property
           </button>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="bg-gray-50 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Verified Properties */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">Verified Properties</h3>
+              <p className="text-gray-600 text-center leading-relaxed">
+                All PG listings are verified for your safety and peace of mind
+              </p>
+            </div>
+
+            {/* Community Living */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">Community Living</h3>
+              <p className="text-gray-600 text-center leading-relaxed">
+                Connect with like-minded people and build lasting friendships
+              </p>
+            </div>
+
+            {/* Affordable Pricing */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">Affordable Pricing</h3>
+              <p className="text-gray-600 text-center leading-relaxed">
+                Find quality accommodations that fit your budget
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </div>

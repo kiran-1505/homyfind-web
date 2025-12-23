@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * REAL-TIME PG SEARCH - Fetches ACTUAL data from websites!
- * No dummy data - this is the real deal!
+ * REAL-TIME PG SEARCH - Priority order:
+ * 1. Google Maps Places API (most reliable)
+ * 2. Web scraping (fallback)
+ * 3. Quality mock data (final fallback)
  */
 
 export const dynamic = 'force-dynamic';
@@ -18,16 +20,140 @@ export async function GET(request: NextRequest) {
     console.log('\n' + '='.repeat(60));
     console.log(`🔍 REAL-TIME SEARCH STARTING for: ${location}`);
     console.log(`⏰ Time: ${new Date().toLocaleTimeString()}`);
-    console.log('📡 Fetching live data from websites...');
+    console.log('📡 Fetching from Firebase + Google Maps...');
     console.log('='.repeat(60) + '\n');
 
-    // Import dynamically to avoid edge runtime issues
+    // STEP 1: Check Firebase for user-added advertisements
+    console.log('🔥 Step 1: Checking Firebase for user-added PG advertisements...');
+    const { searchPGAdvertisements } = await import('@/lib/firestore');
+    const firebaseListings = await searchPGAdvertisements(location);
+    
+    if (firebaseListings.length > 0) {
+      console.log(`✅ Found ${firebaseListings.length} user-added advertisements in Firebase!`);
+    } else {
+      console.log('⚠️ No user advertisements found in Firebase for this location');
+    }
+
+    // STEP 2: Try Google Maps Places API (most reliable)
+    console.log('🗺️ Step 2: Trying Google Maps Places API...');
+    let googleMapsListings: any[] = [];
+    
+    try {
+      const { fetchFromGoogleMapsPlaces } = await import('@/lib/google-maps-places');
+      googleMapsListings = await fetchFromGoogleMapsPlaces(location);
+
+      if (googleMapsListings.length > 0) {
+        console.log(`✅ SUCCESS! Found ${googleMapsListings.length} listings from Google Maps`);
+      }
+    } catch (googleError: any) {
+      console.log(`⚠️ Google Maps API error: ${googleError.message}\n`);
+    }
+
+    // Combine Firebase listings + Google Maps listings
+    if (firebaseListings.length > 0 || googleMapsListings.length > 0) {
+      // Transform Firebase listings
+      const transformedFirebase = firebaseListings.map((listing) => ({
+        id: listing.id || `firebase-${Date.now()}`,
+        pgName: listing.pgName,
+        address: listing.address,
+        city: listing.city,
+        state: listing.state,
+        pincode: listing.pincode,
+        nearbyLandmark: listing.nearbyLandmark,
+        sharingOption: listing.sharingOption,
+        rent: listing.rent,
+        securityDeposit: listing.securityDeposit,
+        images: listing.images.length > 0 ? listing.images : [`https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop`],
+        description: listing.description,
+        amenities: listing.amenities,
+        rules: listing.rules,
+        foodIncluded: listing.foodIncluded,
+        preferredGender: listing.preferredGender,
+        availableFrom: listing.availableFrom,
+        totalRooms: listing.totalRooms,
+        availableRooms: listing.availableRooms,
+        ownerId: 'owner',
+        ownerName: listing.ownerName,
+        ownerPhone: listing.ownerPhone,
+        ownerEmail: listing.ownerEmail,
+        verified: listing.verified,
+        rating: 4.5, // Default rating for new listings
+        reviewCount: 0,
+        createdAt: listing.createdAt,
+        updatedAt: listing.updatedAt,
+        sourceLink: '#',
+        isRealData: true,
+        source: 'firebase-user-ad',
+      }));
+
+      // Transform Google Maps listings
+      const transformedGoogle = googleMapsListings.map((listing) => ({
+          id: listing.id,
+          pgName: listing.pgName,
+          address: listing.address,
+          city: listing.city,
+          state: listing.state || 'India',
+          pincode: listing.pincode || '',
+          nearbyLandmark: listing.nearbyLandmark || listing.address,
+          sharingOption: listing.sharingOption,
+          rent: listing.rent,
+          securityDeposit: listing.securityDeposit,
+          images: listing.images,
+          description: listing.description,
+          amenities: listing.amenities,
+          rules: listing.rules || [],
+          foodIncluded: listing.foodIncluded,
+          preferredGender: listing.preferredGender,
+          availableFrom: listing.availableFrom,
+          totalRooms: listing.totalRooms,
+          availableRooms: listing.availableRooms,
+          ownerId: listing.ownerId,
+          ownerName: listing.ownerName,
+          ownerPhone: listing.ownerPhone,
+          ownerEmail: listing.ownerEmail,
+          verified: listing.verified,
+          rating: listing.rating,
+          reviewCount: listing.reviewCount,
+          createdAt: listing.createdAt,
+          updatedAt: listing.updatedAt,
+          sourceLink: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.address)}`,
+          isRealData: true,
+          source: 'google-maps-api',
+        }));
+
+        // Combine both sources: Firebase listings first, then Google Maps
+        const allListings = [...transformedFirebase, ...transformedGoogle];
+
+        const timeMs = Date.now() - startTime;
+        console.log('\n' + '='.repeat(60));
+        console.log(`⏱️  Total time: ${(timeMs / 1000).toFixed(2)}s`);
+        console.log(`📊 Results:`);
+        console.log(`   - ${firebaseListings.length} user advertisements (Firebase)`);
+        console.log(`   - ${googleMapsListings.length} listings from Google Maps`);
+        console.log(`   - ${allListings.length} total listings`);
+        console.log('='.repeat(60) + '\n');
+
+        return NextResponse.json({
+          success: true,
+          data: allListings,
+          count: allListings.length,
+          source: firebaseListings.length > 0 ? 'firebase-and-google-maps' : 'google-maps-only',
+          sources: {
+            firebase: firebaseListings.length,
+            googleMaps: googleMapsListings.length,
+          },
+          message: `✅ Found ${allListings.length} PG listings (${firebaseListings.length} ads + ${googleMapsListings.length} from Google Maps)`,
+          timestamp: new Date().toISOString(),
+          isRealData: true,
+        });
+      }
+
+    // STEP 2: Fallback to web scraping
+    console.log('🌐 Step 2: Trying web scraping from PG websites...');
     const { getAggregatedPGData } = await import('@/lib/skyscanner-approach');
     
-    console.log('🌐 Making live HTTP requests to websites...');
     console.log('⏳ This will take 10-15 seconds - scraping in progress!\n');
     
-    // Get listings using Skyscanner approach (APIs + quality fallback)
     const realListings = await getAggregatedPGData(location);
     
     const scrapingTime = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -72,26 +198,33 @@ export async function GET(request: NextRequest) {
         isRealData: true,
       }));
 
+      const scrapingTime = ((Date.now() - startTime) / 1000).toFixed(2);
+      
+      console.log('\n' + '='.repeat(60));
+      console.log(`⏱️  Scraping completed in ${scrapingTime} seconds`);
+      console.log(`📊 Results: ${transformedListings.length} REAL listings from web scraping`);
+      console.log('='.repeat(60) + '\n');
+
       return NextResponse.json({
         success: true,
         data: transformedListings,
         count: transformedListings.length,
-        source: 'real-scraping',
-        message: `✅ Found ${transformedListings.length} REAL PG listings in ${location}`,
+        source: 'web-scraping',
+        message: `✅ Found ${transformedListings.length} REAL PG listings in ${location} from web scraping`,
         timestamp: new Date().toISOString(),
         isRealData: true,
       });
     }
 
-    // If no real data found, return informative message with mock data
-    console.log('⚠️ No real data found from scraping, using quality sample data');
+    // STEP 3: Final fallback to quality mock data
+    console.log('⚠️ No real data found, using quality sample data as final fallback');
     
     return NextResponse.json({
       success: true,
       data: generateMockData(location, 12),
       count: 12,
       source: 'sample-data',
-      message: `Showing quality sample data for ${location} with real area names`,
+      message: `Showing quality sample data for ${location}. Please add your Google Maps API key for real listings.`,
       isRealData: false,
     });
 
