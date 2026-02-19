@@ -5,12 +5,15 @@ import { PGListing, SearchFilters as FilterOptions } from '@/types';
 import PGCard from '@/components/PGCard';
 import SearchFilters from '@/components/SearchFilters';
 import { Home, ChevronLeft, ChevronRight, Shield, Users, IndianRupee, Plus, Menu, X } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { LISTINGS_PER_PAGE, DEFAULT_LOCATION } from '@/constants';
 import { safeSetLocalStorage } from '@/utils';
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function HomePage() {
+  const t = useTranslations();
   const [listings, setListings] = useState<PGListing[]>([]);
   const [allListings, setAllListings] = useState<PGListing[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -106,14 +109,15 @@ export default function HomePage() {
                 href="/"
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
               >
-                Home
+                {t('common.home')}
               </Link>
+              <LanguageSwitcher />
               <Link
                 href="/add-listing"
                 className="ml-2 inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
               >
                 <Plus className="w-4 h-4" />
-                List Your PG
+                {t('common.listYourPG')}
               </Link>
             </nav>
 
@@ -130,14 +134,17 @@ export default function HomePage() {
           {mobileMenuOpen && (
             <div className="md:hidden pb-4 border-t border-gray-100 pt-3 space-y-2">
               <Link href="/" className="block px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50">
-                Home
+                {t('common.home')}
               </Link>
+              <div className="px-4 py-1">
+                <LanguageSwitcher />
+              </div>
               <Link
                 href="/add-listing"
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg"
               >
                 <Plus className="w-4 h-4" />
-                List Your PG
+                {t('common.listYourPG')}
               </Link>
             </div>
           )}
@@ -155,13 +162,13 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="text-center mb-10">
             <p className="text-blue-200 text-sm font-medium tracking-wide uppercase mb-3">
-              Trusted by 10,000+ tenants across India
+              {t('hero.trustLine')}
             </p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-              Find Your Perfect<br className="hidden sm:block" /> PG Accommodation
+              {t('hero.title')}
             </h2>
             <p className="text-lg text-blue-100 max-w-2xl mx-auto">
-              Browse verified paying guest accommodations in Bangalore, Mumbai, Delhi and more
+              {t('hero.subtitle')}
             </p>
           </div>
 
@@ -174,15 +181,15 @@ export default function HomePage() {
           <div className="flex flex-wrap justify-center gap-8 mt-10 text-blue-100 text-sm">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
-              <span>Verified Listings</span>
+              <span>{t('hero.verifiedListings')}</span>
             </div>
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              <span>Male, Female & Co-living</span>
+              <span>{t('hero.genderOptions')}</span>
             </div>
             <div className="flex items-center gap-2">
               <IndianRupee className="w-4 h-4" />
-              <span>Starting at Rs 5,000/mo</span>
+              <span>{t('hero.startingPrice')}</span>
             </div>
           </div>
         </div>
@@ -194,11 +201,15 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {loading ? 'Searching...' : allListings.length > 0 ? `${allListings.length} PGs Found` : 'PG Listings'}
+              {loading ? t('common.searching') : allListings.length > 0 ? t('listings.pgsFound', { count: allListings.length }) : t('listings.pgListings')}
             </h2>
             {!loading && allListings.length > LISTINGS_PER_PAGE && (
               <p className="text-sm text-gray-500 mt-1">
-                Showing {((currentPage - 1) * LISTINGS_PER_PAGE) + 1}-{Math.min(currentPage * LISTINGS_PER_PAGE, allListings.length)} of {allListings.length}
+                {t('listings.showing', {
+                  start: ((currentPage - 1) * LISTINGS_PER_PAGE) + 1,
+                  end: Math.min(currentPage * LISTINGS_PER_PAGE, allListings.length),
+                  total: allListings.length
+                })}
               </p>
             )}
           </div>
@@ -207,11 +218,11 @@ export default function HomePage() {
               {isRealData ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                  Live Data
+                  {t('common.liveData')}
                 </span>
               ) : (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                  Sample Data
+                  {t('common.sampleData')}
                 </span>
               )}
             </div>
@@ -250,8 +261,8 @@ export default function HomePage() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Home className="w-8 h-8 text-gray-400" />
             </div>
-            <p className="text-gray-900 text-lg font-medium mb-1">No PG listings found</p>
-            <p className="text-gray-500 text-sm">Try a different location or adjust your filters</p>
+            <p className="text-gray-900 text-lg font-medium mb-1">{t('listings.noListings')}</p>
+            <p className="text-gray-500 text-sm">{t('listings.noListingsHint')}</p>
           </div>
         )}
 
@@ -307,9 +318,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Own a PG? List it for free</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{t('cta.title')}</h2>
               <p className="text-gray-400 max-w-lg">
-                Reach thousands of tenants looking for PG accommodation. Get enquiries within hours.
+                {t('cta.subtitle')}
               </p>
             </div>
             <Link
@@ -317,7 +328,7 @@ export default function HomePage() {
               className="flex-shrink-0 inline-flex items-center gap-2 px-8 py-3.5 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-lg"
             >
               <Plus className="w-5 h-5" />
-              List Your PG
+              {t('common.listYourPG')}
             </Link>
           </div>
         </div>
@@ -327,34 +338,34 @@ export default function HomePage() {
       <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h3 className="text-center text-sm font-medium text-gray-400 uppercase tracking-wider mb-10">
-            Why choose HomyFind
+            {t('features.whyChoose')}
           </h3>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-6 h-6 text-green-600" />
               </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Verified Properties</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">{t('features.verifiedTitle')}</h4>
               <p className="text-sm text-gray-500 leading-relaxed">
-                Every listing is verified for your safety and peace of mind
+                {t('features.verifiedDesc')}
               </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Community Living</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">{t('features.communityTitle')}</h4>
               <p className="text-sm text-gray-500 leading-relaxed">
-                Connect with like-minded people and build lasting friendships
+                {t('features.communityDesc')}
               </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <IndianRupee className="w-6 h-6 text-indigo-600" />
               </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Affordable Pricing</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">{t('features.pricingTitle')}</h4>
               <p className="text-sm text-gray-500 leading-relaxed">
-                Find quality accommodations that fit your budget
+                {t('features.pricingDesc')}
               </p>
             </div>
           </div>
@@ -369,7 +380,7 @@ export default function HomePage() {
               <Image src="/HomyFind-logo.png" alt="HomyFind" width={28} height={28} className="h-7 w-auto opacity-60" />
               <span className="text-sm text-gray-400">HomyFind</span>
             </div>
-            <p className="text-sm text-gray-400">Find your home away from home</p>
+            <p className="text-sm text-gray-400">{t('footer.tagline')}</p>
           </div>
         </div>
       </footer>

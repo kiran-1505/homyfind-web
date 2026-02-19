@@ -1,0 +1,215 @@
+{
+  "common": {
+    "home": "ಮುಖಪುಟ",
+    "listYourPG": "ನಿಮ್ಮ PG ಪಟ್ಟಿ ಮಾಡಿ",
+    "backToHome": "ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ",
+    "loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+    "search": "ಹುಡುಕಿ",
+    "searching": "ಹುಡುಕುತ್ತಿದೆ...",
+    "back": "ಹಿಂದೆ",
+    "cancel": "ರದ್ದು ಮಾಡಿ",
+    "next": "ಮುಂದೆ",
+    "tryAgain": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+    "verified": "ಪರಿಶೀಲಿಸಲಾಗಿದೆ",
+    "viewDetails": "ವಿವರಗಳನ್ನು ನೋಡಿ",
+    "liveData": "ಲೈವ್ ಡೇಟಾ",
+    "sampleData": "ಮಾದರಿ ಡೇಟಾ",
+    "food": "ಊಟ",
+    "sharing": "ಹಂಚಿಕೆ",
+    "roomsLeft": "{count} ಕೊಠಡಿಗಳು ಉಳಿದಿವೆ",
+    "more": "+{count} ಇನ್ನಷ್ಟು",
+    "perMonth": "/ತಿಂ",
+    "perMonthFull": "/ತಿಂಗಳು",
+    "male": "ಪುರುಷ",
+    "female": "ಮಹಿಳೆ",
+    "any": "ಯಾವುದಾದರೂ"
+  },
+  "hero": {
+    "trustLine": "ಭಾರತದಾದ್ಯಂತ 10,000+ ಬಾಡಿಗೆದಾರರಿಂದ ವಿಶ್ವಾಸಾರ್ಹ",
+    "title": "ನಿಮ್ಮ ಪರಿಪೂರ್ಣ PG ವಸತಿ ಹುಡುಕಿ",
+    "subtitle": "ಬೆಂಗಳೂರು, ಮುಂಬೈ, ದೆಹಲಿ ಮತ್ತು ಇನ್ನಷ್ಟು ನಗರಗಳಲ್ಲಿ ಪರಿಶೀಲಿಸಿದ ಪೇಯಿಂಗ್ ಗೆಸ್ಟ್ ವಸತಿಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ",
+    "verifiedListings": "ಪರಿಶೀಲಿಸಿದ ಪಟ್ಟಿಗಳು",
+    "genderOptions": "ಪುರುಷ, ಮಹಿಳೆ ಮತ್ತು ಸಹ-ವಾಸ",
+    "startingPrice": "₹5,000/ತಿಂಗಳಿನಿಂದ ಪ್ರಾರಂಭ"
+  },
+  "search": {
+    "placeholder": "ನಗರ, ಪ್ರದೇಶ ಅಥವಾ ಹೆಗ್ಗುರುತು ಹುಡುಕಿ...",
+    "filters": "ಫಿಲ್ಟರ್‌ಗಳು",
+    "clearFilters": "ಫಿಲ್ಟರ್‌ಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ",
+    "sharingType": "ಹಂಚಿಕೆ ಪ್ರಕಾರ",
+    "maxRent": "ಗರಿಷ್ಠ ಬಾಡಿಗೆ",
+    "gender": "ಲಿಂಗ",
+    "foodLabel": "ಊಟ",
+    "all": "ಎಲ್ಲಾ",
+    "anyBudget": "ಯಾವುದೇ ಬಜೆಟ್",
+    "any": "ಯಾವುದಾದರೂ",
+    "single": "ಸಿಂಗಲ್",
+    "double": "ಡಬಲ್",
+    "triple": "ಟ್ರಿಪಲ್",
+    "fourPlus": "ನಾಲ್ಕು+",
+    "male": "ಪುರುಷ",
+    "female": "ಮಹಿಳೆ",
+    "coLiving": "ಸಹ-ವಾಸ",
+    "included": "ಸೇರಿಸಲಾಗಿದೆ",
+    "notIncluded": "ಸೇರಿಸಲಾಗಿಲ್ಲ"
+  },
+  "listings": {
+    "pgsFound": "{count} PG ಗಳು ಕಂಡುಬಂದಿವೆ",
+    "pgListings": "PG ಪಟ್ಟಿಗಳು",
+    "showing": "{total} ರಲ್ಲಿ {start}-{end} ತೋರಿಸಲಾಗುತ್ತಿದೆ",
+    "noListings": "ಯಾವುದೇ PG ಪಟ್ಟಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ",
+    "noListingsHint": "ಬೇರೆ ಸ್ಥಳವನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಫಿಲ್ಟರ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ"
+  },
+  "cta": {
+    "title": "PG ಮಾಲೀಕರೇ? ಉಚಿತವಾಗಿ ಪಟ್ಟಿ ಮಾಡಿ",
+    "subtitle": "PG ವಸತಿ ಹುಡುಕುತ್ತಿರುವ ಸಾವಿರಾರು ಬಾಡಿಗೆದಾರರನ್ನು ತಲುಪಿ. ಗಂಟೆಗಳೊಳಗೆ ವಿಚಾರಣೆಗಳನ್ನು ಪಡೆಯಿರಿ."
+  },
+  "features": {
+    "whyChoose": "HomyFind ಅನ್ನು ಏಕೆ ಆಯ್ಕೆ ಮಾಡಬೇಕು",
+    "verifiedTitle": "ಪರಿಶೀಲಿಸಿದ ಆಸ್ತಿಗಳು",
+    "verifiedDesc": "ನಿಮ್ಮ ಸುರಕ್ಷತೆ ಮತ್ತು ಮನಸ್ಸಿನ ಶಾಂತಿಗಾಗಿ ಪ್ರತಿ ಪಟ್ಟಿಯನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ",
+    "communityTitle": "ಸಮುದಾಯ ಜೀವನ",
+    "communityDesc": "ಸಮಾನ ಮನಸ್ಕ ಜನರೊಂದಿಗೆ ಸಂಪರ್ಕ ಹೊಂದಿ ಮತ್ತು ಶಾಶ್ವತ ಸ್ನೇಹವನ್ನು ಬೆಳೆಸಿ",
+    "pricingTitle": "ಕೈಗೆಟುಕುವ ಬೆಲೆ",
+    "pricingDesc": "ನಿಮ್ಮ ಬಜೆಟ್‌ಗೆ ಹೊಂದಿಕೊಳ್ಳುವ ಗುಣಮಟ್ಟದ ವಸತಿಗಳನ್ನು ಹುಡುಕಿ"
+  },
+  "footer": {
+    "tagline": "ಮನೆಯಿಂದ ದೂರ ನಿಮ್ಮ ಮನೆಯನ್ನು ಹುಡುಕಿ"
+  },
+  "detail": {
+    "loadingListing": "ಪಟ್ಟಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+    "listingNotFound": "ಪಟ್ಟಿ ಕಂಡುಬಂದಿಲ್ಲ",
+    "listingNotFoundDesc": "ಈ ಪಟ್ಟಿಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿರಬಹುದು ಅಥವಾ ಲಿಂಕ್ ತಪ್ಪಾಗಿದೆ.",
+    "backToSearch": "ಹುಡುಕಾಟಕ್ಕೆ ಹಿಂತಿರುಗಿ",
+    "aboutThisPG": "ಈ PG ಬಗ್ಗೆ",
+    "amenities": "ಸೌಲಭ್ಯಗಳು",
+    "houseRules": "ಮನೆ ನಿಯಮಗಳು",
+    "location": "ಸ್ಥಳ",
+    "locationDesc": "ನಿಖರ ಸ್ಥಳವನ್ನು ನೋಡಿ ಮತ್ತು ದಿಕ್ಕುಗಳನ್ನು ಪಡೆಯಿರಿ.",
+    "openInMaps": "Google Maps ನಲ್ಲಿ ತೆರೆಯಿರಿ",
+    "deposit": "ಠೇವಣಿ",
+    "sharing": "{count} ಹಂಚಿಕೆ",
+    "foodIncluded": "ಊಟ ಸೇರಿಸಲಾಗಿದೆ",
+    "foodNotIncluded": "ಊಟ ಸೇರಿಸಲಾಗಿಲ್ಲ",
+    "availableFrom": "{date} ರಿಂದ ಲಭ್ಯ",
+    "roomsAvailable": "{total} ರಲ್ಲಿ {available} ಕೊಠಡಿಗಳು ಲಭ್ಯ",
+    "contactOwner": "ಮಾಲೀಕರನ್ನು ಸಂಪರ್ಕಿಸಿ",
+    "contactOnMaps": "ಸಂಪರ್ಕ ಮಾಹಿತಿ Google Maps ನಲ್ಲಿ ಲಭ್ಯ",
+    "callOwner": "ಮಾಲೀಕರಿಗೆ ಕರೆ ಮಾಡಿ",
+    "viewOnMaps": "Maps ನಲ್ಲಿ ನೋಡಿ",
+    "reviews": "({count} ವಿಮರ್ಶೆಗಳು)"
+  },
+  "addListing": {
+    "pageTitle": "ನಿಮ್ಮ PG ಪಟ್ಟಿ ಮಾಡಿ",
+    "steps": {
+      "pgDetails": "PG ವಿವರಗಳು",
+      "location": "ಸ್ಥಳ",
+      "pricing": "ಬೆಲೆ",
+      "amenities": "ಸೌಲಭ್ಯಗಳು"
+    },
+    "pgDetails": {
+      "title": "PG ವಿವರಗಳು",
+      "pgName": "PG ಹೆಸರು",
+      "pgNamePlaceholder": "ಉದಾ., ಸನ್‌ಶೈನ್ PG ಫಾರ್ ಮೆನ್",
+      "description": "ವಿವರಣೆ",
+      "descriptionPlaceholder": "ನಿಮ್ಮ PG ವಿವರಿಸಿ - ಸೌಲಭ್ಯಗಳು, ಹತ್ತಿರದ ಪ್ರದೇಶಗಳು, ಸಾರಿಗೆ ಇತ್ಯಾದಿ."
+    },
+    "contactDetails": {
+      "title": "ಸಂಪರ್ಕ ವಿವರಗಳು",
+      "ownerName": "ಮಾಲೀಕರ ಹೆಸರು",
+      "ownerNamePlaceholder": "ಪೂರ್ಣ ಹೆಸರು",
+      "phone": "ಫೋನ್",
+      "phonePlaceholder": "10-ಅಂಕಿಯ ಸಂಖ್ಯೆ",
+      "email": "ಇಮೇಲ್",
+      "emailPlaceholder": "you@email.com"
+    },
+    "locationSection": {
+      "title": "ಸ್ಥಳ",
+      "fullAddress": "ಪೂರ್ಣ ವಿಳಾಸ",
+      "addressPlaceholder": "ರಸ್ತೆ ವಿಳಾಸ, ಕಟ್ಟಡದ ಹೆಸರು, ಮಹಡಿ...",
+      "city": "ನಗರ",
+      "cityPlaceholder": "ಉದಾ., ಬೆಂಗಳೂರು",
+      "state": "ರಾಜ್ಯ",
+      "statePlaceholder": "ಉದಾ., ಕರ್ನಾಟಕ",
+      "pincode": "ಪಿನ್‌ಕೋಡ್",
+      "pincodePlaceholder": "6-ಅಂಕಿ",
+      "nearbyLandmark": "ಹತ್ತಿರದ ಹೆಗ್ಗುರುತು",
+      "landmarkPlaceholder": "ಉದಾ., ಇಂದಿರಾನಗರ ಮೆಟ್ರೋ ನಿಲ್ದಾಣದ ಬಳಿ"
+    },
+    "pricingSection": {
+      "title": "ಬೆಲೆ ಮತ್ತು ಲಭ್ಯತೆ",
+      "sharingType": "ಹಂಚಿಕೆ ಪ್ರಕಾರ",
+      "single": "ಸಿಂಗಲ್",
+      "double": "ಡಬಲ್",
+      "triple": "ಟ್ರಿಪಲ್",
+      "fourPlusSharing": "4+ ಹಂಚಿಕೆ",
+      "preferredGender": "ಆದ್ಯತೆಯ ಲಿಂಗ",
+      "maleOnly": "ಪುರುಷರು ಮಾತ್ರ",
+      "femaleOnly": "ಮಹಿಳೆಯರು ಮಾತ್ರ",
+      "any": "ಯಾವುದಾದರೂ",
+      "monthlyRent": "ಮಾಸಿಕ ಬಾಡಿಗೆ",
+      "rentPlaceholder": "ಉದಾ., 8000",
+      "securityDeposit": "ಭದ್ರತಾ ಠೇವಣಿ",
+      "depositPlaceholder": "ಉದಾ., 16000",
+      "totalRooms": "ಒಟ್ಟು ಕೊಠಡಿಗಳು",
+      "totalRoomsPlaceholder": "ಉದಾ., 10",
+      "availableRooms": "ಲಭ್ಯ ಕೊಠಡಿಗಳು",
+      "availableRoomsPlaceholder": "ಉದಾ., 3",
+      "availableFrom": "ಲಭ್ಯವಿರುವ ದಿನಾಂಕ",
+      "foodIncluded": "ಬಾಡಿಗೆಯಲ್ಲಿ ಊಟ ಸೇರಿದೆ"
+    },
+    "amenitiesSection": {
+      "title": "ಸೌಲಭ್ಯಗಳು",
+      "rulesTitle": "ಮನೆ ನಿಯಮಗಳು",
+      "rulesPlaceholder": "ಪ್ರತಿ ನಿಯಮವನ್ನು ಹೊಸ ಸಾಲಿನಲ್ಲಿ ನಮೂದಿಸಿ, ಉದಾ.\nಧೂಮಪಾನ ನಿಷೇಧ\nಸಂಜೆ 9 ರವರೆಗೆ ಭೇಟಿಗಾರರು\nಸ್ವಚ್ಛತೆ ಕಾಪಾಡಿ"
+    },
+    "submitting": "ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ...",
+    "submitListing": "ಪಟ್ಟಿ ಸಲ್ಲಿಸಿ",
+    "success": {
+      "title": "ಪಟ್ಟಿ ಸಲ್ಲಿಸಲಾಗಿದೆ",
+      "message": "ನಿಮ್ಮ PG ಪಟ್ಟಿಯನ್ನು ಪರಿಶೀಲನೆಗಾಗಿ ಸಲ್ಲಿಸಲಾಗಿದೆ. ಅನುಮೋದನೆಯ ನಂತರ ಬಾಡಿಗೆದಾರರಿಗೆ ಗೋಚರಿಸುತ್ತದೆ."
+    },
+    "failedSubmit": "ಸಲ್ಲಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+  },
+  "amenityNames": {
+    "wifi": "ವೈಫೈ",
+    "ac": "AC",
+    "tv": "TV",
+    "washingMachine": "ವಾಷಿಂಗ್ ಮಷೀನ್",
+    "fridge": "ಫ್ರಿಡ್ಜ್",
+    "microwave": "ಮೈಕ್ರೋವೇವ್",
+    "parking": "ಪಾರ್ಕಿಂಗ್",
+    "cctv": "CCTV",
+    "securityGuard": "ಭದ್ರತಾ ಸಿಬ್ಬಂದಿ",
+    "powerBackup": "ಪವರ್ ಬ್ಯಾಕಪ್",
+    "waterPurifier": "ವಾಟರ್ ಪ್ಯೂರಿಫೈಯರ್",
+    "laundryService": "ಲಾಂಡ್ರಿ ಸೇವೆ",
+    "housekeeping": "ಹೌಸ್‌ಕೀಪಿಂಗ್",
+    "gym": "ಜಿಮ್",
+    "security": "ಭದ್ರತೆ"
+  },
+  "rentBrackets": {
+    "under5000": "5,000 ಕ್ಕಿಂತ ಕಡಿಮೆ",
+    "under8000": "8,000 ಕ್ಕಿಂತ ಕಡಿಮೆ",
+    "under10000": "10,000 ಕ್ಕಿಂತ ಕಡಿಮೆ",
+    "under15000": "15,000 ಕ್ಕಿಂತ ಕಡಿಮೆ",
+    "under20000": "20,000 ಕ್ಕಿಂತ ಕಡಿಮೆ"
+  },
+  "error": {
+    "title": "ಏನೋ ತಪ್ಪಾಯಿತು",
+    "description": "ಅನಿರೀಕ್ಷಿತ ದೋಷ ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+    "tryAgain": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "ನೀವು ಹುಡುಕುತ್ತಿರುವ ಪುಟ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ."
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "kn": "ಕನ್ನಡ",
+    "te": "తెలుగు",
+    "ta": "தமிழ்",
+    "ml": "മലയാളം"
+  }
+}

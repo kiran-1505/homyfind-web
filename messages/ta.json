@@ -1,0 +1,215 @@
+{
+  "common": {
+    "home": "முகப்பு",
+    "listYourPG": "உங்கள் PG பட்டியலிடுங்கள்",
+    "backToHome": "முகப்புக்குத் திரும்பு",
+    "loading": "ஏற்றுகிறது...",
+    "search": "தேடு",
+    "searching": "தேடுகிறது...",
+    "back": "பின்",
+    "cancel": "ரத்து செய்",
+    "next": "அடுத்து",
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+    "verified": "சரிபார்க்கப்பட்டது",
+    "viewDetails": "விவரங்களைக் காண",
+    "liveData": "நேரடி தரவு",
+    "sampleData": "மாதிரி தரவு",
+    "food": "உணவு",
+    "sharing": "பகிர்வு",
+    "roomsLeft": "{count} அறைகள் உள்ளன",
+    "more": "+{count} மேலும்",
+    "perMonth": "/மா",
+    "perMonthFull": "/மாதம்",
+    "male": "ஆண்",
+    "female": "பெண்",
+    "any": "ஏதேனும்"
+  },
+  "hero": {
+    "trustLine": "இந்தியா முழுவதும் 10,000+ குத்தகைதாரர்களால் நம்பப்படுகிறது",
+    "title": "உங்கள் சரியான PG தங்குமிடத்தைக் கண்டறியுங்கள்",
+    "subtitle": "பெங்களூரு, மும்பை, டெல்லி மற்றும் பல நகரங்களில் சரிபார்க்கப்பட்ட பேயிங் கெஸ்ட் தங்குமிடங்களை உலாவுங்கள்",
+    "verifiedListings": "சரிபார்க்கப்பட்ட பட்டியல்கள்",
+    "genderOptions": "ஆண், பெண் & இணை வாழ்க்கை",
+    "startingPrice": "₹5,000/மாதத்தில் தொடங்குகிறது"
+  },
+  "search": {
+    "placeholder": "நகரம், பகுதி அல்லது அடையாளத்தைத் தேடு...",
+    "filters": "வடிப்பான்கள்",
+    "clearFilters": "வடிப்பான்களை அழி",
+    "sharingType": "பகிர்வு வகை",
+    "maxRent": "அதிகபட்ச வாடகை",
+    "gender": "பாலினம்",
+    "foodLabel": "உணவு",
+    "all": "அனைத்தும்",
+    "anyBudget": "எந்த பட்ஜெட்டும்",
+    "any": "ஏதேனும்",
+    "single": "சிங்கிள்",
+    "double": "டபுள்",
+    "triple": "ட்ரிபிள்",
+    "fourPlus": "நான்கு+",
+    "male": "ஆண்",
+    "female": "பெண்",
+    "coLiving": "இணை வாழ்க்கை",
+    "included": "சேர்க்கப்பட்டது",
+    "notIncluded": "சேர்க்கப்படவில்லை"
+  },
+  "listings": {
+    "pgsFound": "{count} PG கள் கண்டுபிடிக்கப்பட்டன",
+    "pgListings": "PG பட்டியல்கள்",
+    "showing": "{total} இல் {start}-{end} காண்பிக்கிறது",
+    "noListings": "PG பட்டியல்கள் கிடைக்கவில்லை",
+    "noListingsHint": "வேறு இடத்தை முயற்சிக்கவும் அல்லது வடிப்பான்களை மாற்றவும்"
+  },
+  "cta": {
+    "title": "PG உரிமையாளரா? இலவசமாக பட்டியலிடுங்கள்",
+    "subtitle": "PG தங்குமிடம் தேடும் ஆயிரக்கணக்கான குத்தகைதாரர்களை அடையுங்கள். மணி நேரத்தில் விசாரணைகளைப் பெறுங்கள்."
+  },
+  "features": {
+    "whyChoose": "HomyFind ஏன் தேர்வு செய்ய வேண்டும்",
+    "verifiedTitle": "சரிபார்க்கப்பட்ட சொத்துகள்",
+    "verifiedDesc": "உங்கள் பாதுகாப்பு மற்றும் மன அமைதிக்காக ஒவ்வொரு பட்டியலும் சரிபார்க்கப்படுகிறது",
+    "communityTitle": "சமூக வாழ்க்கை",
+    "communityDesc": "ஒத்த எண்ணம் கொண்ட மக்களுடன் இணைந்து நிலையான நட்புகளை உருவாக்குங்கள்",
+    "pricingTitle": "மலிவான விலை",
+    "pricingDesc": "உங்கள் பட்ஜெட்டுக்கு ஏற்ற தரமான தங்குமிடங்களைக் கண்டறியுங்கள்"
+  },
+  "footer": {
+    "tagline": "வீட்டிலிருந்து தொலைவில் உங்கள் வீட்டைக் கண்டறியுங்கள்"
+  },
+  "detail": {
+    "loadingListing": "பட்டியல் ஏற்றுகிறது...",
+    "listingNotFound": "பட்டியல் கிடைக்கவில்லை",
+    "listingNotFoundDesc": "இந்த பட்டியல் அகற்றப்பட்டிருக்கலாம் அல்லது இணைப்பு தவறானது.",
+    "backToSearch": "தேடலுக்குத் திரும்பு",
+    "aboutThisPG": "இந்த PG பற்றி",
+    "amenities": "வசதிகள்",
+    "houseRules": "வீட்டு விதிகள்",
+    "location": "இடம்",
+    "locationDesc": "சரியான இடத்தைப் பார்த்து திசைகளைப் பெறுங்கள்.",
+    "openInMaps": "Google Maps இல் திற",
+    "deposit": "வைப்புத்தொகை",
+    "sharing": "{count} பகிர்வு",
+    "foodIncluded": "உணவு சேர்க்கப்பட்டது",
+    "foodNotIncluded": "உணவு சேர்க்கப்படவில்லை",
+    "availableFrom": "{date} முதல் கிடைக்கும்",
+    "roomsAvailable": "{total} இல் {available} அறைகள் கிடைக்கும்",
+    "contactOwner": "உரிமையாளரைத் தொடர்பு கொள்ளுங்கள்",
+    "contactOnMaps": "தொடர்புத் தகவல் Google Maps இல் கிடைக்கும்",
+    "callOwner": "உரிமையாளரை அழைக்கவும்",
+    "viewOnMaps": "Maps இல் காண",
+    "reviews": "({count} விமர்சனங்கள்)"
+  },
+  "addListing": {
+    "pageTitle": "உங்கள் PG பட்டியலிடுங்கள்",
+    "steps": {
+      "pgDetails": "PG விவரங்கள்",
+      "location": "இடம்",
+      "pricing": "விலை",
+      "amenities": "வசதிகள்"
+    },
+    "pgDetails": {
+      "title": "PG விவரங்கள்",
+      "pgName": "PG பெயர்",
+      "pgNamePlaceholder": "எ.கா., சன்ஷைன் PG ஃபார் மென்",
+      "description": "விளக்கம்",
+      "descriptionPlaceholder": "உங்கள் PG பற்றி விவரிக்கவும் - வசதிகள், அருகிலுள்ள பகுதிகள், போக்குவரத்து போன்றவை."
+    },
+    "contactDetails": {
+      "title": "தொடர்பு விவரங்கள்",
+      "ownerName": "உரிமையாளர் பெயர்",
+      "ownerNamePlaceholder": "முழு பெயர்",
+      "phone": "தொலைபேசி",
+      "phonePlaceholder": "10-இலக்க எண்",
+      "email": "மின்னஞ்சல்",
+      "emailPlaceholder": "you@email.com"
+    },
+    "locationSection": {
+      "title": "இடம்",
+      "fullAddress": "முழு முகவரி",
+      "addressPlaceholder": "தெரு முகவரி, கட்டிட பெயர், தளம்...",
+      "city": "நகரம்",
+      "cityPlaceholder": "எ.கா., பெங்களூரு",
+      "state": "மாநிலம்",
+      "statePlaceholder": "எ.கா., கர்நாடகா",
+      "pincode": "பின்கோடு",
+      "pincodePlaceholder": "6-இலக்கம்",
+      "nearbyLandmark": "அருகிலுள்ள அடையாளம்",
+      "landmarkPlaceholder": "எ.கா., இந்திரா நகர் மெட்ரோ நிலையம் அருகில்"
+    },
+    "pricingSection": {
+      "title": "விலை & கிடைக்கும் தன்மை",
+      "sharingType": "பகிர்வு வகை",
+      "single": "சிங்கிள்",
+      "double": "டபுள்",
+      "triple": "ட்ரிபிள்",
+      "fourPlusSharing": "4+ பகிர்வு",
+      "preferredGender": "விரும்பும் பாலினம்",
+      "maleOnly": "ஆண்கள் மட்டும்",
+      "femaleOnly": "பெண்கள் மட்டும்",
+      "any": "ஏதேனும்",
+      "monthlyRent": "மாத வாடகை",
+      "rentPlaceholder": "எ.கா., 8000",
+      "securityDeposit": "பாதுகாப்பு வைப்புத்தொகை",
+      "depositPlaceholder": "எ.கா., 16000",
+      "totalRooms": "மொத்த அறைகள்",
+      "totalRoomsPlaceholder": "எ.கா., 10",
+      "availableRooms": "கிடைக்கும் அறைகள்",
+      "availableRoomsPlaceholder": "எ.கா., 3",
+      "availableFrom": "கிடைக்கும் தேதி",
+      "foodIncluded": "வாடகையில் உணவு சேர்க்கப்பட்டது"
+    },
+    "amenitiesSection": {
+      "title": "வசதிகள்",
+      "rulesTitle": "வீட்டு விதிகள்",
+      "rulesPlaceholder": "ஒவ்வொரு விதியையும் புதிய வரியில் உள்ளிடவும், எ.கா.\nபுகைபிடிக்கக் கூடாது\nமாலை 9 மணி வரை பார்வையாளர்கள்\nதூய்மையை பராமரிக்கவும்"
+    },
+    "submitting": "சமர்ப்பிக்கிறது...",
+    "submitListing": "பட்டியலை சமர்ப்பிக்கவும்",
+    "success": {
+      "title": "பட்டியல் சமர்ப்பிக்கப்பட்டது",
+      "message": "உங்கள் PG பட்டியல் மதிப்பாய்வுக்காக சமர்ப்பிக்கப்பட்டது. அனுமதிக்கப்பட்ட பின் குத்தகைதாரர்களுக்கு தெரியும்."
+    },
+    "failedSubmit": "சமர்ப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+  },
+  "amenityNames": {
+    "wifi": "வைஃபை",
+    "ac": "AC",
+    "tv": "TV",
+    "washingMachine": "சலவை இயந்திரம்",
+    "fridge": "குளிர்சாதன பெட்டி",
+    "microwave": "மைக்ரோவேவ்",
+    "parking": "பார்க்கிங்",
+    "cctv": "CCTV",
+    "securityGuard": "பாதுகாப்பு காவலர்",
+    "powerBackup": "பவர் பேக்கப்",
+    "waterPurifier": "நீர் சுத்திகரிப்பான்",
+    "laundryService": "சலவை சேவை",
+    "housekeeping": "வீட்டு பராமரிப்பு",
+    "gym": "ஜிம்",
+    "security": "பாதுகாப்பு"
+  },
+  "rentBrackets": {
+    "under5000": "5,000 க்கு கீழ்",
+    "under8000": "8,000 க்கு கீழ்",
+    "under10000": "10,000 க்கு கீழ்",
+    "under15000": "15,000 க்கு கீழ்",
+    "under20000": "20,000 க்கு கீழ்"
+  },
+  "error": {
+    "title": "ஏதோ தவறு நடந்தது",
+    "description": "எதிர்பாராத பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.",
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "நீங்கள் தேடும் பக்கம் இல்லை."
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "kn": "ಕನ್ನಡ",
+    "te": "తెలుగు",
+    "ta": "தமிழ்",
+    "ml": "മലയാളം"
+  }
+}

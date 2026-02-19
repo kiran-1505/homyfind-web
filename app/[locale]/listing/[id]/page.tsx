@@ -1,25 +1,34 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useRouter } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { PGListing } from '@/types';
 import { useImageCarousel } from '@/hooks/useImageCarousel';
 import { safeParseJSON } from '@/utils';
+import { AMENITY_KEYS } from '@/constants';
 import {
   MapPin, Star, Users, Utensils, Home, Phone, Mail,
   CheckCircle, XCircle, Calendar, IndianRupee, Shield,
   ArrowLeft, ExternalLink, ChevronLeft, ChevronRight
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function ListingDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
+  const t = useTranslations();
   const [listing, setListing] = useState<PGListing | null>(null);
   const [loading, setLoading] = useState(true);
 
   const images = listing?.images && listing.images.length > 0 ? listing.images : [];
   const { currentIndex, imageLoaded, hasMultiple, goToNext, goToPrev, goToIndex, onImageLoad } = useImageCarousel(images);
+
+  const translateAmenity = (amenity: string) => {
+    const key = AMENITY_KEYS[amenity];
+    return key ? t(`amenityNames.${key}`) : amenity;
+  };
 
   useEffect(() => {
     const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings'));
@@ -46,7 +55,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-600 border-t-transparent mx-auto mb-4" />
-          <p className="text-gray-500 text-sm">Loading listing...</p>
+          <p className="text-gray-500 text-sm">{t('detail.loadingListing')}</p>
         </div>
       </div>
     );
@@ -59,13 +68,13 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Home className="w-8 h-8 text-gray-400" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Listing not found</h2>
-          <p className="text-gray-500 text-sm mb-6">This listing may have been removed or the link is incorrect.</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t('detail.listingNotFound')}</h2>
+          <p className="text-gray-500 text-sm mb-6">{t('detail.listingNotFoundDesc')}</p>
           <button
             onClick={() => router.push('/')}
             className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors"
           >
-            Back to search
+            {t('detail.backToSearch')}
           </button>
         </div>
       </div>
@@ -76,20 +85,23 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center gap-3">
-          <button
-            onClick={() => router.back()}
-            className="p-1.5 -ml-1.5 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Go back"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/HomyFind-logo.png" alt="HomyFind" width={32} height={32} className="h-8 w-auto" />
-            <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              HomyFind
-            </span>
-          </Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.back()}
+              className="p-1.5 -ml-1.5 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/HomyFind-logo.png" alt="HomyFind" width={32} height={32} className="h-8 w-auto" />
+              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                HomyFind
+              </span>
+            </Link>
+          </div>
+          <LanguageSwitcher />
         </div>
       </header>
 
@@ -171,32 +183,32 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                 {listing.verified && (
                   <span className="flex-shrink-0 flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-semibold border border-green-200">
                     <CheckCircle className="w-3.5 h-3.5" />
-                    Verified
+                    {t('common.verified')}
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-1">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 <span className="font-semibold text-sm">{listing.rating}</span>
-                <span className="text-gray-400 text-sm">({listing.reviewCount} reviews)</span>
+                <span className="text-gray-400 text-sm">{t('detail.reviews', { count: listing.reviewCount })}</span>
               </div>
             </div>
 
             {listing.description && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">About this PG</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('detail.aboutThisPG')}</h2>
                 <p className="text-gray-600 leading-relaxed text-sm">{listing.description}</p>
               </div>
             )}
 
             {listing.amenities && listing.amenities.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Amenities</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('detail.amenities')}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {listing.amenities.map((amenity, index) => (
                     <div key={index} className="flex items-center gap-2 text-sm text-gray-700">
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      <span>{amenity}</span>
+                      <span>{translateAmenity(amenity)}</span>
                     </div>
                   ))}
                 </div>
@@ -205,7 +217,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
 
             {listing.rules && listing.rules.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">House Rules</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('detail.houseRules')}</h2>
                 <ul className="space-y-2.5">
                   {listing.rules.map((rule, index) => (
                     <li key={index} className="flex items-start gap-2 text-sm text-gray-700">
@@ -218,8 +230,8 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
             )}
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">Location</h2>
-              <p className="text-gray-500 text-sm mb-4">See the exact location and get directions.</p>
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('detail.location')}</h2>
+              <p className="text-gray-500 text-sm mb-4">{t('detail.locationDesc')}</p>
               <a
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.address)}`}
                 target="_blank"
@@ -227,7 +239,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 <ExternalLink className="w-4 h-4" />
-                Open in Google Maps
+                {t('detail.openInMaps')}
               </a>
             </div>
           </div>
@@ -240,18 +252,18 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                   <span className="text-3xl font-bold text-gray-900">
                     ₹{listing.rent.toLocaleString('en-IN')}
                   </span>
-                  <span className="text-gray-400">/month</span>
+                  <span className="text-gray-400">{t('common.perMonthFull')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-gray-500 text-sm">
                   <IndianRupee className="w-3.5 h-3.5" />
-                  <span>Deposit: ₹{listing.securityDeposit.toLocaleString('en-IN')}</span>
+                  <span>{t('detail.deposit')}: ₹{listing.securityDeposit.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               <div className="space-y-3 mb-5 pb-5 border-b border-gray-100">
                 <div className="flex items-center gap-3 text-sm">
                   <Users className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-700">{listing.sharingOption} Sharing</span>
+                  <span className="text-gray-700">{t('detail.sharing', { count: listing.sharingOption })}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Shield className="w-4 h-4 text-gray-400" />
@@ -259,20 +271,20 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Utensils className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-700">Food {listing.foodIncluded ? 'Included' : 'Not Included'}</span>
+                  <span className="text-gray-700">{listing.foodIncluded ? t('detail.foodIncluded') : t('detail.foodNotIncluded')}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Calendar className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-700">From {new Date(listing.availableFrom).toLocaleDateString('en-IN')}</span>
+                  <span className="text-gray-700">{t('detail.availableFrom', { date: new Date(listing.availableFrom).toLocaleDateString('en-IN') })}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Home className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-700">{listing.availableRooms} of {listing.totalRooms} rooms available</span>
+                  <span className="text-gray-700">{t('detail.roomsAvailable', { available: listing.availableRooms, total: listing.totalRooms })}</span>
                 </div>
               </div>
 
               <div>
-                <h3 className="font-semibold text-gray-900 text-sm mb-3">Contact Owner</h3>
+                <h3 className="font-semibold text-gray-900 text-sm mb-3">{t('detail.contactOwner')}</h3>
                 <div className="space-y-2.5">
                   {listing.ownerName && <p className="text-sm text-gray-700">{listing.ownerName}</p>}
                   {listing.ownerPhone && (
@@ -288,7 +300,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                     </a>
                   )}
                   {!listing.ownerPhone && !listing.ownerEmail && (
-                    <p className="text-sm text-gray-400">Contact info available on Google Maps</p>
+                    <p className="text-sm text-gray-400">{t('detail.contactOnMaps')}</p>
                   )}
                 </div>
 
@@ -298,7 +310,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                     className="mt-5 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-semibold transition-colors"
                   >
                     <Phone className="w-4 h-4" />
-                    Call Owner
+                    {t('detail.callOwner')}
                   </a>
                 ) : (
                   <a
@@ -308,7 +320,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                     className="mt-5 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-semibold transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    View on Maps
+                    {t('detail.viewOnMaps')}
                   </a>
                 )}
               </div>

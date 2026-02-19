@@ -1,0 +1,215 @@
+{
+  "common": {
+    "home": "హోమ్",
+    "listYourPG": "మీ PG జాబితా చేయండి",
+    "backToHome": "హోమ్‌కు తిరిగి వెళ్ళండి",
+    "loading": "లోడ్ అవుతోంది...",
+    "search": "వెతకండి",
+    "searching": "వెతుకుతోంది...",
+    "back": "వెనుకకు",
+    "cancel": "రద్దు చేయండి",
+    "next": "తదుపరి",
+    "tryAgain": "మళ్ళీ ప్రయత్నించండి",
+    "verified": "ధృవీకరించబడింది",
+    "viewDetails": "వివరాలు చూడండి",
+    "liveData": "లైవ్ డేటా",
+    "sampleData": "నమూనా డేటా",
+    "food": "ఆహారం",
+    "sharing": "షేరింగ్",
+    "roomsLeft": "{count} గదులు మిగిలి ఉన్నాయి",
+    "more": "+{count} మరిన్ని",
+    "perMonth": "/నె",
+    "perMonthFull": "/నెల",
+    "male": "పురుషులు",
+    "female": "మహిళలు",
+    "any": "ఏదైనా"
+  },
+  "hero": {
+    "trustLine": "భారతదేశం అంతటా 10,000+ అద్దెదారులచే నమ్మబడింది",
+    "title": "మీ సరైన PG వసతి కనుగొనండి",
+    "subtitle": "బెంగళూరు, ముంబై, ఢిల్లీ మరియు మరిన్ని నగరాల్లో ధృవీకరించిన పేయింగ్ గెస్ట్ వసతులు బ్రౌజ్ చేయండి",
+    "verifiedListings": "ధృవీకరించిన జాబితాలు",
+    "genderOptions": "పురుషులు, మహిళలు & సహ-జీవనం",
+    "startingPrice": "₹5,000/నె నుండి ప్రారంభం"
+  },
+  "search": {
+    "placeholder": "నగరం, ప్రాంతం లేదా ల్యాండ్‌మార్క్ వెతకండి...",
+    "filters": "ఫిల్టర్‌లు",
+    "clearFilters": "ఫిల్టర్‌లు తొలగించండి",
+    "sharingType": "షేరింగ్ రకం",
+    "maxRent": "గరిష్ట అద్దె",
+    "gender": "లింగం",
+    "foodLabel": "ఆహారం",
+    "all": "అన్నీ",
+    "anyBudget": "ఏదైనా బడ్జెట్",
+    "any": "ఏదైనా",
+    "single": "సింగిల్",
+    "double": "డబుల్",
+    "triple": "ట్రిపుల్",
+    "fourPlus": "నాలుగు+",
+    "male": "పురుషులు",
+    "female": "మహిళలు",
+    "coLiving": "సహ-జీవనం",
+    "included": "చేర్చబడింది",
+    "notIncluded": "చేర్చబడలేదు"
+  },
+  "listings": {
+    "pgsFound": "{count} PG లు కనుగొనబడ్డాయి",
+    "pgListings": "PG జాబితాలు",
+    "showing": "{total} లో {start}-{end} చూపిస్తోంది",
+    "noListings": "PG జాబితాలు కనుగొనబడలేదు",
+    "noListingsHint": "వేరే ప్రదేశం ప్రయత్నించండి లేదా ఫిల్టర్‌లు మార్చండి"
+  },
+  "cta": {
+    "title": "PG యజమానులారా? ఉచితంగా జాబితా చేయండి",
+    "subtitle": "PG వసతి కోసం వెతుకుతున్న వేలాది అద్దెదారులను చేరుకోండి. గంటల్లో ఎంక్వైరీలు పొందండి."
+  },
+  "features": {
+    "whyChoose": "HomyFind ఎందుకు ఎంచుకోవాలి",
+    "verifiedTitle": "ధృవీకరించిన ఆస్తులు",
+    "verifiedDesc": "మీ భద్రత మరియు మనశ్శాంతి కోసం ప్రతి జాబితా ధృవీకరించబడింది",
+    "communityTitle": "సమాజ జీవనం",
+    "communityDesc": "ఆలోచనలు పంచుకునే వ్యక్తులతో కనెక్ట్ అవ్వండి మరియు శాశ్వత స్నేహాలు నిర్మించండి",
+    "pricingTitle": "అందుబాటు ధరలు",
+    "pricingDesc": "మీ బడ్జెట్‌కు సరిపోయే నాణ్యమైన వసతులు కనుగొనండి"
+  },
+  "footer": {
+    "tagline": "ఇంటికి దూరంగా మీ ఇల్లు కనుగొనండి"
+  },
+  "detail": {
+    "loadingListing": "జాబితా లోడ్ అవుతోంది...",
+    "listingNotFound": "జాబితా కనుగొనబడలేదు",
+    "listingNotFoundDesc": "ఈ జాబితా తొలగించబడి ఉండవచ్చు లేదా లింక్ తప్పు.",
+    "backToSearch": "వెతకడానికి తిరిగి వెళ్ళండి",
+    "aboutThisPG": "ఈ PG గురించి",
+    "amenities": "సౌకర్యాలు",
+    "houseRules": "ఇంటి నియమాలు",
+    "location": "స్థానం",
+    "locationDesc": "ఖచ్చితమైన స్థానం చూడండి మరియు దిశలు పొందండి.",
+    "openInMaps": "Google Maps లో తెరవండి",
+    "deposit": "డిపాజిట్",
+    "sharing": "{count} షేరింగ్",
+    "foodIncluded": "ఆహారం చేర్చబడింది",
+    "foodNotIncluded": "ఆహారం చేర్చబడలేదు",
+    "availableFrom": "{date} నుండి అందుబాటులో",
+    "roomsAvailable": "{total} లో {available} గదులు అందుబాటులో",
+    "contactOwner": "యజమానిని సంప్రదించండి",
+    "contactOnMaps": "సంప్రదింపు సమాచారం Google Maps లో అందుబాటులో",
+    "callOwner": "యజమానికి కాల్ చేయండి",
+    "viewOnMaps": "Maps లో చూడండి",
+    "reviews": "({count} సమీక్షలు)"
+  },
+  "addListing": {
+    "pageTitle": "మీ PG జాబితా చేయండి",
+    "steps": {
+      "pgDetails": "PG వివరాలు",
+      "location": "స్థానం",
+      "pricing": "ధర",
+      "amenities": "సౌకర్యాలు"
+    },
+    "pgDetails": {
+      "title": "PG వివరాలు",
+      "pgName": "PG పేరు",
+      "pgNamePlaceholder": "ఉదా., సన్‌షైన్ PG ఫర్ మెన్",
+      "description": "వివరణ",
+      "descriptionPlaceholder": "మీ PG వివరించండి - సౌకర్యాలు, సమీపంలోని ప్రాంతాలు, రవాణా మొదలైనవి."
+    },
+    "contactDetails": {
+      "title": "సంప్రదింపు వివరాలు",
+      "ownerName": "యజమాని పేరు",
+      "ownerNamePlaceholder": "పూర్తి పేరు",
+      "phone": "ఫోన్",
+      "phonePlaceholder": "10-అంకెల సంఖ్య",
+      "email": "ఇమెయిల్",
+      "emailPlaceholder": "you@email.com"
+    },
+    "locationSection": {
+      "title": "స్థానం",
+      "fullAddress": "పూర్తి చిరునామా",
+      "addressPlaceholder": "రోడ్డు చిరునామా, భవనం పేరు, అంతస్తు...",
+      "city": "నగరం",
+      "cityPlaceholder": "ఉదా., బెంగళూరు",
+      "state": "రాష్ట్రం",
+      "statePlaceholder": "ఉదా., కర్ణాటక",
+      "pincode": "పిన్‌కోడ్",
+      "pincodePlaceholder": "6-అంకెలు",
+      "nearbyLandmark": "సమీపంలోని ల్యాండ్‌మార్క్",
+      "landmarkPlaceholder": "ఉదా., ఇందిరానగర్ మెట్రో స్టేషన్ సమీపంలో"
+    },
+    "pricingSection": {
+      "title": "ధర & అందుబాటు",
+      "sharingType": "షేరింగ్ రకం",
+      "single": "సింగిల్",
+      "double": "డబుల్",
+      "triple": "ట్రిపుల్",
+      "fourPlusSharing": "4+ షేరింగ్",
+      "preferredGender": "ఇష్టపడే లింగం",
+      "maleOnly": "పురుషులు మాత్రమే",
+      "femaleOnly": "మహిళలు మాత్రమే",
+      "any": "ఏదైనా",
+      "monthlyRent": "నెలవారీ అద్దె",
+      "rentPlaceholder": "ఉదా., 8000",
+      "securityDeposit": "భద్రతా డిపాజిట్",
+      "depositPlaceholder": "ఉదా., 16000",
+      "totalRooms": "మొత్తం గదులు",
+      "totalRoomsPlaceholder": "ఉదా., 10",
+      "availableRooms": "అందుబాటులో ఉన్న గదులు",
+      "availableRoomsPlaceholder": "ఉదా., 3",
+      "availableFrom": "అందుబాటు తేదీ",
+      "foodIncluded": "అద్దెలో ఆహారం చేర్చబడింది"
+    },
+    "amenitiesSection": {
+      "title": "సౌకర్యాలు",
+      "rulesTitle": "ఇంటి నియమాలు",
+      "rulesPlaceholder": "ప్రతి నియమం కొత్త లైన్‌లో నమోదు చేయండి, ఉదా.\nధూమపానం నిషేధం\nసాయంత్రం 9 వరకు సందర్శకులు\nపరిశుభ్రత పాటించండి"
+    },
+    "submitting": "సమర్పిస్తోంది...",
+    "submitListing": "జాబితా సమర్పించండి",
+    "success": {
+      "title": "జాబితా సమర్పించబడింది",
+      "message": "మీ PG జాబితా సమీక్ష కోసం సమర్పించబడింది. ఆమోదం తర్వాత అద్దెదారులకు కనిపిస్తుంది."
+    },
+    "failedSubmit": "సమర్పించడం విఫలమైంది. దయచేసి మళ్ళీ ప్రయత్నించండి."
+  },
+  "amenityNames": {
+    "wifi": "వైఫై",
+    "ac": "AC",
+    "tv": "TV",
+    "washingMachine": "వాషింగ్ మెషీన్",
+    "fridge": "ఫ్రిడ్జ్",
+    "microwave": "మైక్రోవేవ్",
+    "parking": "పార్కింగ్",
+    "cctv": "CCTV",
+    "securityGuard": "సెక్యూరిటీ గార్డ్",
+    "powerBackup": "పవర్ బ్యాకప్",
+    "waterPurifier": "వాటర్ ప్యూరిఫైయర్",
+    "laundryService": "లాండ్రీ సేవ",
+    "housekeeping": "హౌస్‌కీపింగ్",
+    "gym": "జిమ్",
+    "security": "భద్రత"
+  },
+  "rentBrackets": {
+    "under5000": "5,000 కంటే తక్కువ",
+    "under8000": "8,000 కంటే తక్కువ",
+    "under10000": "10,000 కంటే తక్కువ",
+    "under15000": "15,000 కంటే తక్కువ",
+    "under20000": "20,000 కంటే తక్కువ"
+  },
+  "error": {
+    "title": "ఏదో తప్పు జరిగింది",
+    "description": "ఊహించని లోపం సంభవించింది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+    "tryAgain": "మళ్ళీ ప్రయత్నించండి"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "మీరు వెతుకుతున్న పేజీ ఉనికిలో లేదు."
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "kn": "ಕನ್ನಡ",
+    "te": "తెలుగు",
+    "ta": "தமிழ்",
+    "ml": "മലയാളം"
+  }
+}

@@ -1,17 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useRouter, Link } from '@/i18n/navigation';
 import {
   Home, MapPin, IndianRupee, Utensils, Wifi,
   ArrowLeft, CheckCircle, ChevronRight, Phone, Mail, User, FileText,
   Shield
 } from 'lucide-react';
-import { ADD_LISTING_STEPS, AMENITIES_LIST, DEFAULT_STATE } from '@/constants';
+import { ADD_LISTING_STEPS, AMENITIES_LIST, DEFAULT_STATE, ADD_LISTING_STEP_KEYS, AMENITY_KEYS } from '@/constants';
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function AddListingPage() {
   const router = useRouter();
+  const t = useTranslations();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -49,6 +51,11 @@ export default function AddListingPage() {
     }));
   };
 
+  const translateAmenity = (amenity: string) => {
+    const key = AMENITY_KEYS[amenity];
+    return key ? t(`amenityNames.${key}`) : amenity;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -78,7 +85,7 @@ export default function AddListingPage() {
         setError(data.error || 'Failed to add listing');
       }
     } catch (err: unknown) {
-      setError('Failed to submit. Please try again.');
+      setError(t('addListing.failedSubmit'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -92,15 +99,15 @@ export default function AddListingPage() {
           <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5">
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Listing Submitted</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('addListing.success.title')}</h2>
           <p className="text-gray-500 mb-6">
-            Your PG listing has been submitted for review. It will be visible to tenants once approved.
+            {t('addListing.success.message')}
           </p>
           <button
             onClick={() => router.push('/')}
             className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium transition-colors"
           >
-            Back to Home
+            {t('common.backToHome')}
           </button>
         </div>
       </div>
@@ -111,11 +118,14 @@ export default function AddListingPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
-          <Link href="/" className="p-1.5 -ml-1.5 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <h1 className="font-semibold text-gray-900">List Your PG</h1>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="p-1.5 -ml-1.5 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <h1 className="font-semibold text-gray-900">{t('addListing.pageTitle')}</h1>
+          </div>
+          <LanguageSwitcher />
         </div>
       </header>
 
@@ -141,7 +151,7 @@ export default function AddListingPage() {
                 }">
                   {index < currentStep ? <CheckCircle className="w-4 h-4" /> : index + 1}
                 </span>
-                <span className="hidden sm:inline">{step}</span>
+                <span className="hidden sm:inline">{t(`addListing.steps.${ADD_LISTING_STEP_KEYS[index]}`)}</span>
               </div>
               {index < ADD_LISTING_STEPS.length - 1 && (
                 <ChevronRight className="w-4 h-4 text-gray-300 flex-shrink-0" />
@@ -163,14 +173,14 @@ export default function AddListingPage() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
                   <Home className="w-5 h-5 text-blue-600" />
-                  PG Details
+                  {t('addListing.pgDetails.title')}
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">PG Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pgDetails.pgName')}</label>
                     <input
                       type="text"
-                      placeholder="e.g., Sunshine PG for Men"
+                      placeholder={t('addListing.pgDetails.pgNamePlaceholder')}
                       required
                       value={formData.pgName}
                       onChange={e => setFormData({ ...formData, pgName: e.target.value })}
@@ -178,9 +188,9 @@ export default function AddListingPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pgDetails.description')}</label>
                     <textarea
-                      placeholder="Describe your PG - facilities, nearby areas, transport etc."
+                      placeholder={t('addListing.pgDetails.descriptionPlaceholder')}
                       required
                       rows={3}
                       value={formData.description}
@@ -194,14 +204,14 @@ export default function AddListingPage() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
                   <User className="w-5 h-5 text-blue-600" />
-                  Contact Details
+                  {t('addListing.contactDetails.title')}
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Owner Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.contactDetails.ownerName')}</label>
                     <input
                       type="text"
-                      placeholder="Full name"
+                      placeholder={t('addListing.contactDetails.ownerNamePlaceholder')}
                       required
                       value={formData.ownerName}
                       onChange={e => setFormData({ ...formData, ownerName: e.target.value })}
@@ -210,12 +220,12 @@ export default function AddListingPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.contactDetails.phone')}</label>
                       <div className="relative">
                         <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           type="tel"
-                          placeholder="10-digit number"
+                          placeholder={t('addListing.contactDetails.phonePlaceholder')}
                           required
                           value={formData.ownerPhone}
                           onChange={e => setFormData({ ...formData, ownerPhone: e.target.value })}
@@ -224,12 +234,12 @@ export default function AddListingPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.contactDetails.email')}</label>
                       <div className="relative">
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           type="email"
-                          placeholder="you@email.com"
+                          placeholder={t('addListing.contactDetails.emailPlaceholder')}
                           required
                           value={formData.ownerEmail}
                           onChange={e => setFormData({ ...formData, ownerEmail: e.target.value })}
@@ -248,13 +258,13 @@ export default function AddListingPage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-blue-600" />
-                Location
+                {t('addListing.locationSection.title')}
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Address</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.locationSection.fullAddress')}</label>
                   <textarea
-                    placeholder="Street address, building name, floor..."
+                    placeholder={t('addListing.locationSection.addressPlaceholder')}
                     required
                     rows={2}
                     value={formData.address}
@@ -264,10 +274,10 @@ export default function AddListingPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">City</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.locationSection.city')}</label>
                     <input
                       type="text"
-                      placeholder="e.g., Bangalore"
+                      placeholder={t('addListing.locationSection.cityPlaceholder')}
                       required
                       value={formData.city}
                       onChange={e => setFormData({ ...formData, city: e.target.value })}
@@ -275,10 +285,10 @@ export default function AddListingPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">State</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.locationSection.state')}</label>
                     <input
                       type="text"
-                      placeholder="e.g., Karnataka"
+                      placeholder={t('addListing.locationSection.statePlaceholder')}
                       required
                       value={formData.state}
                       onChange={e => setFormData({ ...formData, state: e.target.value })}
@@ -286,10 +296,10 @@ export default function AddListingPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Pincode</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.locationSection.pincode')}</label>
                     <input
                       type="text"
-                      placeholder="6-digit"
+                      placeholder={t('addListing.locationSection.pincodePlaceholder')}
                       required
                       value={formData.pincode}
                       onChange={e => setFormData({ ...formData, pincode: e.target.value })}
@@ -298,10 +308,10 @@ export default function AddListingPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Nearby Landmark</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.locationSection.nearbyLandmark')}</label>
                   <input
                     type="text"
-                    placeholder="e.g., Near Indiranagar Metro Station"
+                    placeholder={t('addListing.locationSection.landmarkPlaceholder')}
                     value={formData.nearbyLandmark}
                     onChange={e => setFormData({ ...formData, nearbyLandmark: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
@@ -316,45 +326,45 @@ export default function AddListingPage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
                 <IndianRupee className="w-5 h-5 text-blue-600" />
-                Pricing & Availability
+                {t('addListing.pricingSection.title')}
               </h2>
               <div className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Sharing Type</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pricingSection.sharingType')}</label>
                     <select
                       value={formData.sharingOption}
                       onChange={e => setFormData({ ...formData, sharingOption: parseInt(e.target.value) })}
                       className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
-                      <option value={1}>Single</option>
-                      <option value={2}>Double</option>
-                      <option value={3}>Triple</option>
-                      <option value={4}>4+ Sharing</option>
+                      <option value={1}>{t('addListing.pricingSection.single')}</option>
+                      <option value={2}>{t('addListing.pricingSection.double')}</option>
+                      <option value={3}>{t('addListing.pricingSection.triple')}</option>
+                      <option value={4}>{t('addListing.pricingSection.fourPlusSharing')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Gender</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pricingSection.preferredGender')}</label>
                     <select
                       value={formData.preferredGender}
                       onChange={e => setFormData({ ...formData, preferredGender: e.target.value as 'Male' | 'Female' | 'Any' })}
                       className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     >
-                      <option value="Male">Male Only</option>
-                      <option value="Female">Female Only</option>
-                      <option value="Any">Any</option>
+                      <option value="Male">{t('addListing.pricingSection.maleOnly')}</option>
+                      <option value="Female">{t('addListing.pricingSection.femaleOnly')}</option>
+                      <option value="Any">{t('addListing.pricingSection.any')}</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Monthly Rent</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pricingSection.monthlyRent')}</label>
                     <div className="relative">
                       <IndianRupee className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="number"
-                        placeholder="e.g., 8000"
+                        placeholder={t('addListing.pricingSection.rentPlaceholder')}
                         required
                         value={formData.rent}
                         onChange={e => setFormData({ ...formData, rent: e.target.value })}
@@ -363,12 +373,12 @@ export default function AddListingPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Security Deposit</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pricingSection.securityDeposit')}</label>
                     <div className="relative">
                       <IndianRupee className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="number"
-                        placeholder="e.g., 16000"
+                        placeholder={t('addListing.pricingSection.depositPlaceholder')}
                         required
                         value={formData.securityDeposit}
                         onChange={e => setFormData({ ...formData, securityDeposit: e.target.value })}
@@ -380,10 +390,10 @@ export default function AddListingPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Total Rooms</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pricingSection.totalRooms')}</label>
                     <input
                       type="number"
-                      placeholder="e.g., 10"
+                      placeholder={t('addListing.pricingSection.totalRoomsPlaceholder')}
                       required
                       value={formData.totalRooms}
                       onChange={e => setFormData({ ...formData, totalRooms: e.target.value })}
@@ -391,10 +401,10 @@ export default function AddListingPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Available Rooms</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pricingSection.availableRooms')}</label>
                     <input
                       type="number"
-                      placeholder="e.g., 3"
+                      placeholder={t('addListing.pricingSection.availableRoomsPlaceholder')}
                       required
                       value={formData.availableRooms}
                       onChange={e => setFormData({ ...formData, availableRooms: e.target.value })}
@@ -402,7 +412,7 @@ export default function AddListingPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Available From</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('addListing.pricingSection.availableFrom')}</label>
                     <input
                       type="date"
                       value={formData.availableFrom}
@@ -421,7 +431,7 @@ export default function AddListingPage() {
                   />
                   <div className="flex items-center gap-2">
                     <Utensils className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-800">Food included in rent</span>
+                    <span className="text-sm font-medium text-green-800">{t('addListing.pricingSection.foodIncluded')}</span>
                   </div>
                 </label>
               </div>
@@ -434,7 +444,7 @@ export default function AddListingPage() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
                   <Wifi className="w-5 h-5 text-blue-600" />
-                  Amenities
+                  {t('addListing.amenitiesSection.title')}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
                   {AMENITIES_LIST.map((amenity) => (
@@ -448,7 +458,7 @@ export default function AddListingPage() {
                           : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                       }`}
                     >
-                      {amenity}
+                      {translateAmenity(amenity)}
                     </button>
                   ))}
                 </div>
@@ -457,10 +467,10 @@ export default function AddListingPage() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-blue-600" />
-                  House Rules
+                  {t('addListing.amenitiesSection.rulesTitle')}
                 </h2>
                 <textarea
-                  placeholder="Enter each rule on a new line, e.g.&#10;No smoking&#10;Visitors allowed till 9 PM&#10;Maintain cleanliness"
+                  placeholder={t('addListing.amenitiesSection.rulesPlaceholder')}
                   rows={4}
                   value={formData.rules}
                   onChange={e => setFormData({ ...formData, rules: e.target.value })}
@@ -478,14 +488,14 @@ export default function AddListingPage() {
                 onClick={() => setCurrentStep(currentStep - 1)}
                 className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
               >
-                Back
+                {t('common.back')}
               </button>
             ) : (
               <Link
                 href="/"
                 className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
               >
-                Cancel
+                {t('common.cancel')}
               </Link>
             )}
 
@@ -495,7 +505,7 @@ export default function AddListingPage() {
                 onClick={() => setCurrentStep(currentStep + 1)}
                 className="px-8 py-3 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2"
               >
-                Next
+                {t('common.next')}
                 <ChevronRight className="w-4 h-4" />
               </button>
             ) : (
@@ -504,7 +514,7 @@ export default function AddListingPage() {
                 disabled={loading}
                 className="px-8 py-3 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Submitting...' : 'Submit Listing'}
+                {loading ? t('addListing.submitting') : t('addListing.submitListing')}
               </button>
             )}
           </div>

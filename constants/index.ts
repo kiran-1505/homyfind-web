@@ -70,6 +70,37 @@ export const MOCK_LANDMARKS = [
   'Shopping Mall Nearby', 'Bus Stop 2 mins', 'Market Area',
 ];
 
+// Amenity English name -> translation key mapping
+export const AMENITY_KEYS: Record<string, string> = {
+  'WiFi': 'wifi',
+  'AC': 'ac',
+  'TV': 'tv',
+  'Washing Machine': 'washingMachine',
+  'Fridge': 'fridge',
+  'Microwave': 'microwave',
+  'Parking': 'parking',
+  'CCTV': 'cctv',
+  'Security Guard': 'securityGuard',
+  'Power Backup': 'powerBackup',
+  'Water Purifier': 'waterPurifier',
+  'Laundry Service': 'laundryService',
+  'Housekeeping': 'housekeeping',
+  'Gym': 'gym',
+  'Security': 'security',
+};
+
+// Rent bracket value -> translation key mapping
+export const RENT_BRACKET_KEYS: Record<number, string> = {
+  5000: 'under5000',
+  8000: 'under8000',
+  10000: 'under10000',
+  15000: 'under15000',
+  20000: 'under20000',
+};
+
+// Add listing step translation keys
+export const ADD_LISTING_STEP_KEYS = ['pgDetails', 'location', 'pricing', 'amenities'] as const;
+
 // Empty filters for reset
 export const EMPTY_FILTERS: SearchFilters = {
   location: '',

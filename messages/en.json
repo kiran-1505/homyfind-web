@@ -1,0 +1,215 @@
+{
+  "common": {
+    "home": "Home",
+    "listYourPG": "List Your PG",
+    "backToHome": "Back to Home",
+    "loading": "Loading...",
+    "search": "Search",
+    "searching": "Searching...",
+    "back": "Back",
+    "cancel": "Cancel",
+    "next": "Next",
+    "tryAgain": "Try again",
+    "verified": "Verified",
+    "viewDetails": "View Details",
+    "liveData": "Live Data",
+    "sampleData": "Sample Data",
+    "food": "Food",
+    "sharing": "Sharing",
+    "roomsLeft": "{count} rooms left",
+    "more": "+{count} more",
+    "perMonth": "/mo",
+    "perMonthFull": "/month",
+    "male": "Male",
+    "female": "Female",
+    "any": "Any"
+  },
+  "hero": {
+    "trustLine": "Trusted by 10,000+ tenants across India",
+    "title": "Find Your Perfect PG Accommodation",
+    "subtitle": "Browse verified paying guest accommodations in Bangalore, Mumbai, Delhi and more",
+    "verifiedListings": "Verified Listings",
+    "genderOptions": "Male, Female & Co-living",
+    "startingPrice": "Starting at Rs 5,000/mo"
+  },
+  "search": {
+    "placeholder": "Search city, area, or landmark...",
+    "filters": "Filters",
+    "clearFilters": "Clear filters",
+    "sharingType": "Sharing Type",
+    "maxRent": "Max Rent",
+    "gender": "Gender",
+    "foodLabel": "Food",
+    "all": "All",
+    "anyBudget": "Any budget",
+    "any": "Any",
+    "single": "Single",
+    "double": "Double",
+    "triple": "Triple",
+    "fourPlus": "Four+",
+    "male": "Male",
+    "female": "Female",
+    "coLiving": "Co-living",
+    "included": "Included",
+    "notIncluded": "Not included"
+  },
+  "listings": {
+    "pgsFound": "{count} PGs Found",
+    "pgListings": "PG Listings",
+    "showing": "Showing {start}-{end} of {total}",
+    "noListings": "No PG listings found",
+    "noListingsHint": "Try a different location or adjust your filters"
+  },
+  "cta": {
+    "title": "Own a PG? List it for free",
+    "subtitle": "Reach thousands of tenants looking for PG accommodation. Get enquiries within hours."
+  },
+  "features": {
+    "whyChoose": "Why choose HomyFind",
+    "verifiedTitle": "Verified Properties",
+    "verifiedDesc": "Every listing is verified for your safety and peace of mind",
+    "communityTitle": "Community Living",
+    "communityDesc": "Connect with like-minded people and build lasting friendships",
+    "pricingTitle": "Affordable Pricing",
+    "pricingDesc": "Find quality accommodations that fit your budget"
+  },
+  "footer": {
+    "tagline": "Find your home away from home"
+  },
+  "detail": {
+    "loadingListing": "Loading listing...",
+    "listingNotFound": "Listing not found",
+    "listingNotFoundDesc": "This listing may have been removed or the link is incorrect.",
+    "backToSearch": "Back to search",
+    "aboutThisPG": "About this PG",
+    "amenities": "Amenities",
+    "houseRules": "House Rules",
+    "location": "Location",
+    "locationDesc": "See the exact location and get directions.",
+    "openInMaps": "Open in Google Maps",
+    "deposit": "Deposit",
+    "sharing": "{count} Sharing",
+    "foodIncluded": "Food Included",
+    "foodNotIncluded": "Food Not Included",
+    "availableFrom": "From {date}",
+    "roomsAvailable": "{available} of {total} rooms available",
+    "contactOwner": "Contact Owner",
+    "contactOnMaps": "Contact info available on Google Maps",
+    "callOwner": "Call Owner",
+    "viewOnMaps": "View on Maps",
+    "reviews": "({count} reviews)"
+  },
+  "addListing": {
+    "pageTitle": "List Your PG",
+    "steps": {
+      "pgDetails": "PG Details",
+      "location": "Location",
+      "pricing": "Pricing",
+      "amenities": "Amenities"
+    },
+    "pgDetails": {
+      "title": "PG Details",
+      "pgName": "PG Name",
+      "pgNamePlaceholder": "e.g., Sunshine PG for Men",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your PG - facilities, nearby areas, transport etc."
+    },
+    "contactDetails": {
+      "title": "Contact Details",
+      "ownerName": "Owner Name",
+      "ownerNamePlaceholder": "Full name",
+      "phone": "Phone",
+      "phonePlaceholder": "10-digit number",
+      "email": "Email",
+      "emailPlaceholder": "you@email.com"
+    },
+    "locationSection": {
+      "title": "Location",
+      "fullAddress": "Full Address",
+      "addressPlaceholder": "Street address, building name, floor...",
+      "city": "City",
+      "cityPlaceholder": "e.g., Bangalore",
+      "state": "State",
+      "statePlaceholder": "e.g., Karnataka",
+      "pincode": "Pincode",
+      "pincodePlaceholder": "6-digit",
+      "nearbyLandmark": "Nearby Landmark",
+      "landmarkPlaceholder": "e.g., Near Indiranagar Metro Station"
+    },
+    "pricingSection": {
+      "title": "Pricing & Availability",
+      "sharingType": "Sharing Type",
+      "single": "Single",
+      "double": "Double",
+      "triple": "Triple",
+      "fourPlusSharing": "4+ Sharing",
+      "preferredGender": "Preferred Gender",
+      "maleOnly": "Male Only",
+      "femaleOnly": "Female Only",
+      "any": "Any",
+      "monthlyRent": "Monthly Rent",
+      "rentPlaceholder": "e.g., 8000",
+      "securityDeposit": "Security Deposit",
+      "depositPlaceholder": "e.g., 16000",
+      "totalRooms": "Total Rooms",
+      "totalRoomsPlaceholder": "e.g., 10",
+      "availableRooms": "Available Rooms",
+      "availableRoomsPlaceholder": "e.g., 3",
+      "availableFrom": "Available From",
+      "foodIncluded": "Food included in rent"
+    },
+    "amenitiesSection": {
+      "title": "Amenities",
+      "rulesTitle": "House Rules",
+      "rulesPlaceholder": "Enter each rule on a new line, e.g.\nNo smoking\nVisitors allowed till 9 PM\nMaintain cleanliness"
+    },
+    "submitting": "Submitting...",
+    "submitListing": "Submit Listing",
+    "success": {
+      "title": "Listing Submitted",
+      "message": "Your PG listing has been submitted for review. It will be visible to tenants once approved."
+    },
+    "failedSubmit": "Failed to submit. Please try again."
+  },
+  "amenityNames": {
+    "wifi": "WiFi",
+    "ac": "AC",
+    "tv": "TV",
+    "washingMachine": "Washing Machine",
+    "fridge": "Fridge",
+    "microwave": "Microwave",
+    "parking": "Parking",
+    "cctv": "CCTV",
+    "securityGuard": "Security Guard",
+    "powerBackup": "Power Backup",
+    "waterPurifier": "Water Purifier",
+    "laundryService": "Laundry Service",
+    "housekeeping": "Housekeeping",
+    "gym": "Gym",
+    "security": "Security"
+  },
+  "rentBrackets": {
+    "under5000": "Under 5,000",
+    "under8000": "Under 8,000",
+    "under10000": "Under 10,000",
+    "under15000": "Under 15,000",
+    "under20000": "Under 20,000"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again.",
+    "tryAgain": "Try again"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "The page you are looking for does not exist."
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "kn": "ಕನ್ನಡ",
+    "te": "తెలుగు",
+    "ta": "தமிழ்",
+    "ml": "മലയാളം"
+  }
+}

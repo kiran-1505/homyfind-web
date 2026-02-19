@@ -1,0 +1,215 @@
+{
+  "common": {
+    "home": "ഹോം",
+    "listYourPG": "നിങ്ങളുടെ PG ലിസ്റ്റ് ചെയ്യൂ",
+    "backToHome": "ഹോമിലേക്ക് മടങ്ങുക",
+    "loading": "ലോഡ് ചെയ്യുന്നു...",
+    "search": "തിരയുക",
+    "searching": "തിരയുന്നു...",
+    "back": "പിന്നോട്ട്",
+    "cancel": "റദ്ദാക്കുക",
+    "next": "അടുത്തത്",
+    "tryAgain": "വീണ്ടും ശ്രമിക്കൂ",
+    "verified": "പരിശോധിച്ചു",
+    "viewDetails": "വിശദാംശങ്ങൾ കാണുക",
+    "liveData": "ലൈവ് ഡാറ്റ",
+    "sampleData": "സാമ്പിൾ ഡാറ്റ",
+    "food": "ഭക്ഷണം",
+    "sharing": "ഷെയറിംഗ്",
+    "roomsLeft": "{count} മുറികൾ ബാക്കി",
+    "more": "+{count} കൂടുതൽ",
+    "perMonth": "/മാ",
+    "perMonthFull": "/മാസം",
+    "male": "പുരുഷൻ",
+    "female": "സ്ത്രീ",
+    "any": "ഏതും"
+  },
+  "hero": {
+    "trustLine": "ഇന്ത്യയിലുടനീളം 10,000+ വാടകക്കാർ വിശ്വസിക്കുന്നു",
+    "title": "നിങ്ങളുടെ അനുയോജ്യമായ PG താമസം കണ്ടെത്തൂ",
+    "subtitle": "ബെംഗളൂരു, മുംബൈ, ഡൽഹി എന്നിവിടങ്ങളിലും മറ്റും പരിശോധിച്ച പേയിംഗ് ഗസ്റ്റ് താമസങ്ങൾ ബ്രൗസ് ചെയ്യൂ",
+    "verifiedListings": "പരിശോധിച്ച ലിസ്റ്റിംഗുകൾ",
+    "genderOptions": "പുരുഷൻ, സ്ത്രീ & സഹ-ജീവിതം",
+    "startingPrice": "₹5,000/മാസം മുതൽ"
+  },
+  "search": {
+    "placeholder": "നഗരം, പ്രദേശം അല്ലെങ്കിൽ ലാൻഡ്‌മാർക്ക് തിരയൂ...",
+    "filters": "ഫിൽട്ടറുകൾ",
+    "clearFilters": "ഫിൽട്ടറുകൾ മായ്ക്കുക",
+    "sharingType": "ഷെയറിംഗ് തരം",
+    "maxRent": "പരമാവധി വാടക",
+    "gender": "ലിംഗം",
+    "foodLabel": "ഭക്ഷണം",
+    "all": "എല്ലാം",
+    "anyBudget": "ഏത് ബജറ്റും",
+    "any": "ഏതും",
+    "single": "സിംഗിൾ",
+    "double": "ഡബിൾ",
+    "triple": "ട്രിപ്പിൾ",
+    "fourPlus": "നാല്+",
+    "male": "പുരുഷൻ",
+    "female": "സ്ത്രീ",
+    "coLiving": "സഹ-ജീവിതം",
+    "included": "ഉൾപ്പെടുത്തിയിട്ടുണ്ട്",
+    "notIncluded": "ഉൾപ്പെടുത്തിയിട്ടില്ല"
+  },
+  "listings": {
+    "pgsFound": "{count} PG കൾ കണ്ടെത്തി",
+    "pgListings": "PG ലിസ്റ്റിംഗുകൾ",
+    "showing": "{total} ൽ {start}-{end} കാണിക്കുന്നു",
+    "noListings": "PG ലിസ്റ്റിംഗുകൾ കണ്ടെത്തിയില്ല",
+    "noListingsHint": "മറ്റൊരു സ്ഥലം പരീക്ഷിക്കുക അല്ലെങ്കിൽ ഫിൽട്ടറുകൾ മാറ്റുക"
+  },
+  "cta": {
+    "title": "PG ഉടമയാണോ? സൗജന്യമായി ലിസ്റ്റ് ചെയ്യൂ",
+    "subtitle": "PG താമസം തിരയുന്ന ആയിരക്കണക്കിന് വാടകക്കാരിലേക്ക് എത്തൂ. മണിക്കൂറുകൾക്കുള്ളിൽ അന്വേഷണങ്ങൾ ലഭിക്കൂ."
+  },
+  "features": {
+    "whyChoose": "HomyFind എന്തുകൊണ്ട് തിരഞ്ഞെടുക്കണം",
+    "verifiedTitle": "പരിശോധിച്ച സ്വത്തുക്കൾ",
+    "verifiedDesc": "നിങ്ങളുടെ സുരക്ഷയ്ക്കും മനസ്സമാധാനത്തിനുമായി ഓരോ ലിസ്റ്റിംഗും പരിശോധിച്ചിട്ടുണ്ട്",
+    "communityTitle": "കമ്മ്യൂണിറ്റി ജീവിതം",
+    "communityDesc": "സമാന ചിന്താഗതിക്കാരുമായി ബന്ധപ്പെടുക, ശാശ്വത സൗഹൃദങ്ങൾ സ്ഥാപിക്കുക",
+    "pricingTitle": "താങ്ങാനാവുന്ന വില",
+    "pricingDesc": "നിങ്ങളുടെ ബജറ്റിന് അനുയോജ്യമായ ഗുണനിലവാരമുള്ള താമസങ്ങൾ കണ്ടെത്തൂ"
+  },
+  "footer": {
+    "tagline": "വീട്ടിൽ നിന്ന് അകലെ നിങ്ങളുടെ വീട് കണ്ടെത്തൂ"
+  },
+  "detail": {
+    "loadingListing": "ലിസ്റ്റിംഗ് ലോഡ് ചെയ്യുന്നു...",
+    "listingNotFound": "ലിസ്റ്റിംഗ് കണ്ടെത്തിയില്ല",
+    "listingNotFoundDesc": "ഈ ലിസ്റ്റിംഗ് നീക്കം ചെയ്‌തിരിക്കാം അല്ലെങ്കിൽ ലിങ്ക് തെറ്റാണ്.",
+    "backToSearch": "തിരയലിലേക്ക് മടങ്ങുക",
+    "aboutThisPG": "ഈ PG നെ കുറിച്ച്",
+    "amenities": "സൗകര്യങ്ങൾ",
+    "houseRules": "വീട്ടു നിയമങ്ങൾ",
+    "location": "സ്ഥലം",
+    "locationDesc": "കൃത്യമായ സ്ഥലം കാണുക, ദിശ നിർദ്ദേശങ്ങൾ നേടുക.",
+    "openInMaps": "Google Maps ൽ തുറക്കുക",
+    "deposit": "ഡെപ്പോസിറ്റ്",
+    "sharing": "{count} ഷെയറിംഗ്",
+    "foodIncluded": "ഭക്ഷണം ഉൾപ്പെടുത്തിയിട്ടുണ്ട്",
+    "foodNotIncluded": "ഭക്ഷണം ഉൾപ്പെടുത്തിയിട്ടില്ല",
+    "availableFrom": "{date} മുതൽ ലഭ്യം",
+    "roomsAvailable": "{total} ൽ {available} മുറികൾ ലഭ്യം",
+    "contactOwner": "ഉടമയെ ബന്ധപ്പെടുക",
+    "contactOnMaps": "ബന്ധപ്പെടാനുള്ള വിവരങ്ങൾ Google Maps ൽ ലഭ്യം",
+    "callOwner": "ഉടമയെ വിളിക്കുക",
+    "viewOnMaps": "Maps ൽ കാണുക",
+    "reviews": "({count} അവലോകനങ്ങൾ)"
+  },
+  "addListing": {
+    "pageTitle": "നിങ്ങളുടെ PG ലിസ്റ്റ് ചെയ്യൂ",
+    "steps": {
+      "pgDetails": "PG വിശദാംശങ്ങൾ",
+      "location": "സ്ഥലം",
+      "pricing": "വില",
+      "amenities": "സൗകര്യങ്ങൾ"
+    },
+    "pgDetails": {
+      "title": "PG വിശദാംശങ്ങൾ",
+      "pgName": "PG പേര്",
+      "pgNamePlaceholder": "ഉദാ., സൺഷൈൻ PG ഫോർ മെൻ",
+      "description": "വിവരണം",
+      "descriptionPlaceholder": "നിങ്ങളുടെ PG വിവരിക്കുക - സൗകര്യങ്ങൾ, സമീപ പ്രദേശങ്ങൾ, ഗതാഗതം മുതലായവ."
+    },
+    "contactDetails": {
+      "title": "ബന്ധപ്പെടാനുള്ള വിശദാംശങ്ങൾ",
+      "ownerName": "ഉടമയുടെ പേര്",
+      "ownerNamePlaceholder": "മുഴുവൻ പേര്",
+      "phone": "ഫോൺ",
+      "phonePlaceholder": "10-അക്ക നമ്പർ",
+      "email": "ഇമെയിൽ",
+      "emailPlaceholder": "you@email.com"
+    },
+    "locationSection": {
+      "title": "സ്ഥലം",
+      "fullAddress": "മുഴുവൻ വിലാസം",
+      "addressPlaceholder": "റോഡ് വിലാസം, കെട്ടിടത്തിന്റെ പേര്, നില...",
+      "city": "നഗരം",
+      "cityPlaceholder": "ഉദാ., ബെംഗളൂരു",
+      "state": "സംസ്ഥാനം",
+      "statePlaceholder": "ഉദാ., കർണാടക",
+      "pincode": "പിൻകോഡ്",
+      "pincodePlaceholder": "6-അക്കം",
+      "nearbyLandmark": "സമീപ ലാൻഡ്‌മാർക്ക്",
+      "landmarkPlaceholder": "ഉദാ., ഇന്ദിരാനഗർ മെട്രോ സ്റ്റേഷന് സമീപം"
+    },
+    "pricingSection": {
+      "title": "വില & ലഭ്യത",
+      "sharingType": "ഷെയറിംഗ് തരം",
+      "single": "സിംഗിൾ",
+      "double": "ഡബിൾ",
+      "triple": "ട്രിപ്പിൾ",
+      "fourPlusSharing": "4+ ഷെയറിംഗ്",
+      "preferredGender": "ഇഷ്ടപ്പെട്ട ലിംഗം",
+      "maleOnly": "പുരുഷന്മാർ മാത്രം",
+      "femaleOnly": "സ്ത്രീകൾ മാത്രം",
+      "any": "ഏതും",
+      "monthlyRent": "പ്രതിമാസ വാടക",
+      "rentPlaceholder": "ഉദാ., 8000",
+      "securityDeposit": "സെക്യൂരിറ്റി ഡെപ്പോസിറ്റ്",
+      "depositPlaceholder": "ഉദാ., 16000",
+      "totalRooms": "ആകെ മുറികൾ",
+      "totalRoomsPlaceholder": "ഉദാ., 10",
+      "availableRooms": "ലഭ്യമായ മുറികൾ",
+      "availableRoomsPlaceholder": "ഉദാ., 3",
+      "availableFrom": "ലഭ്യമാകുന്ന തീയതി",
+      "foodIncluded": "വാടകയിൽ ഭക്ഷണം ഉൾപ്പെടുന്നു"
+    },
+    "amenitiesSection": {
+      "title": "സൗകര്യങ്ങൾ",
+      "rulesTitle": "വീട്ടു നിയമങ്ങൾ",
+      "rulesPlaceholder": "ഓരോ നിയമവും പുതിയ വരിയിൽ നൽകുക, ഉദാ.\nപുകവലി നിരോധിച്ചിരിക്കുന്നു\nരാത്രി 9 വരെ സന്ദർശകർ\nവൃത്തി പാലിക്കുക"
+    },
+    "submitting": "സമർപ്പിക്കുന്നു...",
+    "submitListing": "ലിസ്റ്റിംഗ് സമർപ്പിക്കുക",
+    "success": {
+      "title": "ലിസ്റ്റിംഗ് സമർപ്പിച്ചു",
+      "message": "നിങ്ങളുടെ PG ലിസ്റ്റിംഗ് അവലോകനത്തിനായി സമർപ്പിച്ചു. അംഗീകരിച്ചതിന് ശേഷം വാടകക്കാർക്ക് ദൃശ്യമാകും."
+    },
+    "failedSubmit": "സമർപ്പിക്കാൻ കഴിഞ്ഞില്ല. ദയവായി വീണ്ടും ശ്രമിക്കൂ."
+  },
+  "amenityNames": {
+    "wifi": "വൈഫൈ",
+    "ac": "AC",
+    "tv": "TV",
+    "washingMachine": "വാഷിംഗ് മെഷീൻ",
+    "fridge": "ഫ്രിഡ്ജ്",
+    "microwave": "മൈക്രോവേവ്",
+    "parking": "പാർക്കിംഗ്",
+    "cctv": "CCTV",
+    "securityGuard": "സെക്യൂരിറ്റി ഗാർഡ്",
+    "powerBackup": "പവർ ബാക്കപ്പ്",
+    "waterPurifier": "വാട്ടർ പ്യൂരിഫയർ",
+    "laundryService": "ലോൺഡ്രി സേവനം",
+    "housekeeping": "ഹൗസ്കീപ്പിംഗ്",
+    "gym": "ജിം",
+    "security": "സുരക്ഷ"
+  },
+  "rentBrackets": {
+    "under5000": "5,000 ൽ താഴെ",
+    "under8000": "8,000 ൽ താഴെ",
+    "under10000": "10,000 ൽ താഴെ",
+    "under15000": "15,000 ൽ താഴെ",
+    "under20000": "20,000 ൽ താഴെ"
+  },
+  "error": {
+    "title": "എന്തോ കുഴപ്പം സംഭവിച്ചു",
+    "description": "അപ്രതീക്ഷിത പിശക് സംഭവിച്ചു. ദയവായി വീണ്ടും ശ്രമിക്കൂ.",
+    "tryAgain": "വീണ്ടും ശ്രമിക്കൂ"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "നിങ്ങൾ തിരയുന്ന പേജ് നിലവിലില്ല."
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "kn": "ಕನ್ನಡ",
+    "te": "తెలుగు",
+    "ta": "தமிழ்",
+    "ml": "മലയാളം"
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "common": {
+    "home": "होम",
+    "listYourPG": "अपना PG लिस्ट करें",
+    "backToHome": "होम पर वापस जाएं",
+    "loading": "लोड हो रहा है...",
+    "search": "खोजें",
+    "searching": "खोज रहे हैं...",
+    "back": "वापस",
+    "cancel": "रद्द करें",
+    "next": "आगे",
+    "tryAgain": "फिर से कोशिश करें",
+    "verified": "सत्यापित",
+    "viewDetails": "विवरण देखें",
+    "liveData": "लाइव डेटा",
+    "sampleData": "नमूना डेटा",
+    "food": "खाना",
+    "sharing": "शेयरिंग",
+    "roomsLeft": "{count} कमरे बाकी",
+    "more": "+{count} और",
+    "perMonth": "/माह",
+    "perMonthFull": "/महीना",
+    "male": "पुरुष",
+    "female": "महिला",
+    "any": "कोई भी"
+  },
+  "hero": {
+    "trustLine": "भारत भर में 10,000+ किरायेदारों द्वारा विश्वसनीय",
+    "title": "अपना सही PG आवास खोजें",
+    "subtitle": "बैंगलोर, मुंबई, दिल्ली और अन्य शहरों में सत्यापित पेइंग गेस्ट आवास ब्राउज़ करें",
+    "verifiedListings": "सत्यापित लिस्टिंग",
+    "genderOptions": "पुरुष, महिला और सह-रहन",
+    "startingPrice": "₹5,000/माह से शुरू"
+  },
+  "search": {
+    "placeholder": "शहर, क्षेत्र या लैंडमार्क खोजें...",
+    "filters": "फ़िल्टर",
+    "clearFilters": "फ़िल्टर साफ़ करें",
+    "sharingType": "शेयरिंग प्रकार",
+    "maxRent": "अधिकतम किराया",
+    "gender": "लिंग",
+    "foodLabel": "खाना",
+    "all": "सभी",
+    "anyBudget": "कोई भी बजट",
+    "any": "कोई भी",
+    "single": "सिंगल",
+    "double": "डबल",
+    "triple": "ट्रिपल",
+    "fourPlus": "चार+",
+    "male": "पुरुष",
+    "female": "महिला",
+    "coLiving": "सह-रहन",
+    "included": "शामिल",
+    "notIncluded": "शामिल नहीं"
+  },
+  "listings": {
+    "pgsFound": "{count} PG मिले",
+    "pgListings": "PG लिस्टिंग",
+    "showing": "{start}-{end} दिखा रहे हैं, कुल {total}",
+    "noListings": "कोई PG लिस्टिंग नहीं मिली",
+    "noListingsHint": "कोई अलग स्थान आज़माएं या फ़िल्टर बदलें"
+  },
+  "cta": {
+    "title": "PG के मालिक हैं? मुफ़्त में लिस्ट करें",
+    "subtitle": "PG आवास खोज रहे हजारों किरायेदारों तक पहुंचें। घंटों में पूछताछ पाएं।"
+  },
+  "features": {
+    "whyChoose": "HomyFind क्यों चुनें",
+    "verifiedTitle": "सत्यापित संपत्तियां",
+    "verifiedDesc": "आपकी सुरक्षा और मानसिक शांति के लिए हर लिस्टिंग सत्यापित है",
+    "communityTitle": "सामुदायिक जीवन",
+    "communityDesc": "समान विचारधारा वाले लोगों से जुड़ें और स्थायी दोस्ती बनाएं",
+    "pricingTitle": "किफायती मूल्य",
+    "pricingDesc": "अपने बजट में गुणवत्तापूर्ण आवास खोजें"
+  },
+  "footer": {
+    "tagline": "घर से दूर अपना घर खोजें"
+  },
+  "detail": {
+    "loadingListing": "लिस्टिंग लोड हो रही है...",
+    "listingNotFound": "लिस्टिंग नहीं मिली",
+    "listingNotFoundDesc": "यह लिस्टिंग हटा दी गई हो सकती है या लिंक गलत है।",
+    "backToSearch": "खोज पर वापस जाएं",
+    "aboutThisPG": "इस PG के बारे में",
+    "amenities": "सुविधाएं",
+    "houseRules": "घर के नियम",
+    "location": "स्थान",
+    "locationDesc": "सटीक स्थान देखें और दिशा-निर्देश प्राप्त करें।",
+    "openInMaps": "Google Maps में खोलें",
+    "deposit": "जमा राशि",
+    "sharing": "{count} शेयरिंग",
+    "foodIncluded": "खाना शामिल",
+    "foodNotIncluded": "खाना शामिल नहीं",
+    "availableFrom": "{date} से उपलब्ध",
+    "roomsAvailable": "{total} में से {available} कमरे उपलब्ध",
+    "contactOwner": "मालिक से संपर्क करें",
+    "contactOnMaps": "संपर्क जानकारी Google Maps पर उपलब्ध",
+    "callOwner": "मालिक को कॉल करें",
+    "viewOnMaps": "Maps पर देखें",
+    "reviews": "({count} समीक्षाएं)"
+  },
+  "addListing": {
+    "pageTitle": "अपना PG लिस्ट करें",
+    "steps": {
+      "pgDetails": "PG विवरण",
+      "location": "स्थान",
+      "pricing": "मूल्य",
+      "amenities": "सुविधाएं"
+    },
+    "pgDetails": {
+      "title": "PG विवरण",
+      "pgName": "PG का नाम",
+      "pgNamePlaceholder": "जैसे, सनशाइन PG फॉर मेन",
+      "description": "विवरण",
+      "descriptionPlaceholder": "अपने PG का वर्णन करें - सुविधाएं, आस-पास के क्षेत्र, परिवहन आदि।"
+    },
+    "contactDetails": {
+      "title": "संपर्क विवरण",
+      "ownerName": "मालिक का नाम",
+      "ownerNamePlaceholder": "पूरा नाम",
+      "phone": "फ़ोन",
+      "phonePlaceholder": "10-अंकों का नंबर",
+      "email": "ईमेल",
+      "emailPlaceholder": "you@email.com"
+    },
+    "locationSection": {
+      "title": "स्थान",
+      "fullAddress": "पूरा पता",
+      "addressPlaceholder": "सड़क का पता, भवन का नाम, मंजिल...",
+      "city": "शहर",
+      "cityPlaceholder": "जैसे, बैंगलोर",
+      "state": "राज्य",
+      "statePlaceholder": "जैसे, कर्नाटक",
+      "pincode": "पिनकोड",
+      "pincodePlaceholder": "6-अंक",
+      "nearbyLandmark": "नज़दीकी लैंडमार्क",
+      "landmarkPlaceholder": "जैसे, इंदिरानगर मेट्रो स्टेशन के पास"
+    },
+    "pricingSection": {
+      "title": "मूल्य और उपलब्धता",
+      "sharingType": "शेयरिंग प्रकार",
+      "single": "सिंगल",
+      "double": "डबल",
+      "triple": "ट्रिपल",
+      "fourPlusSharing": "4+ शेयरिंग",
+      "preferredGender": "पसंदीदा लिंग",
+      "maleOnly": "केवल पुरुष",
+      "femaleOnly": "केवल महिला",
+      "any": "कोई भी",
+      "monthlyRent": "मासिक किराया",
+      "rentPlaceholder": "जैसे, 8000",
+      "securityDeposit": "सुरक्षा जमा",
+      "depositPlaceholder": "जैसे, 16000",
+      "totalRooms": "कुल कमरे",
+      "totalRoomsPlaceholder": "जैसे, 10",
+      "availableRooms": "उपलब्ध कमरे",
+      "availableRoomsPlaceholder": "जैसे, 3",
+      "availableFrom": "उपलब्ध तारीख",
+      "foodIncluded": "किराए में खाना शामिल"
+    },
+    "amenitiesSection": {
+      "title": "सुविधाएं",
+      "rulesTitle": "घर के नियम",
+      "rulesPlaceholder": "प्रत्येक नियम नई पंक्ति में लिखें, जैसे\nधूम्रपान मना\nआगंतुक रात 9 बजे तक\nस्वच्छता बनाए रखें"
+    },
+    "submitting": "सबमिट हो रहा है...",
+    "submitListing": "लिस्टिंग सबमिट करें",
+    "success": {
+      "title": "लिस्टिंग सबमिट हो गई",
+      "message": "आपकी PG लिस्टिंग समीक्षा के लिए सबमिट की गई है। स्वीकृति के बाद यह किरायेदारों को दिखाई देगी।"
+    },
+    "failedSubmit": "सबमिट करने में विफल। कृपया फिर से कोशिश करें।"
+  },
+  "amenityNames": {
+    "wifi": "वाईफ़ाई",
+    "ac": "AC",
+    "tv": "TV",
+    "washingMachine": "वॉशिंग मशीन",
+    "fridge": "फ्रिज",
+    "microwave": "माइक्रोवेव",
+    "parking": "पार्किंग",
+    "cctv": "CCTV",
+    "securityGuard": "सुरक्षा गार्ड",
+    "powerBackup": "पावर बैकअप",
+    "waterPurifier": "वाटर प्यूरीफायर",
+    "laundryService": "लॉन्ड्री सेवा",
+    "housekeeping": "हाउसकीपिंग",
+    "gym": "जिम",
+    "security": "सुरक्षा"
+  },
+  "rentBrackets": {
+    "under5000": "5,000 से कम",
+    "under8000": "8,000 से कम",
+    "under10000": "10,000 से कम",
+    "under15000": "15,000 से कम",
+    "under20000": "20,000 से कम"
+  },
+  "error": {
+    "title": "कुछ गलत हो गया",
+    "description": "एक अप्रत्याशित त्रुटि हुई। कृपया फिर से कोशिश करें।",
+    "tryAgain": "फिर से कोशिश करें"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "जो पेज आप खोज रहे हैं वह मौजूद नहीं है।"
+  },
+  "language": {
+    "en": "English",
+    "hi": "हिन्दी",
+    "kn": "ಕನ್ನಡ",
+    "te": "తెలుగు",
+    "ta": "தமிழ்",
+    "ml": "മലയാളം"
+  }
+}
