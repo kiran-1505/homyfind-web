@@ -11,10 +11,11 @@ export interface PGAdvertisement {
   ownerEmail: string;
   address: string;
   city: string;
+  cityLower?: string;
   state: string;
   pincode: string;
   nearbyLandmark: string;
-  sharingOption: number; // 1, 2, 3, or 4 sharing
+  sharingOption: number;
   rent: number;
   securityDeposit: number;
   foodIncluded: boolean;
@@ -22,7 +23,7 @@ export interface PGAdvertisement {
   amenities: string[];
   rules: string[];
   description: string;
-  images: string[]; // URLs
+  images: string[];
   totalRooms: number;
   availableRooms: number;
   availableFrom: string;
@@ -34,21 +35,22 @@ export interface PGAdvertisement {
 /**
  * Add a new PG advertisement to Firebase
  */
-export async function addPGAdvertisement(pgData: Omit<PGAdvertisement, 'id' | 'createdAt' | 'updatedAt' | 'verified'>): Promise<string> {
+export async function addPGAdvertisement(pgData: Omit<PGAdvertisement, 'id' | 'createdAt' | 'updatedAt' | 'verified' | 'cityLower'>): Promise<string> {
   try {
     const advertisementData = {
       ...pgData,
-      verified: false, // New advertisements need verification
+      cityLower: pgData.city.toLowerCase().trim(),
+      verified: false,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
 
     const docRef = await addDoc(collection(db, 'pg_advertisements'), advertisementData);
-    console.log('✅ PG Advertisement added with ID:', docRef.id);
+    console.log('PG Advertisement added with ID:', docRef.id);
     return docRef.id;
-  } catch (error: any) {
-    console.error('❌ Error adding PG advertisement:', error);
-    throw new Error(`Failed to add advertisement: ${error.message}`);
+  } catch (error) {
+    console.error('Error adding PG advertisement:', error);
+    throw new Error(`Failed to add advertisement: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -58,11 +60,13 @@ export async function addPGAdvertisement(pgData: Omit<PGAdvertisement, 'id' | 'c
 export async function searchPGAdvertisements(city: string): Promise<PGAdvertisement[]> {
   try {
     const cityLower = city.toLowerCase().trim();
-    console.log(`🔍 Searching Firebase for PG ads in: ${city}`);
+    console.log(`Searching Firebase for PG ads in: ${city}`);
 
+    // Query using cityLower for case-insensitive search.
+    // Falls back to exact city match for older documents without cityLower field.
     const q = query(
       collection(db, 'pg_advertisements'),
-      where('city', '==', city)
+      where('cityLower', '==', cityLower)
     );
 
     const querySnapshot = await getDocs(q);
@@ -78,6 +82,7 @@ export async function searchPGAdvertisements(city: string): Promise<PGAdvertisem
         ownerEmail: data.ownerEmail,
         address: data.address,
         city: data.city,
+        cityLower: data.cityLower,
         state: data.state,
         pincode: data.pincode,
         nearbyLandmark: data.nearbyLandmark,
@@ -99,11 +104,51 @@ export async function searchPGAdvertisements(city: string): Promise<PGAdvertisem
       });
     });
 
-    console.log(`✅ Found ${advertisements.length} Firebase advertisements for ${city}`);
+    // If no results with cityLower, try exact city match for legacy documents
+    if (advertisements.length === 0) {
+      const legacyQ = query(
+        collection(db, 'pg_advertisements'),
+        where('city', '==', city)
+      );
+      const legacySnapshot = await getDocs(legacyQ);
+      legacySnapshot.forEach((doc) => {
+        const data = doc.data();
+        advertisements.push({
+          id: doc.id,
+          pgName: data.pgName,
+          ownerName: data.ownerName,
+          ownerPhone: data.ownerPhone,
+          ownerEmail: data.ownerEmail,
+          address: data.address,
+          city: data.city,
+          cityLower: data.cityLower,
+          state: data.state,
+          pincode: data.pincode,
+          nearbyLandmark: data.nearbyLandmark,
+          sharingOption: data.sharingOption,
+          rent: data.rent,
+          securityDeposit: data.securityDeposit,
+          foodIncluded: data.foodIncluded,
+          preferredGender: data.preferredGender,
+          amenities: data.amenities || [],
+          rules: data.rules || [],
+          description: data.description,
+          images: data.images || [],
+          totalRooms: data.totalRooms,
+          availableRooms: data.availableRooms,
+          availableFrom: data.availableFrom,
+          verified: data.verified || false,
+          createdAt: data.createdAt?.toDate() || new Date(),
+          updatedAt: data.updatedAt?.toDate() || new Date(),
+        });
+      });
+    }
+
+    console.log(`Found ${advertisements.length} Firebase advertisements for ${city}`);
     return advertisements;
-  } catch (error: any) {
-    console.error('❌ Error searching Firebase advertisements:', error);
-    return []; // Return empty array instead of throwing
+  } catch (error) {
+    console.error('Error searching Firebase advertisements:', error);
+    throw new Error(`Firebase search failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -119,16 +164,37 @@ export async function getAllPGAdvertisements(): Promise<PGAdvertisement[]> {
       const data = doc.data();
       advertisements.push({
         id: doc.id,
-        ...data,
+        pgName: data.pgName,
+        ownerName: data.ownerName,
+        ownerPhone: data.ownerPhone,
+        ownerEmail: data.ownerEmail,
+        address: data.address,
+        city: data.city,
+        cityLower: data.cityLower,
+        state: data.state,
+        pincode: data.pincode,
+        nearbyLandmark: data.nearbyLandmark,
+        sharingOption: data.sharingOption,
+        rent: data.rent,
+        securityDeposit: data.securityDeposit,
+        foodIncluded: data.foodIncluded,
+        preferredGender: data.preferredGender,
+        amenities: data.amenities || [],
+        rules: data.rules || [],
+        description: data.description,
+        images: data.images || [],
+        totalRooms: data.totalRooms,
+        availableRooms: data.availableRooms,
+        availableFrom: data.availableFrom,
+        verified: data.verified || false,
         createdAt: data.createdAt?.toDate() || new Date(),
         updatedAt: data.updatedAt?.toDate() || new Date(),
-      } as PGAdvertisement);
+      });
     });
 
     return advertisements;
-  } catch (error: any) {
-    console.error('❌ Error getting all advertisements:', error);
-    return [];
+  } catch (error) {
+    console.error('Error getting all advertisements:', error);
+    throw new Error(`Failed to fetch advertisements: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
-

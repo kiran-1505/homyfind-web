@@ -1,8 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { PGListing } from '@/types';
-import { MapPin, Star, Users, Utensils, Home } from 'lucide-react';
+import { MapPin, Star, Users, Utensils, Home, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useImageCarousel } from '@/hooks/useImageCarousel';
+import { safeParseJSON, safeSetLocalStorage } from '@/utils';
+import Image from 'next/image';
 
 interface PGCardProps {
   listing: PGListing;
@@ -10,41 +14,100 @@ interface PGCardProps {
 
 export default function PGCard({ listing }: PGCardProps) {
   const router = useRouter();
+  const [liked, setLiked] = useState(false);
+
+  const images = listing.images && listing.images.length > 0 ? listing.images : [];
+  const { currentIndex, imageLoaded, hasMultiple, goToNext, goToPrev, goToIndex, onImageLoad } = useImageCarousel(images);
 
   const handleViewDetails = () => {
-    // Save listing to localStorage for quick access
-    const cachedListings = localStorage.getItem('pgListings');
-    const allListings = cachedListings ? JSON.parse(cachedListings) : [];
-    const exists = allListings.find((l: PGListing) => l.id === listing.id);
+    const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings')) || [];
+    const exists = allListings.find((l) => l.id === listing.id);
     if (!exists) {
       allListings.push(listing);
-      localStorage.setItem('pgListings', JSON.stringify(allListings));
+      safeSetLocalStorage('pgListings', JSON.stringify(allListings));
     }
-    
-    // Navigate to detail page
     router.push(`/listing/${listing.id}`);
   };
 
+  const toggleLike = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLiked(!liked);
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-      {/* Image Carousel - For now showing first image */}
-      <div className="relative h-56 bg-gray-200 overflow-hidden group">
-        {listing.images && listing.images.length > 0 ? (
-          <img 
-            src={listing.images[0]} 
-            alt={listing.pgName}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          />
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 group">
+      {/* Image Carousel */}
+      <div className="relative h-56 bg-gray-100 overflow-hidden cursor-pointer" onClick={handleViewDetails}>
+        {images.length > 0 ? (
+          <>
+            {/* Shimmer loader */}
+            {!imageLoaded && (
+              <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+            )}
+            <Image
+              src={images[currentIndex]}
+              alt={`${listing.pgName} - Photo ${currentIndex + 1}`}
+              fill
+              className={`object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+              onLoad={onImageLoad}
+              unoptimized
+            />
+
+            {/* Navigation Arrows - visible on hover */}
+            {hasMultiple && (
+              <>
+                <button
+                  onClick={(e) => goToPrev(e)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  aria-label="Previous photo"
+                >
+                  <ChevronLeft className="w-4 h-4 text-gray-700" />
+                </button>
+                <button
+                  onClick={(e) => goToNext(e)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-1.5 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  aria-label="Next photo"
+                >
+                  <ChevronRight className="w-4 h-4 text-gray-700" />
+                </button>
+              </>
+            )}
+
+            {/* Dot Indicators */}
+            {hasMultiple && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {images.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={(e) => goToIndex(index, e)}
+                    className={`rounded-full transition-all duration-200 ${
+                      currentIndex === index
+                        ? 'w-2.5 h-2.5 bg-white shadow-md'
+                        : 'w-2 h-2 bg-white/60 hover:bg-white/80'
+                    }`}
+                    aria-label={`Go to photo ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Image count badge */}
+            {hasMultiple && (
+              <div className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
+                {currentIndex + 1}/{images.length}
+              </div>
+            )}
+          </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
-            <Home className="w-20 h-20 text-blue-400" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+            <Home className="w-16 h-16 text-blue-300" />
           </div>
         )}
-        
-        {/* Badges */}
+
+        {/* Top row overlays */}
         <div className="absolute top-3 left-3 flex gap-2">
           {listing.verified && (
-            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg">
+            <span className="bg-green-500 text-white px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-sm">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
@@ -52,97 +115,102 @@ export default function PGCard({ listing }: PGCardProps) {
             </span>
           )}
         </div>
-        
-        {/* Available Rooms Badge */}
-        <div className="absolute top-3 right-3">
-          <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-            {listing.availableRooms || 0} rooms available
-          </span>
-        </div>
+
+        {/* Wishlist heart */}
+        <button
+          onClick={toggleLike}
+          className="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm transition-all duration-200"
+          aria-label={liked ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          <Heart className={`w-4 h-4 transition-colors duration-200 ${liked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+        </button>
       </div>
-      
+
       {/* Content */}
-      <div className="p-5">
-        {/* Title and Location */}
-        <div className="mb-3">
-          <h3 className="text-xl font-bold text-gray-800 mb-1 line-clamp-1">
+      <div className="p-4" onClick={handleViewDetails} role="button" tabIndex={0}>
+        {/* Title row */}
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h3 className="text-base font-semibold text-gray-900 line-clamp-1 flex-1">
             {listing.pgName}
           </h3>
-          <div className="flex items-start gap-1 text-gray-600 text-sm">
-            <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            <span className="line-clamp-1">{listing.nearbyLandmark || listing.address || listing.city}</span>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+            <span className="text-sm font-medium text-gray-800">{listing.rating || 4.0}</span>
           </div>
         </div>
-        
-        {/* Price and Rating */}
-        <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-blue-600">
-                ₹{(listing.rent || 0).toLocaleString('en-IN')}
-              </span>
-              <span className="text-gray-500 text-sm">/mo</span>
-            </div>
-            <span className="text-xs text-gray-500">
-              + ₹{(listing.securityDeposit || 0).toLocaleString('en-IN')} deposit
-            </span>
-          </div>
-          <div className="flex items-center gap-1 bg-yellow-50 px-3 py-1.5 rounded-lg">
-            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-            <span className="font-semibold text-gray-800">{listing.rating || 4.0}</span>
-            <span className="text-xs text-gray-500">({listing.reviewCount || 0})</span>
-          </div>
+
+        {/* Location */}
+        <div className="flex items-center gap-1 text-gray-500 text-sm mb-3">
+          <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="line-clamp-1">{listing.nearbyLandmark || listing.address || listing.city}</span>
         </div>
-        
-        {/* Tags/Features */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium flex items-center gap-1">
-            <Users className="w-3.5 h-3.5" />
+
+        {/* Tags row */}
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium flex items-center gap-1">
+            <Users className="w-3 h-3" />
             {listing.sharingOption || 1} Sharing
           </span>
-          <span className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
-            listing.preferredGender === 'Male' ? 'bg-blue-50 text-blue-700' : 
-            listing.preferredGender === 'Female' ? 'bg-pink-50 text-pink-700' : 
+          <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+            listing.preferredGender === 'Male' ? 'bg-blue-50 text-blue-700' :
+            listing.preferredGender === 'Female' ? 'bg-pink-50 text-pink-700' :
             'bg-purple-50 text-purple-700'
           }`}>
             {listing.preferredGender || 'Any'}
           </span>
           {listing.foodIncluded && (
-            <span className="px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-sm font-medium flex items-center gap-1">
-              <Utensils className="w-3.5 h-3.5" />
+            <span className="px-2 py-1 bg-green-50 text-green-700 rounded-md text-xs font-medium flex items-center gap-1">
+              <Utensils className="w-3 h-3" />
               Food
             </span>
           )}
+          {(listing.availableRooms || 0) > 0 && (
+            <span className="px-2 py-1 bg-orange-50 text-orange-700 rounded-md text-xs font-medium">
+              {listing.availableRooms} rooms left
+            </span>
+          )}
         </div>
-        
+
         {/* Amenities */}
-        <div className="mb-4">
-          <div className="flex flex-wrap gap-1.5">
-            {(listing.amenities || []).slice(0, 4).map((amenity, index) => (
-              <span 
+        {(listing.amenities || []).length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-4">
+            {(listing.amenities || []).slice(0, 3).map((amenity, index) => (
+              <span
                 key={index}
-                className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded"
+                className="text-xs px-2 py-0.5 bg-gray-50 text-gray-600 rounded border border-gray-100"
               >
                 {amenity}
               </span>
             ))}
-            {(listing.amenities || []).length > 4 && (
-              <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded">
-                +{(listing.amenities || []).length - 4} more
+            {(listing.amenities || []).length > 3 && (
+              <span className="text-xs px-2 py-0.5 text-gray-400">
+                +{(listing.amenities || []).length - 3} more
               </span>
             )}
           </div>
+        )}
+
+        {/* Price and CTA */}
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-xl font-bold text-gray-900">
+                ₹{(listing.rent || 0).toLocaleString('en-IN')}
+              </span>
+              <span className="text-gray-400 text-sm">/mo</span>
+            </div>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewDetails();
+            }}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors duration-200"
+          >
+            View Details
+          </button>
         </div>
-        
-        {/* Action Button */}
-        <button 
-          onClick={handleViewDetails}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors duration-200 shadow-sm hover:shadow-md"
-        >
-          View Details
-        </button>
       </div>
     </div>
   );
 }
-

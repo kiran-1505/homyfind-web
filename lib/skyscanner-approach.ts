@@ -1,39 +1,41 @@
-/**
- * SMART APPROACH - Using FREE APIs
- * 1. Foursquare Places API (50k free calls/day)
- * 2. OpenStreetMap Overpass API (completely free)
- */
+import { ExternalPGListing } from '@/types';
+import { CITY_NEIGHBORHOODS, SHARING_BASE_PRICES } from '@/constants';
 
-export interface PGListing {
-  id: string;
+interface FoursquarePlace {
+  fsq_id?: string;
   name: string;
-  location: string;
-  city: string;
-  price: number;
-  image: string;
-  rating: number;
-  reviews: number;
-  amenities: string[];
-  sharingType: number;
-  gender: 'Male' | 'Female' | 'Any';
-  foodIncluded: boolean;
-  phone?: string;
-  link: string;
+  location?: {
+    formatted_address?: string;
+    locality?: string;
+  };
+  rating?: number;
+  stats?: { total_ratings?: number };
+  categories?: Array<{ name: string }>;
+  tel?: string;
+  website?: string;
+}
+
+interface OverpassElement {
+  id: number;
+  type: string;
+  tags?: Record<string, string>;
 }
 
 /**
  * Foursquare Places API - FREE tier (no credit card needed)
- * Get your free API key: https://location.foursquare.com/developer/
  */
-async function searchFoursquare(city: string): Promise<PGListing[]> {
+async function searchFoursquare(city: string): Promise<ExternalPGListing[]> {
   try {
-    // Foursquare API key - FREE tier
-    const apiKey = process.env.FOURSQUARE_API_KEY || 'fsq3vEWOHJj1234567890abcdef'; // User can add their own
-    
+    const apiKey = process.env.FOURSQUARE_API_KEY;
+    if (!apiKey) {
+      console.log('Foursquare API key not configured');
+      return [];
+    }
+
     const url = `https://api.foursquare.com/v3/places/search?query=paying guest hostel accommodation&near=${encodeURIComponent(city)}&limit=30`;
-    
-    console.log(`🔑 Searching Foursquare API for PGs in ${city}...`);
-    
+
+    console.log(`Searching Foursquare API for PGs in ${city}...`);
+
     const response = await fetch(url, {
       headers: {
         'Authorization': apiKey,
@@ -42,18 +44,18 @@ async function searchFoursquare(city: string): Promise<PGListing[]> {
     });
 
     if (!response.ok) {
-      console.log(`⚠️  Foursquare: ${response.status} - ${response.statusText}`);
+      console.log(`Foursquare: ${response.status} - ${response.statusText}`);
       return [];
     }
 
     const data = await response.json();
-    const listings: PGListing[] = [];
+    const listings: ExternalPGListing[] = [];
 
     if (data.results && data.results.length > 0) {
-      data.results.forEach((place: any, index: number) => {
+      data.results.forEach((place: FoursquarePlace, index: number) => {
         const sharingType = [1, 2, 3, 4][index % 4];
-        const basePrice = sharingType === 1 ? 12000 : sharingType === 2 ? 8000 : sharingType === 3 ? 6000 : 5000;
-        
+        const basePrice = SHARING_BASE_PRICES[sharingType] || 8000;
+
         listings.push({
           id: `fsq-${place.fsq_id || index}`,
           name: place.name,
@@ -65,19 +67,19 @@ async function searchFoursquare(city: string): Promise<PGListing[]> {
           reviews: place.stats?.total_ratings || Math.floor(Math.random() * 100) + 10,
           amenities: place.categories?.[0]?.name ? ['WiFi', place.categories[0].name] : ['WiFi', 'Security', 'Power Backup'],
           sharingType: sharingType,
-          gender: ['Male', 'Female', 'Any'][index % 3] as any,
+          gender: (['Male', 'Female', 'Any'] as const)[index % 3],
           foodIncluded: index % 2 === 0,
           phone: place.tel,
           link: place.website || `https://foursquare.com/v/${place.fsq_id}`,
         });
       });
 
-      console.log(`✅ Foursquare: Found ${listings.length} real places!`);
+      console.log(`Foursquare: Found ${listings.length} real places!`);
     }
 
     return listings;
-  } catch (error: any) {
-    console.error(`❌ Foursquare failed:`, error.message);
+  } catch (error) {
+    console.error('Foursquare failed:', error instanceof Error ? error.message : error);
     return [];
   }
 }
@@ -85,29 +87,25 @@ async function searchFoursquare(city: string): Promise<PGListing[]> {
 /**
  * OpenStreetMap Overpass API - 100% FREE (no key needed)
  */
-async function searchOpenStreetMap(city: string): Promise<PGListing[]> {
+async function searchOpenStreetMap(city: string): Promise<ExternalPGListing[]> {
   try {
-    console.log(`🗺️  Searching OpenStreetMap for PGs in ${city}...`);
-    
-    // First, get city coordinates
+    console.log(`Searching OpenStreetMap for PGs in ${city}...`);
+
     const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`;
     const geocodeResponse = await fetch(geocodeUrl, {
-      headers: {
-        'User-Agent': 'HomyFind-PG-Search-App',
-      },
+      headers: { 'User-Agent': 'HomyFind-PG-Search-App' },
     });
-    
+
     const geocodeData = await geocodeResponse.json();
-    
+
     if (!geocodeData || geocodeData.length === 0) {
-      console.log(`⚠️  OSM: Could not geocode ${city}`);
+      console.log(`OSM: Could not geocode ${city}`);
       return [];
     }
 
     const lat = parseFloat(geocodeData[0].lat);
     const lon = parseFloat(geocodeData[0].lon);
-    
-    // Search for hostels, guest houses, and accommodations
+
     const overpassQuery = `
       [out:json][timeout:25];
       (
@@ -118,27 +116,25 @@ async function searchOpenStreetMap(city: string): Promise<PGListing[]> {
       );
       out body;
     `;
-    
+
     const overpassUrl = `https://overpass-api.de/api/interpreter`;
     const response = await fetch(overpassUrl, {
       method: 'POST',
       body: `data=${encodeURIComponent(overpassQuery)}`,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     });
 
     const data = await response.json();
-    const listings: PGListing[] = [];
+    const listings: ExternalPGListing[] = [];
 
     if (data.elements && data.elements.length > 0) {
-      data.elements.forEach((place: any, index: number) => {
-        if (index >= 20) return; // Limit to 20
-        
+      data.elements.forEach((place: OverpassElement, index: number) => {
+        if (index >= 20) return;
+
         const name = place.tags?.name || `Hostel near ${city}`;
         const sharingType = [1, 2, 3, 4][index % 4];
-        const basePrice = sharingType === 1 ? 12000 : sharingType === 2 ? 8000 : sharingType === 3 ? 6000 : 5000;
-        
+        const basePrice = SHARING_BASE_PRICES[sharingType] || 8000;
+
         listings.push({
           id: `osm-${place.id}`,
           name: name,
@@ -150,19 +146,19 @@ async function searchOpenStreetMap(city: string): Promise<PGListing[]> {
           reviews: Math.floor(Math.random() * 100) + 5,
           amenities: ['WiFi', 'Security', 'Power Backup'],
           sharingType: sharingType,
-          gender: ['Male', 'Female', 'Any'][index % 3] as any,
+          gender: (['Male', 'Female', 'Any'] as const)[index % 3],
           foodIncluded: index % 2 === 0,
           phone: place.tags?.phone,
           link: `https://www.openstreetmap.org/${place.type}/${place.id}`,
         });
       });
 
-      console.log(`✅ OpenStreetMap: Found ${listings.length} real places!`);
+      console.log(`OpenStreetMap: Found ${listings.length} real places!`);
     }
 
     return listings;
-  } catch (error: any) {
-    console.error(`❌ OpenStreetMap failed:`, error.message);
+  } catch (error) {
+    console.error('OpenStreetMap failed:', error instanceof Error ? error.message : error);
     return [];
   }
 }
@@ -170,17 +166,10 @@ async function searchOpenStreetMap(city: string): Promise<PGListing[]> {
 /**
  * Generate quality fallback data
  */
-export function generateSkyscannerStyleData(city: string): PGListing[] {
-  const realAreas: { [key: string]: string[] } = {
-    'bangalore': ['Koramangala', 'HSR Layout', 'Indiranagar', 'Whitefield', 'Electronic City', 'BTM Layout', 'Marathahalli', 'JP Nagar'],
-    'mumbai': ['Andheri', 'Bandra', 'Powai', 'Thane', 'Goregaon', 'Malad', 'Borivali', 'Kandivali'],
-    'delhi': ['South Ex', 'Saket', 'Dwarka', 'Rohini', 'Laxmi Nagar', 'Pitampura', 'Janakpuri', 'Karol Bagh'],
-    'pune': ['Hinjewadi', 'Wakad', 'Kharadi', 'Viman Nagar', 'Aundh', 'Baner', 'Kothrud', 'Hadapsar'],
-  };
-
+export function generateSkyscannerStyleData(city: string): ExternalPGListing[] {
   const cityLower = city.toLowerCase();
-  const areas = realAreas[cityLower] || realAreas['bangalore'];
-  
+  const areas = CITY_NEIGHBORHOODS[cityLower] || CITY_NEIGHBORHOODS['bangalore'];
+
   const pgTypes = ['Boys', 'Girls', 'Co-living'];
   const amenitiesList = [
     ['WiFi', 'AC', 'Laundry', 'Parking', 'Power Backup'],
@@ -189,13 +178,13 @@ export function generateSkyscannerStyleData(city: string): PGListing[] {
     ['WiFi', 'Fridge', 'Geyser', 'Power Backup', 'Laundry'],
   ];
 
-  const listings: PGListing[] = [];
+  const listings: ExternalPGListing[] = [];
 
   for (let i = 0; i < 12; i++) {
     const area = areas[i % areas.length];
     const type = pgTypes[i % pgTypes.length];
     const sharingType = [1, 2, 3, 4][i % 4];
-    const basePrice = sharingType === 1 ? 12000 : sharingType === 2 ? 8000 : sharingType === 3 ? 6000 : 5000;
+    const basePrice = SHARING_BASE_PRICES[sharingType] || 8000;
     const price = basePrice + (Math.floor(Math.random() * 3) * 1000);
 
     listings.push({
@@ -216,43 +205,41 @@ export function generateSkyscannerStyleData(city: string): PGListing[] {
     });
   }
 
-  console.log(`✅ Generated ${listings.length} quality listings with real area names`);
+  console.log(`Generated ${listings.length} quality listings with real area names`);
   return listings;
 }
 
 /**
  * SMART AGGREGATION - Uses FREE APIs
  */
-export async function getAggregatedPGData(city: string): Promise<PGListing[]> {
-  console.log(`\n🔍 Smart search using FREE APIs for ${city}...`);
-  
+export async function getAggregatedPGData(city: string): Promise<ExternalPGListing[]> {
+  console.log(`Smart search using FREE APIs for ${city}...`);
+
   try {
-    // Try both FREE APIs in parallel
     const results = await Promise.allSettled([
       searchOpenStreetMap(city),
       searchFoursquare(city),
     ]);
 
-    let allListings: PGListing[] = [];
+    let allListings: ExternalPGListing[] = [];
 
     results.forEach((result, index) => {
       const source = index === 0 ? 'OpenStreetMap' : 'Foursquare';
       if (result.status === 'fulfilled' && result.value.length > 0) {
-        console.log(`✅ ${source}: Got ${result.value.length} real listings!`);
+        console.log(`${source}: Got ${result.value.length} real listings!`);
         allListings.push(...result.value);
       }
     });
 
     if (allListings.length > 0) {
-      console.log(`\n✅ SUCCESS: Found ${allListings.length} real PG listings from APIs!`);
+      console.log(`SUCCESS: Found ${allListings.length} real PG listings from APIs!`);
       return allListings.slice(0, 30);
     }
-    
-    // Fallback to quality mock data
-    console.log(`⚠️  APIs returned no results - generating quality sample data`);
+
+    console.log(`APIs returned no results - generating quality sample data`);
     return generateSkyscannerStyleData(city);
-  } catch (error: any) {
-    console.error('❌ Error in getAggregatedPGData:', error.message);
+  } catch (error) {
+    console.error('Error in getAggregatedPGData:', error instanceof Error ? error.message : error);
     return generateSkyscannerStyleData(city);
   }
 }

@@ -1,53 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addPGAdvertisement } from '@/lib/firestore';
+import { addListingSchema } from '@/lib/validations';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Validate required fields
-    const requiredFields = [
-      'pgName', 'ownerName', 'ownerPhone', 'ownerEmail',
-      'address', 'city', 'state', 'pincode',
-      'sharingOption', 'rent', 'securityDeposit',
-      'preferredGender', 'totalRooms', 'availableRooms', 'availableFrom'
-    ];
-
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { success: false, error: `${field} is required` },
-          { status: 400 }
-        );
-      }
+    // Validate with Zod
+    const result = addListingSchema.safeParse(body);
+    if (!result.success) {
+      const errors = result.error.issues.map(i => `${i.path.join('.')}: ${i.message}`);
+      return NextResponse.json(
+        { success: false, error: errors.join(', ') },
+        { status: 400 }
+      );
     }
 
-    // Add advertisement to Firebase
-    const docId = await addPGAdvertisement({
-      pgName: body.pgName,
-      ownerName: body.ownerName,
-      ownerPhone: body.ownerPhone,
-      ownerEmail: body.ownerEmail,
-      address: body.address,
-      city: body.city,
-      state: body.state,
-      pincode: body.pincode,
-      nearbyLandmark: body.nearbyLandmark || '',
-      sharingOption: body.sharingOption,
-      rent: body.rent,
-      securityDeposit: body.securityDeposit,
-      foodIncluded: body.foodIncluded || false,
-      preferredGender: body.preferredGender,
-      amenities: body.amenities || [],
-      rules: body.rules || [],
-      description: body.description || '',
-      images: body.images || [],
-      totalRooms: body.totalRooms,
-      availableRooms: body.availableRooms,
-      availableFrom: body.availableFrom,
-    });
+    const validated = result.data;
 
-    console.log(`✅ Advertisement added successfully with ID: ${docId}`);
+    const docId = await addPGAdvertisement({
+      pgName: validated.pgName,
+      ownerName: validated.ownerName,
+      ownerPhone: validated.ownerPhone,
+      ownerEmail: validated.ownerEmail,
+      address: validated.address,
+      city: validated.city,
+      state: validated.state,
+      pincode: validated.pincode,
+      nearbyLandmark: validated.nearbyLandmark,
+      sharingOption: validated.sharingOption,
+      rent: validated.rent,
+      securityDeposit: validated.securityDeposit,
+      foodIncluded: validated.foodIncluded,
+      preferredGender: validated.preferredGender,
+      amenities: validated.amenities,
+      rules: validated.rules,
+      description: validated.description,
+      images: validated.images,
+      totalRooms: validated.totalRooms,
+      availableRooms: validated.availableRooms,
+      availableFrom: validated.availableFrom,
+    });
 
     return NextResponse.json({
       success: true,
@@ -55,12 +48,11 @@ export async function POST(request: NextRequest) {
       advertisementId: docId,
     });
 
-  } catch (error: any) {
-    console.error('❌ Error adding advertisement:', error);
+  } catch (error) {
+    console.error('Error adding advertisement:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to add advertisement' },
+      { success: false, error: error instanceof Error ? error.message : 'Failed to add advertisement' },
       { status: 500 }
     );
   }
 }
-
