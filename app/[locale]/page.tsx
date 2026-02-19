@@ -98,7 +98,7 @@ export default function HomePage() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5">
               <Image src="/HomyFind-logo.png" alt="HomyFind" width={36} height={36} className="h-9 w-auto" />
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent">
                 HomyFind
               </span>
             </Link>
@@ -107,14 +107,14 @@ export default function HomePage() {
             <nav className="hidden md:flex items-center gap-1">
               <Link
                 href="/"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-500 rounded-lg hover:bg-primary-50 transition-colors"
               >
                 {t('common.home')}
               </Link>
               <LanguageSwitcher />
               <Link
                 href="/add-listing"
-                className="ml-2 inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                className="ml-2 inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-lg hover:bg-primary-600 transition-colors shadow-sm"
               >
                 <Plus className="w-4 h-4" />
                 {t('common.listYourPG')}
@@ -141,7 +141,7 @@ export default function HomePage() {
               </div>
               <Link
                 href="/add-listing"
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-lg"
               >
                 <Plus className="w-4 h-4" />
                 {t('common.listYourPG')}
@@ -152,22 +152,22 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-300 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-primary-200 rounded-full blur-3xl" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="text-center mb-10">
-            <p className="text-blue-200 text-sm font-medium tracking-wide uppercase mb-3">
+            <p className="text-primary-200 text-sm font-medium tracking-wide uppercase mb-3">
               {t('hero.trustLine')}
             </p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
               {t('hero.title')}
             </h2>
-            <p className="text-lg text-blue-100 max-w-2xl mx-auto">
+            <p className="text-lg text-primary-100 max-w-2xl mx-auto">
               {t('hero.subtitle')}
             </p>
           </div>
@@ -178,7 +178,7 @@ export default function HomePage() {
           </div>
 
           {/* Quick stats */}
-          <div className="flex flex-wrap justify-center gap-8 mt-10 text-blue-100 text-sm">
+          <div className="flex flex-wrap justify-center gap-8 mt-10 text-primary-100 text-sm">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               <span>{t('hero.verifiedListings')}</span>
@@ -292,7 +292,7 @@ export default function HomePage() {
                       onClick={() => handlePageChange(pageNum)}
                       className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
                         currentPage === pageNum
-                          ? 'bg-blue-600 text-white shadow-sm'
+                          ? 'bg-primary-500 text-white shadow-sm'
                           : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
                       }`}
                     >
@@ -351,8 +351,8 @@ export default function HomePage() {
               </p>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Users className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Users className="w-6 h-6 text-primary-500" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">{t('features.communityTitle')}</h4>
               <p className="text-sm text-gray-500 leading-relaxed">
@@ -360,8 +360,8 @@ export default function HomePage() {
               </p>
             </div>
             <div className="text-center">
-              <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <IndianRupee className="w-6 h-6 text-indigo-600" />
+              <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <IndianRupee className="w-6 h-6 text-primary-600" />
               </div>
               <h4 className="font-semibold text-gray-900 mb-2">{t('features.pricingTitle')}</h4>
               <p className="text-sm text-gray-500 leading-relaxed">

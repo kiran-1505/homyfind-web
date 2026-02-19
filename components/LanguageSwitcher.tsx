@@ -33,7 +33,7 @@ export default function LanguageSwitcher() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+        className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-500 rounded-lg hover:bg-primary-50 transition-colors"
         aria-label="Select language"
       >
         <Globe className="w-4 h-4" />
@@ -48,7 +48,7 @@ export default function LanguageSwitcher() {
               onClick={() => handleChange(loc)}
               className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
                 locale === loc
-                  ? 'bg-blue-50 text-blue-600 font-medium'
+                  ? 'bg-primary-50 text-primary-500 font-medium'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >

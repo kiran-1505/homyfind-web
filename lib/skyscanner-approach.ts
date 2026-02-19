@@ -32,7 +32,7 @@ async function searchFoursquare(city: string): Promise<ExternalPGListing[]> {
       return [];
     }
 
-    const url = `https://api.foursquare.com/v3/places/search?query=paying guest hostel accommodation&near=${encodeURIComponent(city)}&limit=30`;
+    const url = `https://api.foursquare.com/v3/places/search?query=paying guest hostel accommodation&near=${encodeURIComponent(city)}&limit=50`;
 
     console.log(`Searching Foursquare API for PGs in ${city}...`);
 
@@ -129,7 +129,7 @@ async function searchOpenStreetMap(city: string): Promise<ExternalPGListing[]> {
 
     if (data.elements && data.elements.length > 0) {
       data.elements.forEach((place: OverpassElement, index: number) => {
-        if (index >= 20) return;
+        if (index >= 50) return;
 
         const name = place.tags?.name || `Hostel near ${city}`;
         const sharingType = [1, 2, 3, 4][index % 4];
@@ -180,7 +180,7 @@ export function generateSkyscannerStyleData(city: string): ExternalPGListing[] {
 
   const listings: ExternalPGListing[] = [];
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 30; i++) {
     const area = areas[i % areas.length];
     const type = pgTypes[i % pgTypes.length];
     const sharingType = [1, 2, 3, 4][i % 4];
@@ -233,7 +233,7 @@ export async function getAggregatedPGData(city: string): Promise<ExternalPGListi
 
     if (allListings.length > 0) {
       console.log(`SUCCESS: Found ${allListings.length} real PG listings from APIs!`);
-      return allListings.slice(0, 30);
+      return allListings.slice(0, 60);
     }
 
     console.log(`APIs returned no results - generating quality sample data`);

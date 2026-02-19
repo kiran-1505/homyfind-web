@@ -52,10 +52,12 @@ export const SHARING_BASE_PRICES: Record<number, number> = {
 
 // City neighborhoods for fallback data
 export const CITY_NEIGHBORHOODS: Record<string, string[]> = {
-  bangalore: ['Koramangala', 'HSR Layout', 'Indiranagar', 'Whitefield', 'Electronic City', 'BTM Layout', 'Marathahalli', 'JP Nagar'],
-  mumbai: ['Andheri', 'Bandra', 'Powai', 'Thane', 'Goregaon', 'Malad', 'Borivali', 'Kandivali'],
-  delhi: ['South Ex', 'Saket', 'Dwarka', 'Rohini', 'Laxmi Nagar', 'Pitampura', 'Janakpuri', 'Karol Bagh'],
-  pune: ['Hinjewadi', 'Wakad', 'Kharadi', 'Viman Nagar', 'Aundh', 'Baner', 'Kothrud', 'Hadapsar'],
+  bangalore: ['Koramangala', 'HSR Layout', 'Indiranagar', 'Whitefield', 'Electronic City', 'BTM Layout', 'Marathahalli', 'JP Nagar', 'Jayanagar', 'Yelahanka', 'Hebbal', 'Banashankari', 'Rajajinagar', 'Sadashivanagar', 'Basavanagudi'],
+  mumbai: ['Andheri', 'Bandra', 'Powai', 'Thane', 'Goregaon', 'Malad', 'Borivali', 'Kandivali', 'Chembur', 'Dadar', 'Vikhroli', 'Mulund', 'Juhu', 'Versova', 'Worli'],
+  delhi: ['South Ex', 'Saket', 'Dwarka', 'Rohini', 'Laxmi Nagar', 'Pitampura', 'Janakpuri', 'Karol Bagh', 'Rajouri Garden', 'Vasant Kunj', 'Hauz Khas', 'Greater Kailash', 'Nehru Place', 'Malviya Nagar', 'Patel Nagar'],
+  pune: ['Hinjewadi', 'Wakad', 'Kharadi', 'Viman Nagar', 'Aundh', 'Baner', 'Kothrud', 'Hadapsar', 'Koregaon Park', 'Shivajinagar', 'Kalyani Nagar', 'Magarpatta', 'Pimpri', 'Chinchwad', 'Deccan'],
+  hyderabad: ['Gachibowli', 'Madhapur', 'Hitech City', 'Kondapur', 'Kukatpally', 'Ameerpet', 'Begumpet', 'Banjara Hills', 'Jubilee Hills', 'Secunderabad', 'Miyapur', 'Manikonda', 'Dilsukhnagar', 'LB Nagar', 'Uppal'],
+  chennai: ['Velachery', 'Adyar', 'T Nagar', 'Anna Nagar', 'Porur', 'OMR', 'Sholinganallur', 'Thoraipakkam', 'Tambaram', 'Guindy', 'Nungambakkam', 'Mylapore', 'Perungudi', 'Pallavaram', 'Chromepet'],
 };
 
 // Mock data for fallback
@@ -63,6 +65,11 @@ export const MOCK_PG_NAMES = [
   'Sunshine PG', 'Royal Residency', 'Green Valley PG', 'Comfort Zone',
   'Happy Homes PG', 'Elite Stay', 'Urban Nest', 'Cozy Corner PG',
   'Paradise Living', 'Smart Stay PG', 'Premium PG', 'Golden Residency',
+  'Maple House PG', 'Crystal Homes', 'Silver Oak PG', 'Zenith Living',
+  'Orchid Residency', 'Horizon PG', 'Nest Inn PG', 'Haven Stay',
+  'Bliss PG', 'Metro Living PG', 'Ivy Residency', 'Star PG',
+  'Cloud Nine PG', 'Tranquil Stay', 'Amber House PG', 'Vista PG',
+  'Emerald Living', 'Summit PG',
 ];
 
 export const MOCK_LANDMARKS = [

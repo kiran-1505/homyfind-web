@@ -68,8 +68,25 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
       return [];
     }
 
-    const results: GooglePlace[] = data.results;
+    let results: GooglePlace[] = data.results || [];
     console.log(`Found ${results.length} results for: "${query}"`);
+
+    // Fetch additional pages using next_page_token (Google returns up to 60 results across 3 pages)
+    let nextPageToken = data.next_page_token;
+    let pageCount = 1;
+    while (nextPageToken && pageCount < 3) {
+      // Google requires a short delay before using the next_page_token
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const nextUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken=${nextPageToken}&key=${apiKey}`;
+      const nextResponse = await fetch(nextUrl);
+      const nextData = await nextResponse.json();
+      if (nextData.status === 'OK' && nextData.results) {
+        results = [...results, ...nextData.results];
+        console.log(`Page ${pageCount + 1}: ${nextData.results.length} more results (total: ${results.length})`);
+      }
+      nextPageToken = nextData.next_page_token;
+      pageCount++;
+    }
 
     const listings: PGListing[] = results.map((place, index) => {
       const imageUrls: string[] = [];

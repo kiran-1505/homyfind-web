@@ -95,8 +95,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: generateMockData(location, 12),
-      count: 12,
+      data: generateMockData(location, 30),
+      count: 30,
       source: 'sample-data',
       message: `Showing sample data for ${location}. Add your Google Maps API key for real listings.`,
       isRealData: false,

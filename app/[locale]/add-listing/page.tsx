@@ -105,7 +105,7 @@ export default function AddListingPage() {
           </p>
           <button
             onClick={() => router.push('/')}
-            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium transition-colors"
+            className="w-full bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 font-medium transition-colors"
           >
             {t('common.backToHome')}
           </button>
@@ -141,13 +141,13 @@ export default function AddListingPage() {
             >
               <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 index === currentStep
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-primary-500 text-white'
                   : index < currentStep
-                  ? 'bg-blue-50 text-blue-600'
+                  ? 'bg-primary-50 text-primary-500'
                   : 'bg-gray-100 text-gray-400'
               }`}>
                 <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-semibold border ${
-                  index === currentStep ? 'border-white/30' : index < currentStep ? 'border-blue-200' : 'border-gray-300'
+                  index === currentStep ? 'border-white/30' : index < currentStep ? 'border-primary-200' : 'border-gray-300'
                 }">
                   {index < currentStep ? <CheckCircle className="w-4 h-4" /> : index + 1}
                 </span>
@@ -172,7 +172,7 @@ export default function AddListingPage() {
             <div className="space-y-6">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-                  <Home className="w-5 h-5 text-blue-600" />
+                  <Home className="w-5 h-5 text-primary-500" />
                   {t('addListing.pgDetails.title')}
                 </h2>
                 <div className="space-y-4">
@@ -184,7 +184,7 @@ export default function AddListingPage() {
                       required
                       value={formData.pgName}
                       onChange={e => setFormData({ ...formData, pgName: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
@@ -195,7 +195,7 @@ export default function AddListingPage() {
                       rows={3}
                       value={formData.description}
                       onChange={e => setFormData({ ...formData, description: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors resize-none"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors resize-none"
                     />
                   </div>
                 </div>
@@ -203,7 +203,7 @@ export default function AddListingPage() {
 
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-                  <User className="w-5 h-5 text-blue-600" />
+                  <User className="w-5 h-5 text-primary-500" />
                   {t('addListing.contactDetails.title')}
                 </h2>
                 <div className="space-y-4">
@@ -215,7 +215,7 @@ export default function AddListingPage() {
                       required
                       value={formData.ownerName}
                       onChange={e => setFormData({ ...formData, ownerName: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -229,7 +229,7 @@ export default function AddListingPage() {
                           required
                           value={formData.ownerPhone}
                           onChange={e => setFormData({ ...formData, ownerPhone: e.target.value })}
-                          className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                          className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                         />
                       </div>
                     </div>
@@ -243,7 +243,7 @@ export default function AddListingPage() {
                           required
                           value={formData.ownerEmail}
                           onChange={e => setFormData({ ...formData, ownerEmail: e.target.value })}
-                          className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                          className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                         />
                       </div>
                     </div>
@@ -257,7 +257,7 @@ export default function AddListingPage() {
           {currentStep === 1 && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-blue-600" />
+                <MapPin className="w-5 h-5 text-primary-500" />
                 {t('addListing.locationSection.title')}
               </h2>
               <div className="space-y-4">
@@ -269,7 +269,7 @@ export default function AddListingPage() {
                     rows={2}
                     value={formData.address}
                     onChange={e => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors resize-none"
+                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors resize-none"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -281,7 +281,7 @@ export default function AddListingPage() {
                       required
                       value={formData.city}
                       onChange={e => setFormData({ ...formData, city: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
@@ -292,7 +292,7 @@ export default function AddListingPage() {
                       required
                       value={formData.state}
                       onChange={e => setFormData({ ...formData, state: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
@@ -303,7 +303,7 @@ export default function AddListingPage() {
                       required
                       value={formData.pincode}
                       onChange={e => setFormData({ ...formData, pincode: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -314,7 +314,7 @@ export default function AddListingPage() {
                     placeholder={t('addListing.locationSection.landmarkPlaceholder')}
                     value={formData.nearbyLandmark}
                     onChange={e => setFormData({ ...formData, nearbyLandmark: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -325,7 +325,7 @@ export default function AddListingPage() {
           {currentStep === 2 && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-                <IndianRupee className="w-5 h-5 text-blue-600" />
+                <IndianRupee className="w-5 h-5 text-primary-500" />
                 {t('addListing.pricingSection.title')}
               </h2>
               <div className="space-y-5">
@@ -335,7 +335,7 @@ export default function AddListingPage() {
                     <select
                       value={formData.sharingOption}
                       onChange={e => setFormData({ ...formData, sharingOption: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:outline-none"
                     >
                       <option value={1}>{t('addListing.pricingSection.single')}</option>
                       <option value={2}>{t('addListing.pricingSection.double')}</option>
@@ -348,7 +348,7 @@ export default function AddListingPage() {
                     <select
                       value={formData.preferredGender}
                       onChange={e => setFormData({ ...formData, preferredGender: e.target.value as 'Male' | 'Female' | 'Any' })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:outline-none"
                     >
                       <option value="Male">{t('addListing.pricingSection.maleOnly')}</option>
                       <option value="Female">{t('addListing.pricingSection.femaleOnly')}</option>
@@ -368,7 +368,7 @@ export default function AddListingPage() {
                         required
                         value={formData.rent}
                         onChange={e => setFormData({ ...formData, rent: e.target.value })}
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                       />
                     </div>
                   </div>
@@ -382,7 +382,7 @@ export default function AddListingPage() {
                         required
                         value={formData.securityDeposit}
                         onChange={e => setFormData({ ...formData, securityDeposit: e.target.value })}
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                       />
                     </div>
                   </div>
@@ -397,7 +397,7 @@ export default function AddListingPage() {
                       required
                       value={formData.totalRooms}
                       onChange={e => setFormData({ ...formData, totalRooms: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
@@ -408,7 +408,7 @@ export default function AddListingPage() {
                       required
                       value={formData.availableRooms}
                       onChange={e => setFormData({ ...formData, availableRooms: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
@@ -417,7 +417,7 @@ export default function AddListingPage() {
                       type="date"
                       value={formData.availableFrom}
                       onChange={e => setFormData({ ...formData, availableFrom: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -443,7 +443,7 @@ export default function AddListingPage() {
             <div className="space-y-6">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-                  <Wifi className="w-5 h-5 text-blue-600" />
+                  <Wifi className="w-5 h-5 text-primary-500" />
                   {t('addListing.amenitiesSection.title')}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
@@ -454,7 +454,7 @@ export default function AddListingPage() {
                       onClick={() => toggleAmenity(amenity)}
                       className={`px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         formData.amenities.includes(amenity)
-                          ? 'bg-blue-600 text-white shadow-sm'
+                          ? 'bg-primary-500 text-white shadow-sm'
                           : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                       }`}
                     >
@@ -466,7 +466,7 @@ export default function AddListingPage() {
 
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-600" />
+                  <FileText className="w-5 h-5 text-primary-500" />
                   {t('addListing.amenitiesSection.rulesTitle')}
                 </h2>
                 <textarea
@@ -474,7 +474,7 @@ export default function AddListingPage() {
                   rows={4}
                   value={formData.rules}
                   onChange={e => setFormData({ ...formData, rules: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white focus:outline-none transition-colors resize-none"
+                  className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white focus:outline-none transition-colors resize-none"
                 />
               </div>
             </div>
@@ -503,7 +503,7 @@ export default function AddListingPage() {
               <button
                 type="button"
                 onClick={() => setCurrentStep(currentStep + 1)}
-                className="px-8 py-3 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2"
+                className="px-8 py-3 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 transition-colors shadow-sm flex items-center gap-2"
               >
                 {t('common.next')}
                 <ChevronRight className="w-4 h-4" />
@@ -512,7 +512,7 @@ export default function AddListingPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-8 py-3 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-8 py-3 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? t('addListing.submitting') : t('addListing.submitListing')}
               </button>

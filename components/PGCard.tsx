@@ -103,8 +103,8 @@ export default function PGCard({ listing }: PGCardProps) {
             )}
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
-            <Home className="w-16 h-16 text-blue-300" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100">
+            <Home className="w-16 h-16 text-primary-200" />
           </div>
         )}
 
@@ -146,12 +146,12 @@ export default function PGCard({ listing }: PGCardProps) {
         </div>
 
         <div className="flex flex-wrap gap-1.5 mb-3">
-          <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium flex items-center gap-1">
+          <span className="px-2 py-1 bg-primary-50 text-primary-600 rounded-md text-xs font-medium flex items-center gap-1">
             <Users className="w-3 h-3" />
             {listing.sharingOption || 1} {t('common.sharing')}
           </span>
           <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-            listing.preferredGender === 'Male' ? 'bg-blue-50 text-blue-700' :
+            listing.preferredGender === 'Male' ? 'bg-primary-50 text-primary-600' :
             listing.preferredGender === 'Female' ? 'bg-pink-50 text-pink-700' :
             'bg-purple-50 text-purple-700'
           }`}>
@@ -204,7 +204,7 @@ export default function PGCard({ listing }: PGCardProps) {
               e.stopPropagation();
               handleViewDetails();
             }}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors duration-200"
+            className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm rounded-lg font-medium transition-colors duration-200"
           >
             {t('common.viewDetails')}
           </button>

@@ -54,7 +54,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-600 border-t-transparent mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary-500 border-t-transparent mx-auto mb-4" />
           <p className="text-gray-500 text-sm">{t('detail.loadingListing')}</p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
           <p className="text-gray-500 text-sm mb-6">{t('detail.listingNotFoundDesc')}</p>
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors"
+            className="px-6 py-2.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 text-sm font-medium transition-colors"
           >
             {t('detail.backToSearch')}
           </button>
@@ -96,7 +96,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
             </button>
             <Link href="/" className="flex items-center gap-2">
               <Image src="/HomyFind-logo.png" alt="HomyFind" width={32} height={32} className="h-8 w-auto" />
-              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="text-lg font-bold bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent">
                 HomyFind
               </span>
             </Link>
@@ -145,8 +145,8 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                 )}
               </>
             ) : (
-              <div className="flex items-center justify-center h-full bg-gradient-to-br from-blue-50 to-blue-100">
-                <Home className="w-16 h-16 text-blue-300" />
+              <div className="flex items-center justify-center h-full bg-gradient-to-br from-primary-50 to-primary-100">
+                <Home className="w-16 h-16 text-primary-200" />
               </div>
             )}
           </div>
@@ -158,7 +158,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                   key={index}
                   onClick={() => goToIndex(index)}
                   className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative ${
-                    currentIndex === index ? 'border-blue-600' : 'border-transparent'
+                    currentIndex === index ? 'border-primary-500' : 'border-transparent'
                   }`}
                 >
                   <Image src={image} alt={`${listing.pgName} ${index + 1}`} fill className="object-cover" unoptimized />
@@ -236,7 +236,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.address)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg text-sm font-medium transition-colors"
               >
                 <ExternalLink className="w-4 h-4" />
                 {t('detail.openInMaps')}
@@ -288,13 +288,13 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                 <div className="space-y-2.5">
                   {listing.ownerName && <p className="text-sm text-gray-700">{listing.ownerName}</p>}
                   {listing.ownerPhone && (
-                    <a href={`tel:${listing.ownerPhone}`} className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    <a href={`tel:${listing.ownerPhone}`} className="flex items-center gap-2 text-sm text-primary-500 hover:text-primary-600 font-medium">
                       <Phone className="w-4 h-4" />
                       {listing.ownerPhone}
                     </a>
                   )}
                   {listing.ownerEmail && (
-                    <a href={`mailto:${listing.ownerEmail}`} className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    <a href={`mailto:${listing.ownerEmail}`} className="flex items-center gap-2 text-sm text-primary-500 hover:text-primary-600 font-medium">
                       <Mail className="w-4 h-4" />
                       {listing.ownerEmail}
                     </a>
@@ -307,7 +307,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                 {listing.ownerPhone ? (
                   <a
                     href={`tel:${listing.ownerPhone}`}
-                    className="mt-5 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-semibold transition-colors"
+                    className="mt-5 w-full flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white py-3 rounded-xl text-sm font-semibold transition-colors"
                   >
                     <Phone className="w-4 h-4" />
                     {t('detail.callOwner')}
@@ -317,7 +317,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.address)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-5 w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-semibold transition-colors"
+                    className="mt-5 w-full flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white py-3 rounded-xl text-sm font-semibold transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     {t('detail.viewOnMaps')}

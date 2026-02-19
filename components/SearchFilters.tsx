@@ -41,7 +41,7 @@ export default function SearchFilters({ onSearch, loading }: SearchFiltersProps)
               placeholder={t('placeholder')}
               value={filters.location}
               onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-              className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors text-sm"
+              className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none transition-colors text-sm"
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
           </div>
@@ -50,21 +50,21 @@ export default function SearchFilters({ onSearch, loading }: SearchFiltersProps)
             onClick={() => setShowFilters(!showFilters)}
             className={`relative px-4 py-3.5 rounded-xl font-medium transition-colors flex items-center gap-2 justify-center text-sm ${
               showFilters || hasActiveFilters
-                ? 'bg-blue-50 text-blue-600'
+                ? 'bg-primary-50 text-primary-500'
                 : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
             }`}
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span className="hidden sm:inline">{t('filters')}</span>
             {hasActiveFilters && (
-              <span className="w-2 h-2 bg-blue-600 rounded-full" />
+              <span className="w-2 h-2 bg-primary-500 rounded-full" />
             )}
           </button>
 
           <button
             onClick={handleSearch}
             disabled={loading}
-            className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-2 justify-center"
+            className="px-8 py-3.5 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-2 justify-center"
           >
             <Search className="w-4 h-4" />
             {loading ? tc('searching') : tc('search')}
@@ -81,7 +81,7 @@ export default function SearchFilters({ onSearch, loading }: SearchFiltersProps)
                 <select
                   value={filters.sharingOption ?? ''}
                   onChange={(e) => setFilters({ ...filters, sharingOption: e.target.value ? parseInt(e.target.value) : null })}
-                  className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border-0 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border-0 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 >
                   <option value="">{t('all')}</option>
                   <option value="1">{t('single')}</option>
@@ -98,7 +98,7 @@ export default function SearchFilters({ onSearch, loading }: SearchFiltersProps)
                 <select
                   value={filters.maxRent ?? ''}
                   onChange={(e) => setFilters({ ...filters, maxRent: e.target.value ? parseInt(e.target.value) : null })}
-                  className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border-0 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border-0 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 >
                   <option value="">{t('anyBudget')}</option>
                   {RENT_BRACKETS.map((bracket) => (
@@ -116,7 +116,7 @@ export default function SearchFilters({ onSearch, loading }: SearchFiltersProps)
                 <select
                   value={filters.gender ?? ''}
                   onChange={(e) => setFilters({ ...filters, gender: (e.target.value || null) as FilterOptions['gender'] })}
-                  className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border-0 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border-0 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 >
                   <option value="">{t('any')}</option>
                   <option value="Male">{t('male')}</option>
@@ -132,7 +132,7 @@ export default function SearchFilters({ onSearch, loading }: SearchFiltersProps)
                 <select
                   value={filters.foodIncluded === null ? '' : filters.foodIncluded ? 'true' : 'false'}
                   onChange={(e) => setFilters({ ...filters, foodIncluded: e.target.value === '' ? null : e.target.value === 'true' })}
-                  className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border-0 text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border-0 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                 >
                   <option value="">{t('any')}</option>
                   <option value="true">{t('included')}</option>
