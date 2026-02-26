@@ -8,7 +8,7 @@ export const DEFAULT_LOCATION = 'Bangalore';
 export const DEFAULT_STATE = 'Karnataka';
 
 // Form steps
-export const ADD_LISTING_STEPS = ['PG Details', 'Location', 'Pricing', 'Amenities'] as const;
+export const ADD_LISTING_STEPS = ['PG Details', 'Location', 'Pricing', 'Amenities & Photos'] as const;
 
 // Amenities master list
 export const AMENITIES_LIST = [
@@ -50,16 +50,6 @@ export const SHARING_BASE_PRICES: Record<number, number> = {
   4: 5000,
 };
 
-// City neighborhoods for fallback data
-export const CITY_NEIGHBORHOODS: Record<string, string[]> = {
-  bangalore: ['Koramangala', 'HSR Layout', 'Indiranagar', 'Whitefield', 'Electronic City', 'BTM Layout', 'Marathahalli', 'JP Nagar', 'Jayanagar', 'Yelahanka', 'Hebbal', 'Banashankari', 'Rajajinagar', 'Sadashivanagar', 'Basavanagudi'],
-  mumbai: ['Andheri', 'Bandra', 'Powai', 'Thane', 'Goregaon', 'Malad', 'Borivali', 'Kandivali', 'Chembur', 'Dadar', 'Vikhroli', 'Mulund', 'Juhu', 'Versova', 'Worli'],
-  delhi: ['South Ex', 'Saket', 'Dwarka', 'Rohini', 'Laxmi Nagar', 'Pitampura', 'Janakpuri', 'Karol Bagh', 'Rajouri Garden', 'Vasant Kunj', 'Hauz Khas', 'Greater Kailash', 'Nehru Place', 'Malviya Nagar', 'Patel Nagar'],
-  pune: ['Hinjewadi', 'Wakad', 'Kharadi', 'Viman Nagar', 'Aundh', 'Baner', 'Kothrud', 'Hadapsar', 'Koregaon Park', 'Shivajinagar', 'Kalyani Nagar', 'Magarpatta', 'Pimpri', 'Chinchwad', 'Deccan'],
-  hyderabad: ['Gachibowli', 'Madhapur', 'Hitech City', 'Kondapur', 'Kukatpally', 'Ameerpet', 'Begumpet', 'Banjara Hills', 'Jubilee Hills', 'Secunderabad', 'Miyapur', 'Manikonda', 'Dilsukhnagar', 'LB Nagar', 'Uppal'],
-  chennai: ['Velachery', 'Adyar', 'T Nagar', 'Anna Nagar', 'Porur', 'OMR', 'Sholinganallur', 'Thoraipakkam', 'Tambaram', 'Guindy', 'Nungambakkam', 'Mylapore', 'Perungudi', 'Pallavaram', 'Chromepet'],
-};
-
 // Mock data for fallback
 export const MOCK_PG_NAMES = [
   'Sunshine PG', 'Royal Residency', 'Green Valley PG', 'Comfort Zone',
@@ -76,6 +66,30 @@ export const MOCK_LANDMARKS = [
   'Near Metro Station', 'Close to Tech Park', 'Near University',
   'Shopping Mall Nearby', 'Bus Stop 2 mins', 'Market Area',
 ];
+
+// House rules master list
+export const RULES_LIST = [
+  'No Smoking', 'No Drinking', 'No Visitors After 10 PM',
+  'Gate Closes at 11 PM', 'No Loud Music After 10 PM', 'No Pets',
+  'ID Proof Required', 'Rent Due by 5th', '1 Month Notice to Vacate',
+  'Maintain Cleanliness', 'No Non-Veg Cooking', 'No Opposite Gender Visitors',
+] as const;
+
+// Rule English name -> translation key mapping
+export const RULE_KEYS: Record<string, string> = {
+  'No Smoking': 'noSmoking',
+  'No Drinking': 'noDrinking',
+  'No Visitors After 10 PM': 'noVisitorsAfter10',
+  'Gate Closes at 11 PM': 'gateCloses11',
+  'No Loud Music After 10 PM': 'noLoudMusic',
+  'No Pets': 'noPets',
+  'ID Proof Required': 'idProofRequired',
+  'Rent Due by 5th': 'rentDueBy5th',
+  '1 Month Notice to Vacate': 'oneMonthNotice',
+  'Maintain Cleanliness': 'maintainCleanliness',
+  'No Non-Veg Cooking': 'noNonVegCooking',
+  'No Opposite Gender Visitors': 'noOppositeGenderVisitors',
+};
 
 // Amenity English name -> translation key mapping
 export const AMENITY_KEYS: Record<string, string> = {
@@ -106,7 +120,12 @@ export const RENT_BRACKET_KEYS: Record<number, string> = {
 };
 
 // Add listing step translation keys
-export const ADD_LISTING_STEP_KEYS = ['pgDetails', 'location', 'pricing', 'amenities'] as const;
+export const ADD_LISTING_STEP_KEYS = ['pgDetails', 'location', 'pricing', 'amenitiesPhotos'] as const;
+
+// Image upload limits
+export const MAX_IMAGES = 10;
+export const MAX_IMAGE_SIZE_MB = 5;
+export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 // Empty filters for reset
 export const EMPTY_FILTERS: SearchFilters = {

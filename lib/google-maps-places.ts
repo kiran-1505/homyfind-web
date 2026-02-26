@@ -1,6 +1,27 @@
 import { PGListing } from '@/types';
 import { GOOGLE_MAPS_CACHE_TTL, BASE_PRICE, PRICE_VARIANCE } from '@/constants';
 
+/**
+ * Generate a deterministic hash-based number from a string.
+ * Used for stable prices/values that don't change on page refresh.
+ */
+function hashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Build a proxied photo URL that hides the API key from the client.
+ */
+function buildPhotoUrl(photoReference: string): string {
+  return `/api/maps-photo?ref=${encodeURIComponent(photoReference)}`;
+}
+
 interface GooglePlace {
   place_id: string;
   name: string;
@@ -35,7 +56,57 @@ interface GooglePlaceDetails {
 const searchCache = new Map<string, { data: PGListing[]; timestamp: number }>();
 
 /**
- * Fetch PG listings from Google Maps Places API
+ * Multiple search queries to maximize PG discovery.
+ * Each query targets different terminology used for PG accommodations in India.
+ */
+const SEARCH_QUERIES = [
+  'PG paying guest accommodation in',
+  'hostel accommodation in',
+  'guest house lodge in',
+  'co-living space in',
+  'working women hostel in',
+  'boys girls hostel in',
+];
+
+/**
+ * Run a single Google Maps text search and return raw GooglePlace results.
+ * Follows up to 2 next_page_tokens for maximum results.
+ */
+async function runSingleGoogleQuery(
+  query: string,
+  apiKey: string
+): Promise<GooglePlace[]> {
+  const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${apiKey}`;
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (data.status !== 'OK' || !data.results) {
+    return [];
+  }
+
+  let results: GooglePlace[] = data.results || [];
+
+  // Follow pagination (Google returns up to 60 results across 3 pages)
+  let nextPageToken = data.next_page_token;
+  let pageCount = 1;
+  while (nextPageToken && pageCount < 3) {
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    const nextUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken=${nextPageToken}&key=${apiKey}`;
+    const nextResponse = await fetch(nextUrl);
+    const nextData = await nextResponse.json();
+    if (nextData.status === 'OK' && nextData.results) {
+      results = [...results, ...nextData.results];
+    }
+    nextPageToken = nextData.next_page_token;
+    pageCount++;
+  }
+
+  return results;
+}
+
+/**
+ * Fetch PG listings from Google Maps Places API using multiple search queries
+ * for maximum coverage. Results are deduplicated by place_id.
  */
 export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGListing[]> {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -54,47 +125,48 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
   }
 
   const startTime = Date.now();
-  console.log(`Fetching from Google Maps Places API for: ${location}`);
+  console.log(`Fetching from Google Maps Places API for: ${location} (${SEARCH_QUERIES.length} queries)`);
 
   try {
-    const query = `PG paying guest accommodation in ${location}`;
-    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${apiKey}`;
+    // Run all search queries in parallel for speed
+    const queryPromises = SEARCH_QUERIES.map(prefix => {
+      const fullQuery = `${prefix} ${location}`;
+      return runSingleGoogleQuery(fullQuery, apiKey).then(results => {
+        console.log(`Google Maps query "${prefix}...": ${results.length} results`);
+        return results;
+      });
+    });
 
-    const response = await fetch(url);
-    const data = await response.json();
+    const allQueryResults = await Promise.allSettled(queryPromises);
 
-    if (data.status !== 'OK' || !data.results) {
-      console.log(`No results for: "${query}" (Status: ${data.status})`);
+    // Collect all results and deduplicate by place_id
+    const seenPlaceIds = new Set<string>();
+    const uniqueResults: GooglePlace[] = [];
+
+    for (const result of allQueryResults) {
+      if (result.status === 'fulfilled') {
+        for (const place of result.value) {
+          if (!seenPlaceIds.has(place.place_id)) {
+            seenPlaceIds.add(place.place_id);
+            uniqueResults.push(place);
+          }
+        }
+      }
+    }
+
+    console.log(`Google Maps: ${uniqueResults.length} unique places after deduplication`);
+
+    if (uniqueResults.length === 0) {
       return [];
     }
 
-    let results: GooglePlace[] = data.results || [];
-    console.log(`Found ${results.length} results for: "${query}"`);
-
-    // Fetch additional pages using next_page_token (Google returns up to 60 results across 3 pages)
-    let nextPageToken = data.next_page_token;
-    let pageCount = 1;
-    while (nextPageToken && pageCount < 3) {
-      // Google requires a short delay before using the next_page_token
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const nextUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken=${nextPageToken}&key=${apiKey}`;
-      const nextResponse = await fetch(nextUrl);
-      const nextData = await nextResponse.json();
-      if (nextData.status === 'OK' && nextData.results) {
-        results = [...results, ...nextData.results];
-        console.log(`Page ${pageCount + 1}: ${nextData.results.length} more results (total: ${results.length})`);
-      }
-      nextPageToken = nextData.next_page_token;
-      pageCount++;
-    }
-
-    const listings: PGListing[] = results.map((place, index) => {
+    const listings: PGListing[] = uniqueResults.map((place, index) => {
       const imageUrls: string[] = [];
       if (place.photos && place.photos.length > 0) {
         const photosToFetch = place.photos.slice(0, 5);
         for (const photo of photosToFetch) {
           imageUrls.push(
-            `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${photo.photo_reference}&key=${apiKey}`
+            buildPhotoUrl(photo.photo_reference)
           );
         }
       }
@@ -103,11 +175,13 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
       const city = addressParts[addressParts.length - 2]?.trim() || location;
       const state = addressParts[addressParts.length - 1]?.trim() || 'India';
 
-      const price = BASE_PRICE + Math.floor(Math.random() * PRICE_VARIANCE);
+      const placeHash = hashCode(place.place_id);
+      const price = BASE_PRICE + (placeHash % PRICE_VARIANCE);
 
       return {
         id: `google-${place.place_id}`,
         pgName: place.name,
+        area: addressParts[0]?.trim() || '',
         address: place.formatted_address,
         city: city,
         state: state,
@@ -116,6 +190,12 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
         sharingOption: [1, 2, 3, 4][index % 4],
         rent: price,
         securityDeposit: price * 2,
+        roomConfigurations: [{
+          sharingType: [1, 2, 3, 4][index % 4],
+          rent: price,
+          securityDeposit: price * 2,
+          availableRooms: (placeHash % 5) + 1,
+        }],
         images: imageUrls,
         description: `${place.name} - Comfortable PG accommodation`,
         amenities: ['WiFi', 'Security', 'Power Backup'],
@@ -124,17 +204,18 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
         preferredGender: (['Male', 'Female', 'Any'][index % 3] as 'Male' | 'Female' | 'Any'),
         availableFrom: new Date().toISOString(),
         totalRooms: 10,
-        availableRooms: Math.floor(Math.random() * 5) + 1,
+        availableRooms: (placeHash % 5) + 1,
         ownerId: 'google-maps',
         ownerName: 'Contact via Google',
         ownerPhone: '',
         ownerEmail: '',
-        verified: true,
+        verified: false,
         verificationPlan: 'free' as const,
         rating: place.rating || 4.0,
         reviewCount: place.user_ratings_total || 10,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        source: 'google',
       };
     });
 
@@ -153,9 +234,11 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
 }
 
 /**
- * Get detailed information about a specific place
+ * Get detailed information about a specific place.
+ * Returns a full PGListing-shaped object with ALL photo URLs resolved.
+ * The Place Details API returns up to 10 photos (vs Text Search which returns only 1).
  */
-export async function getPlaceDetails(placeId: string): Promise<GooglePlaceDetails | null> {
+export async function getPlaceDetails(placeId: string): Promise<PGListing | null> {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
@@ -163,17 +246,76 @@ export async function getPlaceDetails(placeId: string): Promise<GooglePlaceDetai
   }
 
   try {
-    const fields = 'name,formatted_address,formatted_phone_number,website,rating,user_ratings_total,photos';
+    const fields = 'name,formatted_address,formatted_phone_number,website,rating,user_ratings_total,photos,types,geometry';
     const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${fields}&key=${apiKey}`;
 
     const response = await fetch(url);
     const data = await response.json();
 
-    if (data.status === 'OK') {
-      return data.result;
+    if (data.status !== 'OK' || !data.result) {
+      return null;
     }
 
-    return null;
+    const place = data.result;
+
+    // Convert ALL photo references to actual image URLs (up to 10 photos)
+    const imageUrls: string[] = [];
+    if (place.photos && place.photos.length > 0) {
+      const photosToFetch = place.photos.slice(0, 10);
+      for (const photo of photosToFetch) {
+        imageUrls.push(
+          buildPhotoUrl(photo.photo_reference)
+        );
+      }
+    }
+
+    console.log(`Place Details for ${placeId}: ${imageUrls.length} photos resolved`);
+
+    const addressParts = (place.formatted_address || '').split(',');
+    const city = addressParts[addressParts.length - 2]?.trim() || '';
+    const state = addressParts[addressParts.length - 1]?.trim() || 'India';
+    const detailHash = hashCode(placeId);
+    const price = BASE_PRICE + (detailHash % PRICE_VARIANCE);
+
+    return {
+      id: `google-${placeId}`,
+      pgName: place.name || 'PG Accommodation',
+      area: '',
+      address: place.formatted_address || '',
+      city,
+      state,
+      pincode: '',
+      nearbyLandmark: place.formatted_address || '',
+      sharingOption: 2,
+      rent: price,
+      securityDeposit: price * 2,
+      roomConfigurations: [{
+        sharingType: 2,
+        rent: price,
+        securityDeposit: price * 2,
+        availableRooms: 3,
+      }],
+      images: imageUrls,
+      description: `${place.name} - Comfortable PG accommodation`,
+      amenities: ['WiFi', 'Security', 'Power Backup'],
+      rules: [],
+      foodIncluded: false,
+      preferredGender: 'Any' as const,
+      availableFrom: new Date().toISOString(),
+      totalRooms: 10,
+      availableRooms: 3,
+      ownerId: 'google-maps',
+      ownerName: place.formatted_phone_number ? 'Contact via Phone' : 'Contact via Google',
+      ownerPhone: place.formatted_phone_number || '',
+      ownerEmail: '',
+      verified: false,
+      verificationPlan: 'free' as const,
+      rating: place.rating || 4.0,
+      reviewCount: place.user_ratings_total || 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      source: 'google',
+    };
   } catch (error) {
     console.error('Error fetching place details:', error);
     return null;

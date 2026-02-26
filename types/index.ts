@@ -1,8 +1,19 @@
 export type VerificationPlan = 'free' | 'verified' | 'premium';
 
+export interface RoomConfiguration {
+  sharingType: number;      // 1 = single, 2 = double, 3 = triple, 4 = four+
+  rent: number;             // monthly rent for this config
+  securityDeposit: number;  // security deposit for this config
+  availableRooms: number;   // rooms available for this config
+}
+
+/** Used for ordering: database (Firestore) ads first, then API-sourced listings. */
+export type ListingSource = 'firestore' | 'google';
+
 export interface PGListing {
   id: string;
   pgName: string;
+  area: string;
   address: string;
   city: string;
   state: string;
@@ -23,13 +34,17 @@ export interface PGListing {
   ownerId: string;
   ownerName: string;
   ownerPhone: string;
-  ownerEmail: string;
+  ownerEmail?: string;
+  googleMapsLink?: string;
   verified: boolean;
+  roomConfigurations: RoomConfiguration[];
   verificationPlan: VerificationPlan;
   rating: number;
   reviewCount: number;
-  createdAt: Date | string;
-  updatedAt: Date | string;
+  createdAt: string;
+  updatedAt: string;
+  /** When set, used to show database ads first; firestore = high priority. */
+  source?: ListingSource;
 }
 
 export interface SearchFilters {
@@ -52,19 +67,3 @@ export interface ApiResponse<T> {
   timestamp?: string;
 }
 
-export interface ExternalPGListing {
-  id: string;
-  name: string;
-  location: string;
-  city: string;
-  price: number;
-  image: string;
-  rating: number;
-  reviews: number;
-  amenities: string[];
-  sharingType: number;
-  gender: 'Male' | 'Female' | 'Any';
-  foodIncluded: boolean;
-  phone?: string;
-  link: string;
-}

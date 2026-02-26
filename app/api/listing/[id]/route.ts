@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getPGAdvertisementById } from '@/lib/firestore';
+import { firebaseAdToPGListing } from '@/utils/transformers';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,42 +13,16 @@ export async function GET(
 
     // Try Firebase for user-submitted advertisements
     if (!listingId.startsWith('google-') && !listingId.startsWith('mock-') && !listingId.startsWith('fsq-') && !listingId.startsWith('osm-')) {
-      const docRef = doc(db, 'pg_advertisements', listingId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
+      const ad = await getPGAdvertisementById(listingId);
+      if (ad) {
+        const listing = firebaseAdToPGListing(ad);
+        // Remove sensitive PII from public response
         return NextResponse.json({
           success: true,
           data: {
-            id: docSnap.id,
-            pgName: data.pgName,
-            ownerName: data.ownerName,
-            ownerPhone: data.ownerPhone,
-            ownerEmail: data.ownerEmail,
-            address: data.address,
-            city: data.city,
-            state: data.state,
-            pincode: data.pincode,
-            nearbyLandmark: data.nearbyLandmark,
-            sharingOption: data.sharingOption,
-            rent: data.rent,
-            securityDeposit: data.securityDeposit,
-            foodIncluded: data.foodIncluded,
-            preferredGender: data.preferredGender,
-            amenities: data.amenities || [],
-            rules: data.rules || [],
-            description: data.description,
-            images: data.images || [],
-            totalRooms: data.totalRooms,
-            availableRooms: data.availableRooms,
-            availableFrom: data.availableFrom,
-            verified: data.verified || false,
-            verificationPlan: data.verificationPlan || (data.verified ? 'verified' : 'free'),
-            rating: 4.5,
-            reviewCount: 0,
-            ownerId: 'owner',
-            createdAt: data.createdAt?.toDate() || new Date(),
-            updatedAt: data.updatedAt?.toDate() || new Date(),
+            ...listing,
+            ownerPhone: '', // Redacted — contact via listing owner
+            ownerEmail: '', // Redacted — contact via listing owner
           },
         });
       }
@@ -71,7 +45,7 @@ export async function GET(
   } catch (error) {
     console.error('Error fetching listing details:', error);
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : 'Failed to fetch listing' },
+      { success: false, error: 'Failed to fetch listing' },
       { status: 500 }
     );
   }

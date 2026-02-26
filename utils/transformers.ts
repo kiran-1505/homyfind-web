@@ -1,13 +1,15 @@
-import { PGListing, ExternalPGListing } from '@/types';
+import { PGListing } from '@/types';
 import type { PGAdvertisement } from '@/lib/firestore';
 
 /**
  * Transform a Firebase PGAdvertisement into the canonical PGListing shape.
+ * Database (Firestore) ads are always shown as verified and tagged for high-priority ordering.
  */
 export function firebaseAdToPGListing(ad: PGAdvertisement): PGListing {
   return {
     id: ad.id || `firebase-${Date.now()}`,
     pgName: ad.pgName,
+    area: ad.area || '',
     address: ad.address,
     city: ad.city,
     state: ad.state,
@@ -16,6 +18,12 @@ export function firebaseAdToPGListing(ad: PGAdvertisement): PGListing {
     sharingOption: ad.sharingOption,
     rent: ad.rent,
     securityDeposit: ad.securityDeposit,
+    roomConfigurations: ad.roomConfigurations || [{
+      sharingType: ad.sharingOption,
+      rent: ad.rent,
+      securityDeposit: ad.securityDeposit,
+      availableRooms: ad.availableRooms,
+    }],
     images: ad.images.length > 0 ? ad.images : [],
     description: ad.description,
     amenities: ad.amenities,
@@ -25,52 +33,17 @@ export function firebaseAdToPGListing(ad: PGAdvertisement): PGListing {
     availableFrom: ad.availableFrom,
     totalRooms: ad.totalRooms,
     availableRooms: ad.availableRooms,
-    ownerId: 'owner',
+    ownerId: ad.ownerId || 'unknown',
     ownerName: ad.ownerName,
     ownerPhone: ad.ownerPhone,
     ownerEmail: ad.ownerEmail,
-    verified: ad.verified,
-    verificationPlan: ad.verificationPlan || (ad.verified ? 'verified' : 'free'),
-    rating: 4.5,
-    reviewCount: 0,
-    createdAt: ad.createdAt,
-    updatedAt: ad.updatedAt,
-  };
-}
-
-/**
- * Transform an ExternalPGListing (Foursquare/OSM) into the canonical PGListing shape.
- */
-export function externalToPGListing(ext: ExternalPGListing): PGListing {
-  return {
-    id: ext.id,
-    pgName: ext.name,
-    address: ext.location,
-    city: ext.city,
-    state: 'India',
-    pincode: '',
-    nearbyLandmark: ext.location,
-    sharingOption: ext.sharingType,
-    rent: ext.price,
-    securityDeposit: ext.price * 2,
-    images: [ext.image],
-    description: `${ext.name} - ${ext.amenities.join(', ')}`,
-    amenities: ext.amenities,
-    rules: [],
-    foodIncluded: ext.foodIncluded,
-    preferredGender: ext.gender,
-    availableFrom: new Date().toISOString(),
-    totalRooms: 10,
-    availableRooms: Math.floor(Math.random() * 5) + 1,
-    ownerId: 'owner',
-    ownerName: 'Contact via listing',
-    ownerPhone: ext.phone || '',
-    ownerEmail: '',
+    googleMapsLink: ad.googleMapsLink,
     verified: true,
-    verificationPlan: 'free',
-    rating: ext.rating,
-    reviewCount: ext.reviews,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    verificationPlan: ad.verificationPlan || 'verified',
+    rating: ad.rating || 0,
+    reviewCount: ad.reviewCount || 0,
+    createdAt: typeof ad.createdAt === 'string' ? ad.createdAt : (ad.createdAt instanceof Date ? ad.createdAt.toISOString() : new Date().toISOString()),
+    updatedAt: typeof ad.updatedAt === 'string' ? ad.updatedAt : (ad.updatedAt instanceof Date ? ad.updatedAt.toISOString() : new Date().toISOString()),
+    source: 'firestore',
   };
 }

@@ -2,11 +2,36 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PGListing } from '@/types';
 import { DEFAULT_LOCATION } from '@/constants';
 import { searchQuerySchema } from '@/lib/validations';
-import { firebaseAdToPGListing, externalToPGListing } from '@/utils/transformers';
+import { firebaseAdToPGListing } from '@/utils/transformers';
 import { generateMockData } from '@/utils/mock-data';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+/**
+ * Cross-source deduplication: removes listings that likely refer to the same
+ * physical place by comparing normalised names and addresses.
+ */
+function deduplicateListings(listings: PGListing[]): PGListing[] {
+  const seen = new Set<string>();
+  const result: PGListing[] = [];
+
+  for (const listing of listings) {
+    const normName = listing.pgName
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '')
+      .trim();
+    const normCity = listing.city.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+    const fingerprint = `${normName}-${normCity}`;
+
+    if (!seen.has(fingerprint)) {
+      seen.add(fingerprint);
+      result.push(listing);
+    }
+  }
+
+  return result;
+}
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
@@ -25,36 +50,83 @@ export async function GET(request: NextRequest) {
     }
     const location = parsed.data.location;
 
-    console.log(`Search starting for: ${location}`);
+    // Optional: ?source=firebase to skip Google Maps API during testing
+    const sourceFilter = searchParams.get('source');
+    const firebaseOnly = sourceFilter === 'firebase';
 
-    // STEP 1: Check Firebase for user-added advertisements
-    let firebaseListings: PGListing[] = [];
-    try {
+    console.log(`Search starting for: ${location}${firebaseOnly ? ' (Firebase only)' : ''}`);
+
+    // ──────────────────────────────────────────────────────────
+    // RUN SOURCES: Firebase (user-submitted) + Google Maps (live data)
+    // ──────────────────────────────────────────────────────────
+
+    const firebasePromise = (async () => {
       const { searchPGAdvertisements } = await import('@/lib/firestore');
       const ads = await searchPGAdvertisements(location);
-      firebaseListings = ads.map(firebaseAdToPGListing);
+      return ads.map(firebaseAdToPGListing);
+    })();
+
+    const googleMapsPromise = firebaseOnly
+      ? Promise.resolve([] as PGListing[])
+      : (async () => {
+          const { fetchFromGoogleMapsPlaces } = await import('@/lib/google-maps-places');
+          return fetchFromGoogleMapsPlaces(location);
+        })();
+
+    const [firebaseResult, googleMapsResult] = await Promise.allSettled([
+      firebasePromise,
+      googleMapsPromise,
+    ]);
+
+    // Collect results from each source
+    const firebaseListings: PGListing[] =
+      firebaseResult.status === 'fulfilled' ? firebaseResult.value : [];
+    const googleMapsListings: PGListing[] =
+      googleMapsResult.status === 'fulfilled' ? googleMapsResult.value : [];
+
+    // Log per-source counts
+    const sourceErrors: Record<string, string> = {};
+
+    if (firebaseResult.status === 'rejected') {
+      const errMsg = firebaseResult.reason instanceof Error
+        ? firebaseResult.reason.message
+        : String(firebaseResult.reason);
+      console.error(`Firebase search FAILED: ${errMsg}`);
+      sourceErrors.firebase = errMsg;
+    } else {
       console.log(`Firebase: ${firebaseListings.length} ads found`);
-    } catch (fbError) {
-      console.log(`Firebase error: ${fbError instanceof Error ? fbError.message : fbError}`);
+      if (firebaseListings.length === 0) {
+        console.warn(`Firebase returned 0 results for "${location}" — check Firestore security rules if you expect results`);
+      }
+    }
+    if (!firebaseOnly) {
+      if (googleMapsResult.status === 'rejected') {
+        const errMsg = googleMapsResult.reason instanceof Error
+          ? googleMapsResult.reason.message
+          : String(googleMapsResult.reason);
+        console.log(`Google Maps error: ${errMsg}`);
+        sourceErrors.googleMaps = errMsg;
+      } else {
+        console.log(`Google Maps: ${googleMapsListings.length} listings found`);
+      }
     }
 
-    // STEP 2: Try Google Maps Places API
-    let googleMapsListings: PGListing[] = [];
-    try {
-      const { fetchFromGoogleMapsPlaces } = await import('@/lib/google-maps-places');
-      googleMapsListings = await fetchFromGoogleMapsPlaces(location);
-      console.log(`Google Maps: ${googleMapsListings.length} listings found`);
-    } catch (googleError) {
-      console.log(`Google Maps API error: ${googleError instanceof Error ? googleError.message : googleError}`);
-    }
+    // Combine: Firebase first (owner-submitted), then Google Maps (live data)
+    const combinedListings = [
+      ...firebaseListings,
+      ...googleMapsListings,
+    ];
 
-    // Combine Firebase + Google Maps listings
-    if (firebaseListings.length > 0 || googleMapsListings.length > 0) {
-      const allListings = [...firebaseListings, ...googleMapsListings];
+    if (combinedListings.length > 0) {
+      const deduplicated = deduplicateListings(combinedListings);
 
-      // Sort: premium first, then verified, then free listings
+      // Sort: Firestore ads first, then by verification plan and rating
+      const sourceRank: Record<string, number> = { firestore: 0, google: 1 };
       const planRank: Record<string, number> = { premium: 0, verified: 1, free: 2 };
-      allListings.sort((a, b) => {
+      deduplicated.sort((a, b) => {
+        const srcA = sourceRank[a.source ?? ''] ?? 2;
+        const srcB = sourceRank[b.source ?? ''] ?? 2;
+        if (srcA !== srcB) return srcA - srcB;
         const rankA = planRank[a.verificationPlan] ?? 2;
         const rankB = planRank[b.verificationPlan] ?? 2;
         if (rankA !== rankB) return rankA - rankB;
@@ -62,46 +134,28 @@ export async function GET(request: NextRequest) {
       });
 
       const timeMs = Date.now() - startTime;
-      console.log(`Search completed in ${(timeMs / 1000).toFixed(2)}s - ${allListings.length} total listings`);
+      console.log(
+        `Search completed in ${(timeMs / 1000).toFixed(2)}s - ${deduplicated.length} total listings (${combinedListings.length} before dedup)`
+      );
 
       return NextResponse.json({
         success: true,
-        data: allListings,
-        count: allListings.length,
-        source: firebaseListings.length > 0 ? 'firebase-and-google-maps' : 'google-maps-only',
+        data: deduplicated,
+        count: deduplicated.length,
+        source: 'all-sources',
         sources: {
           firebase: firebaseListings.length,
           googleMaps: googleMapsListings.length,
         },
-        message: `Found ${allListings.length} PG listings`,
+        ...(Object.keys(sourceErrors).length > 0 && { sourceErrors }),
+        message: `Found ${deduplicated.length} PG listings`,
         timestamp: new Date().toISOString(),
         isRealData: true,
       });
     }
 
-    // STEP 3: Fallback to web scraping (Foursquare + OpenStreetMap)
-    console.log('Trying web scraping fallback...');
-    const { getAggregatedPGData } = await import('@/lib/skyscanner-approach');
-    const realListings = await getAggregatedPGData(location);
-
-    if (realListings.length > 0) {
-      const transformedListings = realListings.map(externalToPGListing);
-      const timeMs = Date.now() - startTime;
-      console.log(`Scraping completed in ${(timeMs / 1000).toFixed(2)}s - ${transformedListings.length} listings`);
-
-      return NextResponse.json({
-        success: true,
-        data: transformedListings,
-        count: transformedListings.length,
-        source: 'web-scraping',
-        message: `Found ${transformedListings.length} PG listings in ${location}`,
-        timestamp: new Date().toISOString(),
-        isRealData: true,
-      });
-    }
-
-    // STEP 4: Final fallback to mock data
-    console.log('No real data found, using sample data');
+    // FALLBACK: No real data from any source — use sample data
+    console.log('No real data found from any source, using sample data');
 
     return NextResponse.json({
       success: true,

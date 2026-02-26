@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import stripe, { PLANS, PlanType } from '@/lib/stripe';
+import { verifyAuthToken } from '@/lib/auth-server';
+import { getPGAdvertisementById } from '@/lib/firestore';
+
+// Allowed origins for Stripe redirect URLs
+const ALLOWED_ORIGINS = [
+  'https://pg-find.com',
+  'https://www.pg-find.com',
+  'https://homyfind.vercel.app',
+  'http://localhost:3000',
+];
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +20,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { plan, listingId, ownerEmail } = await request.json();
+    // Verify authentication
+    const user = await verifyAuthToken(request);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    const { plan, listingId } = await request.json();
 
     // Validate plan
     if (!plan || !['verified', 'premium'].includes(plan)) {
@@ -27,13 +46,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const selectedPlan = PLANS[plan as PlanType];
-    const origin = request.headers.get('origin') || 'http://localhost:3000';
+    // Verify the user owns this listing
+    const listing = await getPGAdvertisementById(listingId);
+    if (!listing) {
+      return NextResponse.json(
+        { success: false, error: 'Listing not found' },
+        { status: 404 }
+      );
+    }
 
-    // Create Stripe Checkout Session with UPI + Card + Netbanking
+    const isOwner =
+      (user.phone && listing.ownerPhone === user.phone) ||
+      (user.email && listing.ownerEmail && listing.ownerEmail === user.email);
+
+    if (!isOwner) {
+      return NextResponse.json(
+        { success: false, error: 'You do not own this listing' },
+        { status: 403 }
+      );
+    }
+
+    const selectedPlan = PLANS[plan as PlanType];
+
+    // Validate origin against allowlist to prevent open redirects
+    const requestOrigin = request.headers.get('origin') || '';
+    const origin = ALLOWED_ORIGINS.includes(requestOrigin) ? requestOrigin : ALLOWED_ORIGINS[ALLOWED_ORIGINS.length - 1];
+
+    // Create Stripe Checkout Session with subscription metadata
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      // UPI is automatically available for INR payments via Stripe India
       line_items: [
         {
           price_data: {
@@ -53,10 +94,17 @@ export async function POST(request: NextRequest) {
       mode: 'subscription',
       success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}&listing=${listingId}&plan=${plan}`,
       cancel_url: `${origin}/payment-cancelled`,
-      customer_email: ownerEmail || undefined,
+      customer_email: user.email || undefined,
       metadata: {
         listingId,
         plan,
+      },
+      // Copy metadata to the subscription so webhook handlers can access it
+      subscription_data: {
+        metadata: {
+          listingId,
+          plan,
+        },
       },
       payment_method_options: {
         card: {
@@ -73,7 +121,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Stripe checkout error:', error);
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : 'Payment failed' },
+      { success: false, error: 'Failed to create checkout session' },
       { status: 500 }
     );
   }

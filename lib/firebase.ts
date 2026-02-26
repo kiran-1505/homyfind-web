@@ -1,8 +1,7 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import { getAnalytics, Analytics } from 'firebase/analytics';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,31 +15,24 @@ const firebaseConfig = {
 };
 
 // Safe initialization — won't crash if env vars are missing during build
-let app: ReturnType<typeof initializeApp>;
+let app: FirebaseApp | null = null;
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 } catch (error) {
   console.warn('Firebase init skipped during build:', (error as Error).message);
-  app = null as any;
 }
 
 // Firestore & Storage — safe to initialize if app exists
-const db = app ? getFirestore(app) : (null as any);
-const storage = app ? getStorage(app) : (null as any);
+const db: Firestore | null = app ? getFirestore(app) : null;
+const storage: FirebaseStorage | null = app ? getStorage(app) : null;
 
 // Auth — call this function when needed (login page, dashboard)
 // NOT initialized at module level to prevent build crashes
 function getFirebaseAuth() {
+  if (!app) {
+    throw new Error('Firebase is not initialized. Check your environment variables.');
+  }
   return getAuth(app);
 }
 
-let analytics: Analytics | null = null;
-if (typeof window !== 'undefined' && app) {
-  try {
-    analytics = getAnalytics(app);
-  } catch {
-    // Analytics may fail in dev or if blocked by browser
-  }
-}
-
-export { getFirebaseAuth, db, storage, app, analytics };
+export { getFirebaseAuth, db, storage, app };

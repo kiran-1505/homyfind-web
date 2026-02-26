@@ -36,6 +36,7 @@ git push -u origin main
 In the Vercel dashboard, go to Settings → Environment Variables and add:
 
 ```
+# Firebase
 NEXT_PUBLIC_FIREBASE_API_KEY=your_value
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_value
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_value
@@ -44,8 +45,18 @@ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_value
 NEXT_PUBLIC_FIREBASE_APP_ID=your_value
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_value
 NEXT_PUBLIC_FIREBASE_DATABASE_URL=your_value
+
+# Google Maps
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_value
 GOOGLE_MAPS_API_KEY=your_value
+
+# Stripe (if using verified/premium plans)
+STRIPE_SECRET_KEY=sk_live_xxxxx
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+
+# Admin
+ADMIN_API_KEY=your_admin_key
 ```
 
 Copy these from your `.env.local` file.
@@ -123,9 +134,14 @@ git push origin main
 - [ ] Website loads correctly on `https://homyfind.in`
 - [ ] All environment variables are set in Vercel
 - [ ] Search works (test with "Bangalore")
-- [ ] Add listing form submits to Firebase
+- [ ] Add listing form submits to Firebase (requires login)
+- [ ] Owner login works (Email + Password)
+- [ ] Dashboard shows owner's listings
+- [ ] Edit and delete work from dashboard
+- [ ] Photo upload works in add-listing form
 - [ ] All 6 languages work (`/hi`, `/kn`, `/te`, `/ta`, `/ml`)
 - [ ] Mobile responsive (test on phone)
+- [ ] Stripe webhook configured (if using paid plans)
 - [ ] Set up Google Search Console (free SEO tool)
 - [ ] Set up Google Analytics (free)
 - [ ] Submit sitemap to Google
@@ -143,15 +159,16 @@ Go to Firebase Console → Firestore → Rules:
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Anyone can read PG listings
     match /pg_advertisements/{document} {
       allow read: if true;
-      allow create: if true; // Allow anyone to submit
-      allow update, delete: if false; // Only admin can modify
+      allow create: if true;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.ownerId;
     }
   }
 }
 ```
+
+This allows anyone to read and create listings, but only the owner (matching `ownerId` field) can update or delete their own listings.
 
 ### Restrict API Keys
 1. Go to Google Cloud Console → APIs & Services → Credentials

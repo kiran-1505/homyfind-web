@@ -11,6 +11,7 @@ export function generateMockData(location: string, count: number): PGListing[] {
     return {
       id: `mock-${Date.now()}-${i}`,
       pgName: MOCK_PG_NAMES[i % MOCK_PG_NAMES.length] + ` - ${location}`,
+      area: `Sector ${i + 1}`,
       address: `Sector ${i + 1}, ${location}`,
       city: location,
       state: 'India',
@@ -19,6 +20,14 @@ export function generateMockData(location: string, count: number): PGListing[] {
       sharingOption,
       rent: baseRent + (i * 500),
       securityDeposit: (baseRent + (i * 500)) * 2,
+      roomConfigurations: i % 3 === 0
+        ? [
+            { sharingType: 2, rent: baseRent + (i * 500), securityDeposit: (baseRent + (i * 500)) * 2, availableRooms: 3 },
+            { sharingType: 1, rent: baseRent + (i * 500) + 4000, securityDeposit: (baseRent + (i * 500) + 4000) * 2, availableRooms: 2 },
+          ]
+        : [
+            { sharingType: sharingOption, rent: baseRent + (i * 500), securityDeposit: (baseRent + (i * 500)) * 2, availableRooms: Math.floor(Math.random() * 5) + 1 },
+          ],
       images: [`https://picsum.photos/seed/${location}${i}/800/600`],
       description: `${sharingOption} sharing PG in ${location}. Clean, safe, and comfortable.`,
       amenities: ['WiFi', 'AC', 'Laundry', 'Security'],
@@ -32,12 +41,12 @@ export function generateMockData(location: string, count: number): PGListing[] {
       ownerName: `Owner ${i + 1}`,
       ownerPhone: `+91 98765${43210 + i}`,
       ownerEmail: `owner${i}@example.com`,
-      verified: i % 3 !== 0,
-      verificationPlan: i % 7 === 0 ? 'premium' : i % 3 !== 0 ? 'verified' : 'free',
+      verified: false,
+      verificationPlan: 'free' as const,
       rating: +(Math.random() * 2 + 3).toFixed(1),
       reviewCount: Math.floor(Math.random() * 50) + 5,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
   });
 }

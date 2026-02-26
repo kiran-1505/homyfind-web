@@ -1,166 +1,40 @@
 # Backend Completion Guide — What's Done & What's Left
 
-## What's Already Working (Your Current Backend)
+## Current Backend Status (~95% Complete)
 
 | Feature | Status | Where |
 |---------|--------|-------|
-| Firebase Firestore (database) | ✅ Done | `lib/firebase.ts`, `lib/firestore.ts` |
-| Add PG listing API | ✅ Done | `app/api/add-advertisement/route.ts` |
-| Search PG listings API | ✅ Done | `app/api/search-realtime/route.ts` |
-| Google Maps Places API | ✅ Done | `lib/google-maps-places.ts` |
-| Input validation (Zod) | ✅ Done | `lib/validations.ts` |
-| Rate limiting middleware | ✅ Done | `middleware.ts` |
-| Multi-language routing (6 langs) | ✅ Done | `i18n/` directory |
-| Verified/Premium listing ranking | ✅ Done | Search API sorts by plan |
-| Stripe + UPI payment APIs | ✅ Done | `app/api/create-checkout/`, `app/api/webhook/` |
-| Payment success/cancelled pages | ✅ Done | `app/[locale]/payment-success/`, `payment-cancelled/` |
-| Update listing function | ✅ Done | `lib/firestore.ts` → `updatePGAdvertisement()` |
-| Firestore security rules | ✅ Done | Firebase Console |
-| Firebase Auth enabled | ✅ Done | Email + Phone + Google sign-in |
-| Firebase Storage rules | ✅ Done | 5MB image limit, auth required |
-
-**Your backend is ~85% complete.** Here's what's left to build.
+| Firebase Firestore (database) | Done | `lib/firebase.ts`, `lib/firestore.ts` |
+| Add PG listing API | Done | `app/api/add-advertisement/route.ts` |
+| Search PG listings API | Done | `app/api/search-realtime/route.ts` |
+| Google Maps Places API | Done | `lib/google-maps-places.ts` |
+| Input validation (Zod) | Done | `lib/validations.ts` |
+| Rate limiting middleware | Done | `middleware.ts` |
+| Multi-language routing (6 langs) | Done | `i18n/` directory |
+| Verified/Premium listing ranking | Done | Search API sorts by plan |
+| Stripe + UPI payment APIs | Done | `app/api/create-checkout/`, `app/api/webhook/` |
+| Payment success/cancelled pages | Done | `app/[locale]/payment-success/`, `payment-cancelled/` |
+| Firebase Auth (Email + Phone OTP) | Done | `lib/auth.ts`, `hooks/useAuth.ts` |
+| Server-side token verification | Done | `lib/auth-server.ts` |
+| Owner login/signup page | Done | `app/[locale]/login/page.tsx` |
+| Owner dashboard (view/edit/delete) | Done | `app/[locale]/dashboard/page.tsx` |
+| Owner listings API | Done | `app/api/owner/listings/route.ts` |
+| Update/Delete listing API | Done | `app/api/owner/update-listing/route.ts` |
+| Firestore REST API for writes | Done | Uses owner's ID token (bypasses anon auth) |
+| Image upload (Firebase Storage) | Done | `lib/storage.ts` |
+| Predefined house rules (12 buttons) | Done | `constants/index.ts`, `messages/*.json` |
+| Google Maps link field | Done | Add-listing form + detail page |
+| Room configurations (multi-type) | Done | Multiple sharing types per listing |
+| Search token backfill API | Done | `app/api/admin/backfill-tokens/route.ts` |
+| Maps photo proxy API | Done | `app/api/maps-photo/route.ts` |
+| Firestore security rules | Done | Firebase Console |
+| Firebase Storage rules | Done | 5MB image limit, auth required |
 
 ---
 
-## What's Left To Do (Next Week)
+## What's Left To Do
 
-### Step 1: Set Up Stripe Account (30 minutes)
-
-1. Go to **https://dashboard.stripe.com/register**
-2. Sign up with your email
-3. Complete KYC:
-   - PAN card number
-   - Bank account details (for receiving payments)
-   - Business name: "HomyFind" (individual/sole proprietorship is fine)
-4. Once approved, go to **Developers → API Keys** and copy:
-   - `Publishable key` → This is `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-   - `Secret key` → This is `STRIPE_SECRET_KEY`
-5. Go to **Developers → Webhooks → Add endpoint**:
-   - URL: `https://YOUR_DOMAIN/api/webhook`
-   - Events: Select `checkout.session.completed` and `customer.subscription.deleted`
-   - Copy the webhook signing secret → This is `STRIPE_WEBHOOK_SECRET`
-6. Add all 3 keys to **Vercel** (Settings → Environment Variables):
-   ```
-   STRIPE_SECRET_KEY=sk_live_xxxxx
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
-   STRIPE_WEBHOOK_SECRET=whsec_xxxxx
-   ```
-7. Also add to your local `.env.local` (use test keys for development):
-   ```
-   STRIPE_SECRET_KEY=sk_test_xxxxx
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
-   STRIPE_WEBHOOK_SECRET=whsec_xxxxx
-   ```
-
-**Payment methods automatically available:** UPI, Cards (Visa/Mastercard/RuPay), Netbanking, Wallets
-**Stripe fee:** 2% per transaction. No setup fee. No monthly fee.
-
-### Step 2: Build Login/Signup Page (1-2 hours)
-
-Create `lib/auth.ts`:
-```typescript
-import { getFirebaseAuth } from './firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
-
-export async function signUp(email: string, password: string) {
-  const auth = getFirebaseAuth();
-  return createUserWithEmailAndPassword(auth, email, password);
-}
-
-export async function signIn(email: string, password: string) {
-  const auth = getFirebaseAuth();
-  return signInWithEmailAndPassword(auth, email, password);
-}
-
-export async function logOut() {
-  const auth = getFirebaseAuth();
-  return signOut(auth);
-}
-
-export function onAuthChange(callback: (user: User | null) => void) {
-  const auth = getFirebaseAuth();
-  return onAuthStateChanged(auth, callback);
-}
-```
-
-Create `contexts/AuthContext.tsx`:
-```typescript
-'use client';
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User } from 'firebase/auth';
-import { onAuthChange } from '@/lib/auth';
-
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
-
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthChange((user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, []);
-
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export const useAuth = () => useContext(AuthContext);
-```
-
-Create login page at `app/[locale]/auth/page.tsx`:
-- Email + password form
-- Toggle between Sign Up and Sign In
-- Redirect to add-listing or dashboard after login
-
-### Step 3: Build Owner Dashboard (2-3 hours)
-
-Create `app/[locale]/dashboard/page.tsx`:
-- Show all listings owned by the logged-in user
-- Each listing card shows: name, city, current plan, edit/upgrade buttons
-- "Upgrade to Verified" and "Upgrade to Premium" buttons trigger Stripe checkout
-
-Add to `lib/firestore.ts`:
-```typescript
-export async function getOwnerListings(ownerId: string): Promise<PGAdvertisement[]> {
-  const q = query(
-    collection(db, 'pg_advertisements'),
-    where('ownerId', '==', ownerId)
-  );
-  const snapshot = await getDocs(q);
-  // Map documents same as searchPGAdvertisements
-}
-```
-
-### Step 4: Add Image Upload (1-2 hours)
-
-Create `lib/storage.ts`:
-```typescript
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from './firebase';
-
-export async function uploadPGImage(file: File, listingId: string): Promise<string> {
-  const storageRef = ref(storage, `pg-images/${listingId}/${Date.now()}-${file.name}`);
-  await uploadBytes(storageRef, file);
-  return getDownloadURL(storageRef);
-}
-```
-
-Add file input to the add-listing form (Step 3 — Amenities section).
-
-### Step 5: Create Static Pages for AdSense (1 hour)
+### Step 1: Static Pages for AdSense (1 hour)
 
 These pages are required for Google AdSense approval:
 
@@ -171,12 +45,28 @@ These pages are required for Google AdSense approval:
 | Contact Us | `/contact` | Email, phone, form |
 | Terms of Service | `/terms` | Usage rules |
 
-### Step 6: Apply for Google AdSense (10 minutes)
+### Step 2: Apply for Google AdSense (10 minutes)
 
 1. Go to https://adsense.google.com
 2. Submit your website URL
 3. Wait 1-2 weeks for approval
 4. Once approved, create ad units and add to your pages
+
+### Step 3: Reviews & Ratings System (Future)
+
+- Allow tenants to rate PGs (1-5 stars)
+- Display average rating on PG cards
+- Show reviews on detail page
+
+### Step 4: Chat System (Future)
+
+- In-app messaging between tenants and owners
+- Firebase Realtime Database or Firestore subcollection
+
+### Step 5: City-Specific Landing Pages (SEO)
+
+- `/pg-in-bangalore`, `/pg-in-hyderabad`, etc.
+- Improves search engine ranking for target keywords
 
 ---
 
@@ -186,41 +76,52 @@ These pages are required for Google AdSense approval:
 HomyFind-Web/
 ├── app/
 │   ├── [locale]/
-│   │   ├── page.tsx                    ✅ Home page
-│   │   ├── add-listing/page.tsx        ✅ Add PG form
-│   │   ├── listing/[id]/page.tsx       ✅ PG detail page
-│   │   ├── payment-success/page.tsx    ✅ Payment success
-│   │   ├── payment-cancelled/page.tsx  ✅ Payment cancelled
-│   │   ├── auth/page.tsx               ❌ TODO: Login/Signup
-│   │   ├── dashboard/page.tsx          ❌ TODO: Owner dashboard
-│   │   ├── about/page.tsx              ❌ TODO: About page
-│   │   ├── privacy/page.tsx            ❌ TODO: Privacy policy
-│   │   ├── contact/page.tsx            ❌ TODO: Contact page
-│   │   └── terms/page.tsx              ❌ TODO: Terms of service
+│   │   ├── page.tsx                    # Home page
+│   │   ├── add-listing/page.tsx        # Add PG form (login required)
+│   │   ├── listing/[id]/page.tsx       # PG detail page
+│   │   ├── login/page.tsx              # Owner login (Email + Phone OTP)
+│   │   ├── dashboard/page.tsx          # Owner dashboard (view/edit/delete)
+│   │   ├── payment-success/page.tsx    # Payment success
+│   │   ├── payment-cancelled/page.tsx  # Payment cancelled
+│   │   ├── about/page.tsx              # TODO: About page
+│   │   ├── privacy/page.tsx            # TODO: Privacy policy
+│   │   ├── contact/page.tsx            # TODO: Contact page
+│   │   └── terms/page.tsx              # TODO: Terms of service
 │   └── api/
-│       ├── add-advertisement/route.ts  ✅ Add listing API
-│       ├── search-realtime/route.ts    ✅ Search API
-│       ├── listing/[id]/route.ts       ✅ Listing detail API
-│       ├── create-checkout/route.ts    ✅ Stripe checkout API
-│       └── webhook/route.ts            ✅ Stripe webhook API
+│       ├── add-advertisement/route.ts  # Add listing API
+│       ├── search-realtime/route.ts    # Search API
+│       ├── listing/[id]/route.ts       # Listing detail API
+│       ├── create-checkout/route.ts    # Stripe checkout API
+│       ├── webhook/route.ts            # Stripe webhook API
+│       ├── maps-photo/route.ts         # Google Maps photo proxy
+│       ├── owner/
+│       │   ├── listings/route.ts       # Owner's listings API
+│       │   └── update-listing/route.ts # Edit/delete listing API (REST API)
+│       └── admin/
+│           └── backfill-tokens/route.ts # Search token backfill (admin)
 ├── lib/
-│   ├── firebase.ts                     ✅ Firebase config (safe init)
-│   ├── firestore.ts                    ✅ CRUD operations
-│   ├── stripe.ts                       ✅ Stripe server config
-│   ├── stripe-client.ts               ✅ Stripe client helper
-│   ├── google-maps-places.ts          ✅ Google Maps API
-│   ├── validations.ts                 ✅ Zod schemas
-│   ├── auth.ts                        ❌ TODO: Auth functions
-│   └── storage.ts                     ❌ TODO: Image upload
+│   ├── firebase.ts                     # Firebase config (safe init)
+│   ├── firebase-admin.ts              # Firebase Admin SDK (optional)
+│   ├── firestore.ts                    # CRUD operations
+│   ├── auth.ts                        # Client-side auth functions
+│   ├── auth-server.ts                 # Server-side token verification
+│   ├── storage.ts                     # Firebase Storage image upload
+│   ├── stripe.ts                      # Stripe server config
+│   ├── stripe-client.ts              # Stripe client helper
+│   ├── google-maps-places.ts         # Google Maps API
+│   └── validations.ts                # Zod schemas
 ├── components/
-│   ├── PGCard.tsx                     ✅ Listing card (verified/premium badges)
-│   ├── SearchFilters.tsx              ✅ Search + filters
-│   └── LanguageSwitcher.tsx           ✅ 6 language switcher
-├── contexts/
-│   └── AuthContext.tsx                ❌ TODO: Auth provider
-├── types/index.ts                     ✅ All types including VerificationPlan
-├── messages/                          ✅ 6 language translation files
-└── middleware.ts                      ✅ Rate limiting + i18n
+│   ├── PGCard.tsx                     # Listing card (verified/premium badges)
+│   ├── SearchFilters.tsx              # Search + filters
+│   └── LanguageSwitcher.tsx           # 6 language switcher
+├── hooks/
+│   ├── useAuth.ts                     # Auth state hook
+│   └── useImageCarousel.ts           # Image carousel
+├── constants/
+│   └── index.ts                       # Amenities, house rules, cities
+├── types/index.ts                     # All types (PGListing, RoomConfiguration)
+├── messages/                          # 6 language translation files
+└── middleware.ts                      # Rate limiting + i18n
 ```
 
 ---
@@ -228,60 +129,72 @@ HomyFind-Web/
 ## Environment Variables
 
 ```env
-# ✅ Already configured in Vercel + .env.local:
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAtSwGVH_rFBk6EdeQQ91VJoN4Fn6wHdU8
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=homyfind-app.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://homyfind-app-default-rtdb.asia-southeast1.firebasedatabase.app
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=homyfind-app
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=homyfind-app.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1061060765252
-NEXT_PUBLIC_FIREBASE_APP_ID=1:1061060765252:web:85b0e7da05db7f0fd67e11
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-S82W1FE1QN
-GOOGLE_MAPS_API_KEY=AIzaSyBcapryw6GrvEK-YUdM2vYupq8BwmFfNkU
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=AIzaSyBcapryw6GrvEK-YUdM2vYupq8BwmFfNkU
+# Firebase Configuration (required)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://your-project.firebaseio.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
-# ❌ Add after Stripe account setup:
-STRIPE_SECRET_KEY=sk_live_xxxxx
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
+# Google Maps API Key (required)
+GOOGLE_MAPS_API_KEY=your_maps_key
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_maps_key
+
+# Stripe (optional - for verified/premium plans)
+STRIPE_SECRET_KEY=sk_test_xxxxx
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
 STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+
+# Admin API Key (for admin endpoints)
+ADMIN_API_KEY=your_admin_key
+
+# Firebase Admin SDK (optional - for future server-side admin operations)
+# FIREBASE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
 ```
 
 ---
 
-## Next Week Checklist
+## Remaining Checklist
 
-- [ ] Create Stripe account + complete KYC
-- [ ] Add Stripe env vars to Vercel
-- [ ] Set up Stripe webhook endpoint
-- [ ] Build login/signup page (`/auth`)
-- [ ] Build owner dashboard (`/dashboard`)
-- [ ] Add image upload to add-listing form
 - [ ] Create About, Privacy, Contact, Terms pages
 - [ ] Apply for Google AdSense
-- [ ] Test full payment flow (Stripe test mode)
-- [ ] Go live with payments (switch to Stripe live keys)
+- [ ] Set up Stripe live keys (switch from test to production)
+- [ ] Add Google Analytics
+- [ ] Create city-specific SEO landing pages
+- [ ] Build reviews and ratings system
+- [ ] Add chat between tenants and owners
+- [ ] Build mobile app (React Native)
 
 ---
 
-## Payment Flow (How It Works)
+## Architecture Notes
+
+### Update/Delete Flow (Firestore REST API)
+
+The dashboard update/delete operations use the **Firestore REST API** with the owner's actual Firebase ID token. This is because:
+
+1. Server-side API routes use the client SDK which signs in anonymously
+2. Firestore security rules require `request.auth.uid == resource.data.ownerId`
+3. Anonymous auth UID doesn't match the document's ownerId
+4. Solution: Pass the owner's ID token to Firestore REST API directly
 
 ```
-PG Owner adds listing (free)
-        ↓
-Owner goes to Dashboard
-        ↓
-Clicks "Upgrade to Verified ₹299/mo" or "Premium ₹599/mo"
-        ↓
-Redirected to Stripe Checkout (UPI / Card / Netbanking)
-        ↓
-Payment successful → Stripe webhook fires
-        ↓
-Webhook updates Firebase: verified=true, verificationPlan='verified'
-        ↓
-Listing now shows Verified badge + ranks higher in search
-        ↓
-If subscription cancelled → Webhook downgrades to free
+Dashboard (client) → PATCH /api/owner/update-listing (with Bearer token)
+    → verifyAuthToken() validates the token
+    → isOwner() checks UID/phone/email match
+    → Firestore REST API PATCH with owner's token
+    → Firestore rules see correct auth.uid → allows write
 ```
+
+### Ownership Verification (Triple Check)
+
+The `isOwner` function checks three identifiers:
+1. `ownerId` (Firebase UID) - primary, set when listing is created by logged-in user
+2. `ownerPhone` - fallback for phone-auth users
+3. `ownerEmail` - fallback for email-auth users
 
 ---
 
@@ -289,9 +202,9 @@ If subscription cancelled → Webhook downgrades to free
 
 | Service | Monthly Cost |
 |---------|-------------|
-| Vercel Hosting | ₹0 |
-| Firebase (Blaze - pay as you go) | ₹0 (within free limits) |
-| Google Maps API | ₹0 (within $200 free credit) |
-| Stripe | ₹0 (2% only when you receive payments) |
-| Domain (homyfind.in) | ~₹46/month |
-| **Total fixed cost** | **~₹46/month** |
+| Vercel Hosting | Free |
+| Firebase (Blaze - pay as you go) | Free (within free limits) |
+| Google Maps API | Free (within $200 free credit) |
+| Stripe | Free (2% only when you receive payments) |
+| Domain (homyfind.in) | ~INR 46/month |
+| **Total fixed cost** | **~INR 46/month** |

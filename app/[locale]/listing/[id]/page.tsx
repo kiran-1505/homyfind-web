@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
@@ -21,9 +21,14 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
   const t = useTranslations();
   const [listing, setListing] = useState<PGListing | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
 
   const images = listing?.images && listing.images.length > 0 ? listing.images : [];
   const { currentIndex, imageLoaded, hasMultiple, goToNext, goToPrev, goToIndex, onImageLoad } = useImageCarousel(images);
+
+  const handleImageError = useCallback((idx: number) => {
+    setImageErrors(prev => ({ ...prev, [idx]: true }));
+  }, []);
 
   const translateAmenity = (amenity: string) => {
     const key = AMENITY_KEYS[amenity];
@@ -31,20 +36,51 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
   };
 
   useEffect(() => {
-    const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings'));
-    if (allListings) {
-      const found = allListings.find((l) => l.id === params.id);
-      if (found) {
-        setListing(found);
-        setLoading(false);
-        return;
+    const isGoogleListing = params.id.startsWith('google-');
+
+    // For non-Google listings, try localStorage cache first (it has full data)
+    if (!isGoogleListing) {
+      const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings'));
+      if (allListings) {
+        const found = allListings.find((l) => l.id === params.id);
+        if (found) {
+          setListing(found);
+          setLoading(false);
+          return;
+        }
       }
     }
 
+    // For Google listings, show cached data immediately (1 photo) but then
+    // fetch Place Details API to get ALL photos (up to 10)
+    if (isGoogleListing) {
+      const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings'));
+      if (allListings) {
+        const found = allListings.find((l) => l.id === params.id);
+        if (found) {
+          setListing(found); // Show immediately with 1 photo
+          setLoading(false);
+        }
+      }
+    }
+
+    // Always fetch from API for Google listings (to get all photos),
+    // and for any listing not found in localStorage
     fetch(`/api/listing/${params.id}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.success) setListing(data.data);
+        if (data.success && data.data) {
+          setListing((prev) => {
+            if (!prev) return data.data;
+            // For Google listings: merge — keep any existing data but update images
+            if (isGoogleListing && data.data.images && data.data.images.length > (prev.images?.length || 0)) {
+              return { ...prev, ...data.data };
+            }
+            // For fresh fetches (no previous data), use API response
+            if (!prev.id) return data.data;
+            return data.data;
+          });
+        }
       })
       .catch((error) => console.error('Error fetching listing:', error))
       .finally(() => setLoading(false));
@@ -111,17 +147,24 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
           <div className="relative h-72 md:h-96 bg-gray-100">
             {images.length > 0 ? (
               <>
-                {!imageLoaded && (
+                {!imageLoaded && !imageErrors[currentIndex] && (
                   <div className="absolute inset-0 bg-gray-200 animate-pulse" />
                 )}
-                <Image
-                  src={images[currentIndex]}
-                  alt={`${listing.pgName} - Photo ${currentIndex + 1}`}
-                  fill
-                  className={`object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  onLoad={onImageLoad}
-                  unoptimized
-                />
+                {imageErrors[currentIndex] ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                    <Home className="w-16 h-16 text-gray-300" />
+                  </div>
+                ) : (
+                  <Image
+                    src={images[currentIndex]}
+                    alt={`${listing.pgName} - Photo ${currentIndex + 1}`}
+                    fill
+                    className={`object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    onLoad={onImageLoad}
+                    onError={() => handleImageError(currentIndex)}
+                    unoptimized
+                  />
+                )}
                 {hasMultiple && (
                   <>
                     <button
@@ -161,7 +204,20 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                     currentIndex === index ? 'border-primary-500' : 'border-transparent'
                   }`}
                 >
-                  <Image src={image} alt={`${listing.pgName} ${index + 1}`} fill className="object-cover" unoptimized />
+                  {imageErrors[index] ? (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <Home className="w-6 h-6 text-gray-300" />
+                    </div>
+                  ) : (
+                    <Image
+                      src={image}
+                      alt={`${listing.pgName} ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      onError={() => handleImageError(index)}
+                      unoptimized
+                    />
+                  )}
                 </button>
               ))}
             </div>
@@ -233,7 +289,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
               <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('detail.location')}</h2>
               <p className="text-gray-500 text-sm mb-4">{t('detail.locationDesc')}</p>
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.address)}`}
+                href={listing.googleMapsLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.address)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg text-sm font-medium transition-colors"
@@ -247,24 +303,53 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-20">
-              <div className="mb-5 pb-5 border-b border-gray-100">
-                <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-3xl font-bold text-gray-900">
-                    ₹{listing.rent.toLocaleString('en-IN')}
-                  </span>
-                  <span className="text-gray-400">{t('common.perMonthFull')}</span>
+              {/* Room Configurations / Pricing */}
+              {listing.roomConfigurations && listing.roomConfigurations.length > 1 ? (
+                <div className="mb-5 pb-5 border-b border-gray-100">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('detail.roomConfigurations')}</h3>
+                  <div className="space-y-2">
+                    {listing.roomConfigurations.map((rc, idx) => (
+                      <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2.5">
+                        <div>
+                          <span className="text-sm font-medium text-gray-900">{rc.sharingType} {t('common.sharing')}</span>
+                          <span className="text-xs text-gray-500 ml-2">({rc.availableRooms} {t('detail.roomsLabel')})</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-sm font-bold text-gray-900">₹{rc.rent.toLocaleString('en-IN')}</span>
+                          <span className="text-xs text-gray-400">{t('common.perMonth')}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {listing.roomConfigurations?.[0] && (
+                    <div className="flex items-center gap-1.5 text-gray-500 text-sm mt-2">
+                      <IndianRupee className="w-3.5 h-3.5" />
+                      <span>{t('detail.deposit')}: ₹{listing.roomConfigurations[0].securityDeposit.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-1.5 text-gray-500 text-sm">
-                  <IndianRupee className="w-3.5 h-3.5" />
-                  <span>{t('detail.deposit')}: ₹{listing.securityDeposit.toLocaleString('en-IN')}</span>
+              ) : (
+                <div className="mb-5 pb-5 border-b border-gray-100">
+                  <div className="flex items-baseline gap-1 mb-1">
+                    <span className="text-3xl font-bold text-gray-900">
+                      ₹{listing.rent.toLocaleString('en-IN')}
+                    </span>
+                    <span className="text-gray-400">{t('common.perMonthFull')}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-gray-500 text-sm">
+                    <IndianRupee className="w-3.5 h-3.5" />
+                    <span>{t('detail.deposit')}: ₹{listing.securityDeposit.toLocaleString('en-IN')}</span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="space-y-3 mb-5 pb-5 border-b border-gray-100">
-                <div className="flex items-center gap-3 text-sm">
-                  <Users className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-700">{t('detail.sharing', { count: listing.sharingOption })}</span>
-                </div>
+                {(!listing.roomConfigurations || listing.roomConfigurations.length <= 1) && (
+                  <div className="flex items-center gap-3 text-sm">
+                    <Users className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-700">{t('detail.sharing', { count: listing.sharingOption })}</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-3 text-sm">
                   <Shield className="w-4 h-4 text-gray-400" />
                   <span className="text-gray-700">{listing.preferredGender}</span>
@@ -314,7 +399,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
                   </a>
                 ) : (
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.address)}`}
+                    href={listing.googleMapsLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.address)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-5 w-full flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white py-3 rounded-xl text-sm font-semibold transition-colors"

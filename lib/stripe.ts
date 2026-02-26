@@ -4,9 +4,9 @@ if (!process.env.STRIPE_SECRET_KEY) {
   console.warn('Stripe secret key not configured — payments disabled');
 }
 
-const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2026-02-25.clover' })
-  : (null as any);
+const stripe: Stripe | null = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2025-12-18.acacia' as Stripe.LatestApiVersion })
+  : null;
 
 export default stripe;
 
