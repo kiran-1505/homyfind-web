@@ -28,6 +28,7 @@ export interface PGAdvertisement {
   availableRooms: number;
   availableFrom: string;
   verified: boolean;
+  verificationPlan: 'free' | 'verified' | 'premium';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,12 +36,13 @@ export interface PGAdvertisement {
 /**
  * Add a new PG advertisement to Firebase
  */
-export async function addPGAdvertisement(pgData: Omit<PGAdvertisement, 'id' | 'createdAt' | 'updatedAt' | 'verified' | 'cityLower'>): Promise<string> {
+export async function addPGAdvertisement(pgData: Omit<PGAdvertisement, 'id' | 'createdAt' | 'updatedAt' | 'verified' | 'verificationPlan' | 'cityLower'>): Promise<string> {
   try {
     const advertisementData = {
       ...pgData,
       cityLower: pgData.city.toLowerCase().trim(),
       verified: false,
+      verificationPlan: 'free' as const,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
@@ -99,6 +101,7 @@ export async function searchPGAdvertisements(city: string): Promise<PGAdvertisem
         availableRooms: data.availableRooms,
         availableFrom: data.availableFrom,
         verified: data.verified || false,
+        verificationPlan: data.verificationPlan || (data.verified ? 'verified' : 'free'),
         createdAt: data.createdAt?.toDate() || new Date(),
         updatedAt: data.updatedAt?.toDate() || new Date(),
       });
@@ -138,6 +141,7 @@ export async function searchPGAdvertisements(city: string): Promise<PGAdvertisem
           availableRooms: data.availableRooms,
           availableFrom: data.availableFrom,
           verified: data.verified || false,
+          verificationPlan: data.verificationPlan || (data.verified ? 'verified' : 'free'),
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
         });
@@ -187,6 +191,7 @@ export async function getAllPGAdvertisements(): Promise<PGAdvertisement[]> {
         availableRooms: data.availableRooms,
         availableFrom: data.availableFrom,
         verified: data.verified || false,
+        verificationPlan: data.verificationPlan || (data.verified ? 'verified' : 'free'),
         createdAt: data.createdAt?.toDate() || new Date(),
         updatedAt: data.updatedAt?.toDate() || new Date(),
       });

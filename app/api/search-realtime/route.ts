@@ -51,6 +51,16 @@ export async function GET(request: NextRequest) {
     // Combine Firebase + Google Maps listings
     if (firebaseListings.length > 0 || googleMapsListings.length > 0) {
       const allListings = [...firebaseListings, ...googleMapsListings];
+
+      // Sort: premium first, then verified, then free listings
+      const planRank: Record<string, number> = { premium: 0, verified: 1, free: 2 };
+      allListings.sort((a, b) => {
+        const rankA = planRank[a.verificationPlan] ?? 2;
+        const rankB = planRank[b.verificationPlan] ?? 2;
+        if (rankA !== rankB) return rankA - rankB;
+        return (b.rating || 0) - (a.rating || 0);
+      });
+
       const timeMs = Date.now() - startTime;
       console.log(`Search completed in ${(timeMs / 1000).toFixed(2)}s - ${allListings.length} total listings`);
 

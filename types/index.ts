@@ -1,3 +1,5 @@
+export type VerificationPlan = 'free' | 'verified' | 'premium';
+
 export interface PGListing {
   id: string;
   pgName: string;
@@ -23,6 +25,7 @@ export interface PGListing {
   ownerPhone: string;
   ownerEmail: string;
   verified: boolean;
+  verificationPlan: VerificationPlan;
   rating: number;
   reviewCount: number;
   createdAt: Date | string;

@@ -33,6 +33,7 @@ export function generateMockData(location: string, count: number): PGListing[] {
       ownerPhone: `+91 98765${43210 + i}`,
       ownerEmail: `owner${i}@example.com`,
       verified: i % 3 !== 0,
+      verificationPlan: i % 7 === 0 ? 'premium' : i % 3 !== 0 ? 'verified' : 'free',
       rating: +(Math.random() * 2 + 3).toFixed(1),
       reviewCount: Math.floor(Math.random() * 50) + 5,
       createdAt: new Date(),

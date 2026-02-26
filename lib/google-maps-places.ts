@@ -130,6 +130,7 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
         ownerPhone: '',
         ownerEmail: '',
         verified: true,
+        verificationPlan: 'free' as const,
         rating: place.rating || 4.0,
         reviewCount: place.user_ratings_total || 10,
         createdAt: new Date(),

@@ -1,6 +1,6 @@
 # 🏠 HomyFind - Find Your Perfect PG
 
-> A modern, real-time PG (Paying Guest) accommodation search platform built with Next.js, Firebase, and Google Maps API.
+> A modern, real-time PG (Paying Guest) accommodation search platform built with Next.js, Firebase, and Google Maps API. Multi-language support for Indian languages.
 
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
@@ -9,29 +9,37 @@
 
 ## ✨ Features
 
+### 🌐 Multi-Language (i18n)
+- **6 Indian languages** – English, Hindi (हिंदी), Kannada (ಕನ್ನಡ), Telugu (తెలుగు), Tamil (தமிழ்), Malayalam (മലയാളം)
+- **next-intl** – Locale routing with `as-needed` prefix (default English has no URL prefix)
+- **Language switcher** – In-header dropdown to change language
+- **Translated UI** – All labels, filters, forms, and messages in `messages/*.json`
+
 ### 🔍 Smart Search
-- **Real-time Google Maps Integration** - Fetch live PG listings from Google Maps
-- **Firebase Firestore Storage** - User-submitted PG advertisements
-- **Advanced Filtering** - Filter by rent, sharing type, gender, food inclusion
-- **Pagination** - Browse through unlimited listings (21 per page)
+- **Real-time Google Maps Integration** – Fetch live PG listings from Google Maps
+- **Firebase Firestore Storage** – User-submitted PG advertisements
+- **Advanced Filtering** – Filter by rent, sharing type, gender, food inclusion
+- **Pagination** – Browse through unlimited listings (21 per page, configurable in `constants`)
 
 ### 🏠 Listing Management
-- **Detailed PG Pages** - Photo galleries, amenities, contact details, Google Maps links
-- **Add Advertisement** - PG owners can list their properties
-- **Verified Listings** - Trust badges for verified properties
-- **Real-time Updates** - Instant synchronization across all users
+- **Detailed PG Pages** – Photo galleries (carousel), amenities, contact details, Google Maps links
+- **Add Advertisement** – Multi-step form (PG Details → Location → Pricing → Amenities) with Zod validation
+- **Verified Listings** – Trust badges for verified properties
+- **Real-time Updates** – Instant synchronization across all users
 
 ### 🎨 Modern UI/UX
-- **Responsive Design** - Works perfectly on mobile, tablet, and desktop
-- **Beautiful Cards** - Professional listing cards with images and details
-- **Smooth Animations** - Engaging hover effects and transitions
-- **Dark Mode Ready** - Clean, modern interface
+- **Responsive Design** – Works on mobile, tablet, and desktop (with mobile menu)
+- **Listing Cards** – Image carousel, ratings, sharing/food badges, “View Details”
+- **Smooth Animations** – Hover effects and transitions
+- **Loading & Error States** – Dedicated loading and error boundaries
 
 ### 🔐 Security & Performance
-- **Firebase Security Rules** - Protected data access
-- **Type Safety** - Full TypeScript implementation
-- **Optimized Images** - Fast loading with Next.js Image optimization
-- **SEO Friendly** - Meta tags and sitemap for better visibility
+- **API Rate Limiting** – 60 requests per minute per IP on `/api/*` (middleware)
+- **Zod Validation** – Request validation for add-listing and search query
+- **Firebase Security Rules** – Protected data access
+- **Type Safety** – Full TypeScript and shared types
+- **Next.js Image** – Optimized images; allowed domains in `next.config.js`
+- **SEO** – Meta tags and locale-aware layout
 
 ---
 
@@ -46,7 +54,8 @@
 ### 1. Clone & Install
 
 ```bash
-cd /Users/kiranbk/HomyFind-Web
+git clone <your-repo-url>
+cd HomyFind-Web
 npm install
 ```
 
@@ -73,11 +82,11 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ### 3. Set Up Firebase
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select existing: `homyfind-app`
+2. Create a new project or select existing (e.g. `homyfind-app`)
 3. Enable **Firestore Database**:
    - Click "Create Database"
    - Choose location: `us-central1` or `asia-southeast1`
-   - Start in **test mode** (for development)
+   - Start in **test mode** for development
 
 4. Set up **Firestore Security Rules**:
 
@@ -85,10 +94,9 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // PG Advertisements - Open for development
     match /pg_advertisements/{adId} {
       allow read: if true;
-      allow write: if true; // Change to require auth in production
+      allow write: if true; // Restrict with auth in production
     }
   }
 }
@@ -97,16 +105,12 @@ service cloud.firestore {
 ### 4. Set Up Google Maps API
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create/select project
-3. Enable these APIs:
-   - **Places API (New)**
-   - **Places API**
-   - **Maps JavaScript API**
-4. Create API Key in Credentials
-5. Restrict API key to only enabled APIs
-6. Add key to `.env.local`
+2. Create or select a project
+3. Enable: **Places API (New)**, **Places API**, **Maps JavaScript API**
+4. Create an API key under Credentials and restrict it to these APIs
+5. Add the key to `.env.local`
 
-**Cost:** $200 FREE credit/month = ~4,000 searches FREE! 🎉
+**Cost:** $200 free credit/month ≈ thousands of searches at no cost.
 
 ### 5. Run Development Server
 
@@ -114,7 +118,7 @@ service cloud.firestore {
 npm run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser. If port 3000 is in use, Next.js will use 3001.
 
 ---
 
@@ -123,124 +127,127 @@ Open [http://localhost:3001](http://localhost:3001) in your browser.
 ```
 HomyFind-Web/
 ├── app/
-│   ├── page.tsx                    # Home page with search & listings
-│   ├── layout.tsx                  # Root layout with metadata
-│   ├── add-listing/
-│   │   └── page.tsx               # PG advertisement form
-│   ├── listing/[id]/
-│   │   └── page.tsx               # Individual PG detail page
+│   ├── layout.tsx                    # Root layout (globals.css only)
+│   ├── [locale]/                      # Locale-based routes (i18n)
+│   │   ├── layout.tsx                 # Locale layout, metadata, NextIntlClientProvider
+│   │   ├── page.tsx                   # Home: search, filters, listing grid, pagination
+│   │   ├── loading.tsx                # Loading UI
+│   │   ├── not-found.tsx              # 404 page
+│   │   ├── error.tsx                  # Error boundary
+│   │   ├── add-listing/
+│   │   │   └── page.tsx               # Multi-step add PG form
+│   │   └── listing/[id]/
+│   │       └── page.tsx               # PG detail page (gallery, amenities, contact)
 │   └── api/
 │       ├── search-realtime/
-│       │   └── route.ts           # Search API (Firebase + Google Maps)
+│       │   └── route.ts               # Search: Firestore + Google Maps + fallback
 │       ├── add-advertisement/
-│       │   └── route.ts           # Add PG listing API
+│       │   └── route.ts               # POST add listing (Zod-validated)
 │       └── listing/[id]/
-│           └── route.ts           # Get listing details API
+│           └── route.ts               # GET single listing
 ├── components/
-│   ├── PGCard.tsx                 # PG listing card component
-│   └── SearchFilters.tsx          # Search and filter component
+│   ├── PGCard.tsx                     # Listing card with carousel
+│   ├── SearchFilters.tsx              # Search + filters (rent, sharing, gender, food)
+│   └── LanguageSwitcher.tsx           # Locale dropdown
+├── hooks/
+│   └── useImageCarousel.ts            # Image carousel state
+├── i18n/
+│   ├── routing.ts                     # Locales: en, hi, kn, te, ta, ml
+│   ├── request.ts                     # next-intl request config (loads messages)
+│   └── navigation.ts                  # Link, useRouter, usePathname (locale-aware)
+├── messages/                          # JSON translation files
+│   ├── en.json
+│   ├── hi.json
+│   ├── kn.json
+│   ├── te.json
+│   ├── ta.json
+│   └── ml.json
 ├── lib/
-│   ├── firebase.ts                # Firebase configuration
-│   ├── firestore.ts               # Firestore database functions
-│   ├── google-maps-places.ts     # Google Maps API integration
-│   └── skyscanner-approach.ts    # Web scraping fallback
+│   ├── firebase.ts                    # Firebase app, auth, firestore, storage, analytics
+│   ├── firestore.ts                   # Firestore: add/search PG ads
+│   ├── google-maps-places.ts          # Google Maps Places API + cache
+│   ├── skyscanner-approach.ts        # Fallback aggregated/mock data
+│   └── validations.ts                 # Zod: addListingSchema, searchQuerySchema
+├── utils/
+│   ├── index.ts                       # safeParseJSON, safeSetLocalStorage, formatINR
+│   ├── transformers.ts                # firebaseAdToPGListing, externalToPGListing
+│   └── mock-data.ts                   # generateMockData for fallback
+├── constants/
+│   └── index.ts                       # LISTINGS_PER_PAGE, amenities, rent brackets, cities, etc.
 ├── types/
-│   └── index.ts                   # TypeScript interfaces
-├── public/
-│   └── HomyFind-logo.png          # Logo image
-├── .env.local                     # Environment variables (create this)
+│   └── index.ts                       # PGListing, SearchFilters, ApiResponse, ExternalPGListing
+├── middleware.ts                      # next-intl + API rate limiting (60/min)
+├── next.config.js                     # next-intl plugin, image domains
 ├── package.json
-├── next.config.js
 ├── tailwind.config.js
 └── tsconfig.json
 ```
 
 ---
 
-## 🎯 Key Features Breakdown
+## 🎯 Key Features in Code
 
-### Smart Search Algorithm
+### Search Pipeline
 
-The search prioritizes data sources in this order:
+1. **Firebase Firestore** – User-submitted PG advertisements (by city)
+2. **Google Maps Places API** – Real-time PG listings (with TTL cache)
+3. **Fallback** – Aggregated/mock data when APIs fail or are unavailable
 
-1. **Firebase Firestore** - User-submitted PG advertisements
-2. **Google Maps Places API** - Real-time PG listings from Google Maps
-3. **Web Scraping Fallback** - Quality mock data if APIs unavailable
+### Pagination
 
-### Pagination System
-
-- **21 listings per page**
-- Previous/Next navigation buttons
-- Clickable page numbers
-- Shows "X - Y of Z" counter
-- Auto-scroll to top on page change
+- **21 listings per page** (set in `constants/index.ts`: `LISTINGS_PER_PAGE`)
+- Previous/Next and page numbers; “X–Y of Z” counter; scroll to top on change
 
 ### PG Detail Page
 
-When users click "View Details":
-- **Photo Gallery** with carousel and thumbnails
-- **Complete Information** - Name, rating, description, amenities, rules
-- **Pricing Details** - Rent, deposit, sharing type, food inclusion
-- **Contact Information** - Owner name, phone, email
-- **Google Maps Link** - Direct link to location
+- **Photo carousel** (hooks/useImageCarousel) with thumbnails
+- Full info: name, rating, description, amenities, rules, rent, deposit, sharing, food
+- Contact: owner name, phone, email
+- Google Maps link
 
-### Add Advertisement Feature
+### Add Advertisement
 
-PG owners can submit listings with:
-- PG name and description
-- Owner contact details
-- Full address with city, state, pincode
-- Pricing (rent, deposit, sharing type)
-- Amenities selection (WiFi, AC, parking, etc.)
-- House rules
-- Room availability
-- Gender preference & food options
+- **Multi-step form**: PG Details → Location → Pricing → Amenities
+- **Zod** validation in `lib/validations.ts`; API uses `addListingSchema.safeParse()`
+- Fields: name, description, owner contact, address, city, state, pincode, rent, deposit, sharing, amenities, rules, rooms, gender, food, availability
+
+### Locales & Routing
+
+- **Locales**: `en` (default), `hi`, `kn`, `te`, `ta`, `ml`
+- **Prefix**: `as-needed` (e.g. `/` for English, `/hi` for Hindi)
+- **Middleware**: next-intl for locale detection; `/api/*` gets rate limiting only (no locale)
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| **Next.js 14** | React framework with App Router |
-| **TypeScript** | Type-safe development |
+| Technology   | Purpose |
+|-------------|---------|
+| **Next.js 14** | App Router, API routes, SSR |
+| **TypeScript** | Type-safe code and shared types |
 | **Tailwind CSS** | Utility-first styling |
-| **Firebase Firestore** | NoSQL database for user listings |
-| **Google Maps API** | Real-time PG data |
-| **Lucide React** | Beautiful icon library |
-| **Vercel** | Hosting & deployment |
+| **next-intl** | i18n routing and translations |
+| **Zod** | Request validation (add listing, search) |
+| **Firebase Firestore** | User-submitted PG listings |
+| **Google Maps API** | Places and PG data |
+| **Lucide React** | Icons |
+| **Vercel** | Hosting (optional) |
 
 ---
 
 ## 🚀 Deployment
 
-### Deploy to Vercel (Recommended)
+### Vercel (Recommended)
 
-1. **Install Vercel CLI**:
-```bash
-npm install -g vercel
-```
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run `vercel` and link the project
+3. In Vercel Dashboard → Project Settings → Environment Variables, add all keys from `.env.local`
+4. Deploy: `vercel --prod`
 
-2. **Deploy**:
-```bash
-vercel
-```
-
-3. **Set Environment Variables** in Vercel Dashboard:
-   - Go to Project Settings → Environment Variables
-   - Add all variables from `.env.local`
-
-4. **Deploy to Production**:
-```bash
-vercel --prod
-```
-
-Your site will be live at: `https://homyfind-web.vercel.app`
-
-### Deploy to Firebase Hosting
+### Firebase Hosting
 
 ```bash
-npm install -g firebase-tools
+npm i -g firebase-tools
 firebase login
 firebase init hosting
 npm run build
@@ -249,158 +256,123 @@ firebase deploy
 
 ---
 
-## 💰 Cost Breakdown
-
-### Free Tier Limits
-
-| Service | Free Tier | Your Usage | Cost |
-|---------|-----------|------------|------|
-| **Vercel** | 100GB bandwidth/month | ~5GB | **$0** |
-| **Firebase Firestore** | 50K reads, 20K writes/day | ~1K operations | **$0** |
-| **Google Maps API** | $200 credit/month | ~$100 usage | **$0** |
-| **Firebase Storage** | 5GB storage, 1GB/day download | ~100MB | **$0** |
-| **Total** | | | **$0/month** ✅ |
-
-Perfect for launching your startup! 🚀
-
----
-
 ## 📱 API Endpoints
 
 ### Search PGs
+
 ```
 GET /api/search-realtime?location=Bangalore
 ```
 
-**Response:**
+Query validated with `searchQuerySchema` (location required). Response shape:
+
 ```json
 {
   "success": true,
   "data": [...listings],
   "count": 60,
   "source": "google-maps-places-api",
-  "isRealData": true
+  "isRealData": true,
+  "message": "..."
 }
 ```
 
 ### Add Advertisement
+
 ```
 POST /api/add-advertisement
 Content-Type: application/json
+```
 
+Body validated with `addListingSchema` (Zod). Example fields:
+
+```json
 {
   "pgName": "Sunshine PG",
   "ownerName": "John Doe",
-  "ownerPhone": "+91 98765 43210",
+  "ownerPhone": "9876543210",
+  "ownerEmail": "john@example.com",
+  "address": "...",
   "city": "Bangalore",
+  "state": "Karnataka",
+  "pincode": "560001",
+  "sharingOption": 2,
   "rent": 8000,
-  ...
+  "securityDeposit": 10000,
+  "foodIncluded": false,
+  "preferredGender": "Any",
+  "amenities": ["WiFi", "AC"],
+  "rules": [],
+  "description": "...",
+  "images": [],
+  "totalRooms": 10,
+  "availableRooms": 3,
+  "availableFrom": "2025-03-01"
 }
 ```
+
+### Get Listing by ID
+
+```
+GET /api/listing/[id]
+```
+
+Returns a single PG listing (Firestore or Google Place details when applicable).
 
 ---
 
 ## 🔧 Development Commands
 
 ```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Type checking
-npm run type-check
-
-# Deploy to Vercel
-vercel --prod
+npm install          # Install dependencies
+npm run dev          # Development server (default port 3000)
+npm run build        # Production build
+npm start            # Production server
+npm run lint         # ESLint
 ```
 
 ---
 
 ## 🎨 Customization
 
-### Change Pagination Limit
+### Pagination
 
-Edit `app/page.tsx`:
+Edit `constants/index.ts`:
+
 ```typescript
-const LISTINGS_PER_PAGE = 21; // Change to any number
+export const LISTINGS_PER_PAGE = 21; // Change as needed
 ```
 
-### Update Theme Colors
+### Theme (Tailwind)
 
-Edit `tailwind.config.js`:
-```javascript
-theme: {
-  extend: {
-    colors: {
-      primary: '#0066FF', // Your brand color
-    }
-  }
-}
-```
+Edit `tailwind.config.js` and extend `theme.colors` (e.g. `primary`).
 
-### Add New Amenities
+### Amenities
 
-Edit `app/add-listing/page.tsx`:
-```typescript
-const amenitiesList = [
-  'WiFi', 'AC', 'TV', 'Washing Machine',
-  'Your New Amenity', // Add here
-];
-```
+Edit `constants/index.ts`: `AMENITIES_LIST` and, for translations, `AMENITY_KEYS` and the `messages/*.json` files.
+
+### New Locale
+
+1. Add locale in `i18n/routing.ts` to `locales`.
+2. Add `messages/<locale>.json` (copy from `en.json` and translate).
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Google Maps returns no results
-- Check API key is correct in `.env.local`
-- Verify APIs are enabled in Google Cloud Console
-- Wait 5-10 minutes after creating key for propagation
-
-### Firebase permission denied
-- Check Firestore security rules allow read/write
-- Verify Firebase config in `.env.local`
-- Make sure Firestore is initialized in project
-
-### Listings show ₹0
-- Data transformation might be incorrect
-- Check browser console for errors
-- Verify API response structure
-
-### Port 3000 already in use
-- Next.js will automatically try port 3001
-- Or manually kill process: `lsof -ti:3000 | xargs kill`
+- **Google Maps returns no results** – Check API key in `.env.local`, enable required APIs in Google Cloud, allow a few minutes after creating the key.
+- **Firebase permission denied** – Check Firestore rules and Firebase config in `.env.local`.
+- **429 Too Many Requests** – API rate limit is 60 requests/minute per IP; wait and retry.
+- **Listings show ₹0** – Check API response shape and `utils/transformers.ts` mapping.
+- **Port in use** – Next.js may use 3001 if 3000 is busy, or stop the process using the port.
 
 ---
 
-## 🔐 Security Best Practices
+## 🔐 Security (Production)
 
-### For Production:
-
-1. **Update Firestore Rules**:
-```javascript
-match /pg_advertisements/{adId} {
-  allow read: if true;
-  allow create: if request.auth != null; // Require login
-  allow update, delete: if request.auth.uid == resource.data.ownerId;
-}
-```
-
-2. **Restrict Google Maps API**:
-   - Add HTTP referrer restrictions
-   - Limit to your domain only
-
-3. **Environment Variables**:
-   - Never commit `.env.local` to git
-   - Use Vercel's environment variables
+1. **Firestore**: Require auth for create/update/delete; keep read rules as needed.
+2. **Google Maps API**: Restrict key by HTTP referrer and APIs.
+3. **Secrets**: Never commit `.env.local`; use platform env vars (e.g. Vercel).
 
 ---
 
@@ -412,19 +384,16 @@ match /pg_advertisements/{adId} {
 - [ ] Booking system
 - [ ] Payment integration
 - [ ] Email notifications
-- [ ] Reviews and ratings system
+- [ ] Reviews and ratings
 - [ ] Chat between users and owners
-- [ ] Advanced search with maps
-- [ ] Mobile app (React Native)
+- [ ] Map-based search
+- [ ] Mobile app (e.g. React Native)
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest new features
-- Submit pull requests
+Contributions are welcome: bug reports, feature ideas, and pull requests.
 
 ---
 
@@ -436,36 +405,16 @@ This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- [Next.js](https://nextjs.org/) for the amazing React framework
-- [Firebase](https://firebase.google.com/) for backend infrastructure
-- [Google Maps](https://developers.google.com/maps) for location services
-- [Tailwind CSS](https://tailwindcss.com/) for beautiful styling
-- [Lucide](https://lucide.dev/) for icon library
-
----
-
-## 📞 Support
-
-Need help? Contact:
-- **Email**: support@homyfind.com
-- **GitHub**: [Open an issue](https://github.com/yourusername/homyfind-web/issues)
+- [Next.js](https://nextjs.org/)
+- [next-intl](https://next-intl-docs.vercel.app/)
+- [Firebase](https://firebase.google.com/)
+- [Google Maps](https://developers.google.com/maps)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Lucide](https://lucide.dev/)
+- [Zod](https://zod.dev/)
 
 ---
 
 **Built with ❤️ by the HomyFind Team**
 
 🌐 **Live Demo**: [https://homyfind-web.vercel.app](https://homyfind-web.vercel.app)
-
----
-
-## 🎯 Quick Setup Checklist
-
-- [ ] Clone repository
-- [ ] Run `npm install`
-- [ ] Create `.env.local` with Firebase & Google Maps credentials
-- [ ] Set up Firestore database
-- [ ] Enable Google Maps APIs
-- [ ] Run `npm run dev`
-- [ ] Test search functionality
-- [ ] Deploy to Vercel
-- [ ] Share with users! 🎉
