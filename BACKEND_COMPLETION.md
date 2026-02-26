@@ -4,60 +4,87 @@
 
 | Feature | Status | Where |
 |---------|--------|-------|
-| Firebase Firestore (database) | Working | `lib/firebase.ts`, `lib/firestore.ts` |
-| Add PG listing API | Working | `app/api/add-advertisement/route.ts` |
-| Search PG listings API | Working | `app/api/search-realtime/route.ts` |
-| Google Maps Places API | Working | `lib/google-maps-places.ts` |
-| Input validation (Zod) | Working | `lib/validations.ts` |
-| Rate limiting middleware | Working | `middleware.ts` |
-| Multi-language routing | Working | `i18n/` directory |
-| Verified/Premium listing ranking | Working | Search API sorts by plan |
+| Firebase Firestore (database) | ✅ Done | `lib/firebase.ts`, `lib/firestore.ts` |
+| Add PG listing API | ✅ Done | `app/api/add-advertisement/route.ts` |
+| Search PG listings API | ✅ Done | `app/api/search-realtime/route.ts` |
+| Google Maps Places API | ✅ Done | `lib/google-maps-places.ts` |
+| Input validation (Zod) | ✅ Done | `lib/validations.ts` |
+| Rate limiting middleware | ✅ Done | `middleware.ts` |
+| Multi-language routing (6 langs) | ✅ Done | `i18n/` directory |
+| Verified/Premium listing ranking | ✅ Done | Search API sorts by plan |
+| Stripe + UPI payment APIs | ✅ Done | `app/api/create-checkout/`, `app/api/webhook/` |
+| Payment success/cancelled pages | ✅ Done | `app/[locale]/payment-success/`, `payment-cancelled/` |
+| Update listing function | ✅ Done | `lib/firestore.ts` → `updatePGAdvertisement()` |
+| Firestore security rules | ✅ Done | Firebase Console |
+| Firebase Auth enabled | ✅ Done | Email + Phone + Google sign-in |
+| Firebase Storage rules | ✅ Done | 5MB image limit, auth required |
 
-**Your backend is ~70% complete.** The core listing and search flow works. Here's what's missing for a production-ready monetized platform.
+**Your backend is ~85% complete.** Here's what's left to build.
 
 ---
 
-## What's Missing (Priority Order)
+## What's Left To Do (Next Week)
 
-### Priority 1: User Authentication (PG Owners)
-**Why**: PG owners need to log in to manage their listings and pay for verification.
+### Step 1: Set Up Stripe Account (30 minutes)
 
-**What to build:**
-- Firebase Authentication (already included in your Firebase setup)
-- Sign up / Login pages for PG owners
-- Owner dashboard to manage their listings
+1. Go to **https://dashboard.stripe.com/register**
+2. Sign up with your email
+3. Complete KYC:
+   - PAN card number
+   - Bank account details (for receiving payments)
+   - Business name: "HomyFind" (individual/sole proprietorship is fine)
+4. Once approved, go to **Developers → API Keys** and copy:
+   - `Publishable key` → This is `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+   - `Secret key` → This is `STRIPE_SECRET_KEY`
+5. Go to **Developers → Webhooks → Add endpoint**:
+   - URL: `https://YOUR_DOMAIN/api/webhook`
+   - Events: Select `checkout.session.completed` and `customer.subscription.deleted`
+   - Copy the webhook signing secret → This is `STRIPE_WEBHOOK_SECRET`
+6. Add all 3 keys to **Vercel** (Settings → Environment Variables):
+   ```
+   STRIPE_SECRET_KEY=sk_live_xxxxx
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
+   STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+   ```
+7. Also add to your local `.env.local` (use test keys for development):
+   ```
+   STRIPE_SECRET_KEY=sk_test_xxxxx
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
+   STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+   ```
 
-**Steps:**
+**Payment methods automatically available:** UPI, Cards (Visa/Mastercard/RuPay), Netbanking, Wallets
+**Stripe fee:** 2% per transaction. No setup fee. No monthly fee.
 
-1. **Enable Firebase Auth** — Go to Firebase Console → Authentication → Sign-in method → Enable "Phone" and "Email/Password"
+### Step 2: Build Login/Signup Page (1-2 hours)
 
-2. **Create auth utility** — `lib/auth.ts`:
+Create `lib/auth.ts`:
 ```typescript
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { app } from './firebase';
-
-const auth = getAuth(app);
+import { getFirebaseAuth } from './firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
 
 export async function signUp(email: string, password: string) {
+  const auth = getFirebaseAuth();
   return createUserWithEmailAndPassword(auth, email, password);
 }
 
 export async function signIn(email: string, password: string) {
+  const auth = getFirebaseAuth();
   return signInWithEmailAndPassword(auth, email, password);
 }
 
 export async function logOut() {
+  const auth = getFirebaseAuth();
   return signOut(auth);
 }
 
 export function onAuthChange(callback: (user: User | null) => void) {
+  const auth = getFirebaseAuth();
   return onAuthStateChanged(auth, callback);
 }
-
-export { auth };
 ```
 
-3. **Create auth context** — `contexts/AuthContext.tsx`:
+Create `contexts/AuthContext.tsx`:
 ```typescript
 'use client';
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
@@ -93,29 +120,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export const useAuth = () => useContext(AuthContext);
 ```
 
-4. **Create login/signup page** — `app/[locale]/auth/page.tsx`
-   - Simple email + password form
-   - Link to from "List Your PG" button
-   - After login, redirect to add-listing page
+Create login page at `app/[locale]/auth/page.tsx`:
+- Email + password form
+- Toggle between Sign Up and Sign In
+- Redirect to add-listing or dashboard after login
 
-5. **Protect add-listing page** — Check if user is logged in before allowing form submission
+### Step 3: Build Owner Dashboard (2-3 hours)
 
-### Priority 2: Owner Dashboard
-**Why**: PG owners need to see and manage their listings.
+Create `app/[locale]/dashboard/page.tsx`:
+- Show all listings owned by the logged-in user
+- Each listing card shows: name, city, current plan, edit/upgrade buttons
+- "Upgrade to Verified" and "Upgrade to Premium" buttons trigger Stripe checkout
 
-**What to build:**
-- Dashboard page showing owner's listings
-- Edit/delete listing functionality
-- View enquiry count per listing
-
-**Steps:**
-
-1. **Create dashboard page** — `app/[locale]/dashboard/page.tsx`
-2. **Add Firestore query** — Get listings where `ownerId == currentUser.uid`
-3. **Add edit functionality** — Update existing Firestore document
-4. **Add delete functionality** — Soft-delete (set `active: false`) rather than hard-delete
-
-**Firestore function to add in `lib/firestore.ts`:**
+Add to `lib/firestore.ts`:
 ```typescript
 export async function getOwnerListings(ownerId: string): Promise<PGAdvertisement[]> {
   const q = query(
@@ -123,241 +140,158 @@ export async function getOwnerListings(ownerId: string): Promise<PGAdvertisement
     where('ownerId', '==', ownerId)
   );
   const snapshot = await getDocs(q);
-  // ... map documents same as searchPGAdvertisements
-}
-
-export async function updatePGAdvertisement(id: string, data: Partial<PGAdvertisement>): Promise<void> {
-  const docRef = doc(db, 'pg_advertisements', id);
-  await updateDoc(docRef, { ...data, updatedAt: Timestamp.now() });
+  // Map documents same as searchPGAdvertisements
 }
 ```
 
-### Priority 3: Payment Integration (For Verified/Premium Plans)
-**Why**: This is your primary revenue source — PG owners pay for better visibility.
+### Step 4: Add Image Upload (1-2 hours)
 
-**Cheapest option: Razorpay** (Free to set up, 2% per transaction)
-
-**Steps:**
-
-1. **Sign up at** https://razorpay.com (free, instant activation for Indian businesses)
-
-2. **Install Razorpay**:
-```bash
-npm install razorpay
-```
-
-3. **Create payment API** — `app/api/create-order/route.ts`:
+Create `lib/storage.ts`:
 ```typescript
-import Razorpay from 'razorpay';
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
-
-export async function POST(request: Request) {
-  const { plan, listingId } = await request.json();
-
-  const amount = plan === 'premium' ? 59900 : 29900; // paise (₹599 or ₹299)
-
-  const order = await razorpay.orders.create({
-    amount,
-    currency: 'INR',
-    receipt: `order_${listingId}_${Date.now()}`,
-    notes: { listingId, plan },
-  });
-
-  return Response.json({ orderId: order.id, amount });
-}
-```
-
-4. **Create payment verification API** — `app/api/verify-payment/route.ts`:
-```typescript
-import crypto from 'crypto';
-
-export async function POST(request: Request) {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, listingId, plan } = await request.json();
-
-  const body = razorpay_order_id + '|' + razorpay_payment_id;
-  const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
-    .update(body)
-    .digest('hex');
-
-  if (expectedSignature === razorpay_signature) {
-    // Payment verified — update listing in Firestore
-    const { updatePGAdvertisement } = await import('@/lib/firestore');
-    await updatePGAdvertisement(listingId, {
-      verified: true,
-      verificationPlan: plan,
-    });
-    return Response.json({ success: true });
-  }
-
-  return Response.json({ success: false, error: 'Invalid signature' }, { status: 400 });
-}
-```
-
-5. **Add Razorpay checkout button** on the owner dashboard:
-```typescript
-// Load Razorpay script in your component
-const handlePayment = async (plan: 'verified' | 'premium') => {
-  const res = await fetch('/api/create-order', {
-    method: 'POST',
-    body: JSON.stringify({ plan, listingId }),
-  });
-  const { orderId, amount } = await res.json();
-
-  const options = {
-    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-    amount,
-    currency: 'INR',
-    name: 'HomyFind',
-    description: `${plan} Plan - Monthly`,
-    order_id: orderId,
-    handler: async (response) => {
-      await fetch('/api/verify-payment', {
-        method: 'POST',
-        body: JSON.stringify({
-          ...response,
-          listingId,
-          plan,
-        }),
-      });
-      // Refresh dashboard
-    },
-  };
-
-  const rzp = new (window as any).Razorpay(options);
-  rzp.open();
-};
-```
-
-6. **Add to `.env.local`:**
-```
-RAZORPAY_KEY_ID=rzp_test_xxxxx
-RAZORPAY_KEY_SECRET=xxxxx
-NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_xxxxx
-```
-
-### Priority 4: Admin Panel
-**Why**: You need to manage listings, verify PG owners, and track revenue.
-
-**Cheapest option**: Use Firebase Console directly for now. Build admin panel later.
-
-**Quick admin tasks via Firebase Console:**
-- View all listings: Firestore → `pg_advertisements` collection
-- Manually verify a PG: Edit document → set `verified: true`, `verificationPlan: 'verified'`
-- Delete spam listings: Delete document directly
-- View users: Authentication → Users tab
-
-**Later (when you have 100+ listings):**
-- Build `/admin` page with password protection
-- Add listing approval workflow
-- Add revenue dashboard
-
-### Priority 5: Image Upload
-**Why**: Currently images are URL-based. PG owners need to upload photos.
-
-**Use Firebase Storage** (5GB free on Spark plan):
-
-```typescript
-// lib/storage.ts
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { app } from './firebase';
-
-const storage = getStorage(app);
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from './firebase';
 
 export async function uploadPGImage(file: File, listingId: string): Promise<string> {
-  const storageRef = ref(storage, `pg-images/${listingId}/${file.name}`);
+  const storageRef = ref(storage, `pg-images/${listingId}/${Date.now()}-${file.name}`);
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
 }
 ```
 
-### Priority 6: Google AdSense Integration
-**Why**: Passive income from ad impressions and clicks.
+Add file input to the add-listing form (Step 3 — Amenities section).
 
-**Steps:**
-1. Sign up at https://adsense.google.com
-2. Get your AdSense publisher ID (ca-pub-XXXXX)
-3. Add the AdSense script to `app/layout.tsx`:
-```html
-<Script
-  async
-  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXX"
-  crossOrigin="anonymous"
-  strategy="afterInteractive"
-/>
-```
-4. Create an AdBanner component for placing ads between listings
+### Step 5: Create Static Pages for AdSense (1 hour)
 
----
+These pages are required for Google AdSense approval:
 
-## Required Pages You Still Need to Build
-
-| Page | Route | Purpose |
+| Page | Route | Content |
 |------|-------|---------|
-| Login/Signup | `/auth` | PG owner authentication |
-| Owner Dashboard | `/dashboard` | Manage listings, upgrade plan |
-| About Us | `/about` | Required for AdSense approval |
-| Privacy Policy | `/privacy` | Required for AdSense approval |
-| Contact Us | `/contact` | Required for AdSense approval |
-| Terms of Service | `/terms` | Legal protection |
+| About Us | `/about` | What HomyFind is, your mission |
+| Privacy Policy | `/privacy` | Data collection, cookies |
+| Contact Us | `/contact` | Email, phone, form |
+| Terms of Service | `/terms` | Usage rules |
+
+### Step 6: Apply for Google AdSense (10 minutes)
+
+1. Go to https://adsense.google.com
+2. Submit your website URL
+3. Wait 1-2 weeks for approval
+4. Once approved, create ad units and add to your pages
 
 ---
 
-## Environment Variables to Add
+## Current Project File Structure
+
+```
+HomyFind-Web/
+├── app/
+│   ├── [locale]/
+│   │   ├── page.tsx                    ✅ Home page
+│   │   ├── add-listing/page.tsx        ✅ Add PG form
+│   │   ├── listing/[id]/page.tsx       ✅ PG detail page
+│   │   ├── payment-success/page.tsx    ✅ Payment success
+│   │   ├── payment-cancelled/page.tsx  ✅ Payment cancelled
+│   │   ├── auth/page.tsx               ❌ TODO: Login/Signup
+│   │   ├── dashboard/page.tsx          ❌ TODO: Owner dashboard
+│   │   ├── about/page.tsx              ❌ TODO: About page
+│   │   ├── privacy/page.tsx            ❌ TODO: Privacy policy
+│   │   ├── contact/page.tsx            ❌ TODO: Contact page
+│   │   └── terms/page.tsx              ❌ TODO: Terms of service
+│   └── api/
+│       ├── add-advertisement/route.ts  ✅ Add listing API
+│       ├── search-realtime/route.ts    ✅ Search API
+│       ├── listing/[id]/route.ts       ✅ Listing detail API
+│       ├── create-checkout/route.ts    ✅ Stripe checkout API
+│       └── webhook/route.ts            ✅ Stripe webhook API
+├── lib/
+│   ├── firebase.ts                     ✅ Firebase config (safe init)
+│   ├── firestore.ts                    ✅ CRUD operations
+│   ├── stripe.ts                       ✅ Stripe server config
+│   ├── stripe-client.ts               ✅ Stripe client helper
+│   ├── google-maps-places.ts          ✅ Google Maps API
+│   ├── validations.ts                 ✅ Zod schemas
+│   ├── auth.ts                        ❌ TODO: Auth functions
+│   └── storage.ts                     ❌ TODO: Image upload
+├── components/
+│   ├── PGCard.tsx                     ✅ Listing card (verified/premium badges)
+│   ├── SearchFilters.tsx              ✅ Search + filters
+│   └── LanguageSwitcher.tsx           ✅ 6 language switcher
+├── contexts/
+│   └── AuthContext.tsx                ❌ TODO: Auth provider
+├── types/index.ts                     ✅ All types including VerificationPlan
+├── messages/                          ✅ 6 language translation files
+└── middleware.ts                      ✅ Rate limiting + i18n
+```
+
+---
+
+## Environment Variables
 
 ```env
-# Already in your .env.local:
-NEXT_PUBLIC_FIREBASE_API_KEY=...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
-NEXT_PUBLIC_FIREBASE_APP_ID=...
-GOOGLE_MAPS_API_KEY=...
+# ✅ Already configured in Vercel + .env.local:
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAtSwGVH_rFBk6EdeQQ91VJoN4Fn6wHdU8
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=homyfind-app.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://homyfind-app-default-rtdb.asia-southeast1.firebasedatabase.app
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=homyfind-app
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=homyfind-app.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=1061060765252
+NEXT_PUBLIC_FIREBASE_APP_ID=1:1061060765252:web:85b0e7da05db7f0fd67e11
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-S82W1FE1QN
+GOOGLE_MAPS_API_KEY=AIzaSyBcapryw6GrvEK-YUdM2vYupq8BwmFfNkU
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=AIzaSyBcapryw6GrvEK-YUdM2vYupq8BwmFfNkU
 
-# Add these when ready:
-RAZORPAY_KEY_ID=rzp_test_xxxxx
-RAZORPAY_KEY_SECRET=xxxxx
-NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_xxxxx
+# ❌ Add after Stripe account setup:
+STRIPE_SECRET_KEY=sk_live_xxxxx
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_xxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
 ```
 
 ---
 
-## Implementation Order (Do This In Sequence)
+## Next Week Checklist
+
+- [ ] Create Stripe account + complete KYC
+- [ ] Add Stripe env vars to Vercel
+- [ ] Set up Stripe webhook endpoint
+- [ ] Build login/signup page (`/auth`)
+- [ ] Build owner dashboard (`/dashboard`)
+- [ ] Add image upload to add-listing form
+- [ ] Create About, Privacy, Contact, Terms pages
+- [ ] Apply for Google AdSense
+- [ ] Test full payment flow (Stripe test mode)
+- [ ] Go live with payments (switch to Stripe live keys)
+
+---
+
+## Payment Flow (How It Works)
 
 ```
-Week 1: Deploy on Vercel (free) + Buy domain
-         ↓
-Week 2: Add About/Privacy/Contact/Terms pages
-         ↓
-Week 3: Add Firebase Auth + Login page
-         ↓
-Week 4: Build Owner Dashboard
-         ↓
-Week 5: Add image upload to add-listing form
-         ↓
-Week 6: Apply for Google AdSense
-         ↓
-Week 7: Integrate Razorpay for verified plans
-         ↓
-Week 8: Launch verified/premium plans
+PG Owner adds listing (free)
+        ↓
+Owner goes to Dashboard
+        ↓
+Clicks "Upgrade to Verified ₹299/mo" or "Premium ₹599/mo"
+        ↓
+Redirected to Stripe Checkout (UPI / Card / Netbanking)
+        ↓
+Payment successful → Stripe webhook fires
+        ↓
+Webhook updates Firebase: verified=true, verificationPlan='verified'
+        ↓
+Listing now shows Verified badge + ranks higher in search
+        ↓
+If subscription cancelled → Webhook downgrades to free
 ```
 
 ---
 
-## Firebase Free Tier Limits (Spark Plan)
+## Costs Summary
 
-| Resource | Free Limit | Enough For |
-|----------|-----------|------------|
-| Firestore reads | 50,000/day | ~2,000 searches/day |
-| Firestore writes | 20,000/day | ~1,000 new listings/day |
-| Firestore storage | 1 GB | ~10,000 listings |
-| Storage (files) | 5 GB | ~5,000 photos |
-| Authentication | Unlimited | Unlimited users |
-| Hosting | 10 GB/month | Not using (we use Vercel) |
-
-These limits are more than enough for the first 6-12 months.
+| Service | Monthly Cost |
+|---------|-------------|
+| Vercel Hosting | ₹0 |
+| Firebase (Blaze - pay as you go) | ₹0 (within free limits) |
+| Google Maps API | ₹0 (within $200 free credit) |
+| Stripe | ₹0 (2% only when you receive payments) |
+| Domain (homyfind.in) | ~₹46/month |
+| **Total fixed cost** | **~₹46/month** |
