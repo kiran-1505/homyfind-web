@@ -1,7 +1,5 @@
-import { getFirestore, collection, addDoc, query, where, getDocs, Timestamp } from 'firebase/firestore';
-import { app } from './firebase';
-
-const db = getFirestore(app);
+import { collection, addDoc, query, where, getDocs, Timestamp, doc, updateDoc } from 'firebase/firestore';
+import { db } from './firebase';
 
 export interface PGAdvertisement {
   id?: string;
@@ -201,5 +199,22 @@ export async function getAllPGAdvertisements(): Promise<PGAdvertisement[]> {
   } catch (error) {
     console.error('Error getting all advertisements:', error);
     throw new Error(`Failed to fetch advertisements: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Update a PG advertisement (used for verification plan upgrades, edits)
+ */
+export async function updatePGAdvertisement(id: string, data: Partial<PGAdvertisement>): Promise<void> {
+  try {
+    const docRef = doc(db, 'pg_advertisements', id);
+    await updateDoc(docRef, {
+      ...data,
+      updatedAt: Timestamp.now(),
+    });
+    console.log('PG Advertisement updated:', id);
+  } catch (error) {
+    console.error('Error updating PG advertisement:', error);
+    throw new Error(`Failed to update advertisement: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

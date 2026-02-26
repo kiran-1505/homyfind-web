@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
-import { app } from '@/lib/firebase';
-
-const db = getFirestore(app);
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +43,7 @@ export async function GET(
             availableRooms: data.availableRooms,
             availableFrom: data.availableFrom,
             verified: data.verified || false,
+            verificationPlan: data.verificationPlan || (data.verified ? 'verified' : 'free'),
             rating: 4.5,
             reviewCount: 0,
             ownerId: 'owner',
