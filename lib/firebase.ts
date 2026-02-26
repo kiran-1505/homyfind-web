@@ -15,14 +15,27 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// Safe initialization — won't crash if env vars are missing during build
+let app: ReturnType<typeof initializeApp>;
+try {
+  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+} catch (error) {
+  console.warn('Firebase init skipped during build:', (error as Error).message);
+  app = null as any;
+}
 
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+// Firestore & Storage — safe to initialize if app exists
+const db = app ? getFirestore(app) : (null as any);
+const storage = app ? getStorage(app) : (null as any);
+
+// Auth — call this function when needed (login page, dashboard)
+// NOT initialized at module level to prevent build crashes
+function getFirebaseAuth() {
+  return getAuth(app);
+}
 
 let analytics: Analytics | null = null;
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && app) {
   try {
     analytics = getAnalytics(app);
   } catch {
@@ -30,4 +43,4 @@ if (typeof window !== 'undefined') {
   }
 }
 
-export { auth, db, storage, app, analytics };
+export { getFirebaseAuth, db, storage, app, analytics };
