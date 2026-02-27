@@ -25,6 +25,7 @@ export default function AboutPage() {
               <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">{t('common.home')}</Link>
               <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900">{t('footer.contact')}</Link>
               <LanguageSwitcher />
+              <Link href="/add-listing" className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">{t('common.listYourPG')}</Link>
             </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -42,6 +43,7 @@ export default function AboutPage() {
               <div className="px-4 py-1">
                 <LanguageSwitcher />
               </div>
+              <Link href="/add-listing" className="block mx-4 mt-1 text-center bg-primary-500 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">{t('common.listYourPG')}</Link>
             </div>
           )}
         </div>

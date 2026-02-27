@@ -25,6 +25,7 @@ export default function ContactPage() {
               <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">{t('common.home')}</Link>
               <Link href="/about" className="text-sm text-gray-600 hover:text-gray-900">{t('footer.about')}</Link>
               <LanguageSwitcher />
+              <Link href="/add-listing" className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">{t('common.listYourPG')}</Link>
             </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -42,6 +43,7 @@ export default function ContactPage() {
               <div className="px-4 py-1">
                 <LanguageSwitcher />
               </div>
+              <Link href="/add-listing" className="block mx-4 mt-1 text-center bg-primary-500 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">{t('common.listYourPG')}</Link>
             </div>
           )}
         </div>
@@ -60,8 +62,8 @@ export default function ContactPage() {
               <Mail className="w-6 h-6 text-primary-500" />
             </div>
             <h2 className="font-bold text-gray-900 mb-2">{t('contact.emailTitle')}</h2>
-            <a href="mailto:findmypg@gmail.com" className="text-primary-500 font-medium hover:underline">
-              findmypg@gmail.com
+            <a href="mailto:homyfind@gmail.com" className="text-primary-500 font-medium hover:underline">
+              homyfind@gmail.com
             </a>
             <p className="text-sm text-gray-400 mt-2">{t('contact.emailResponse')}</p>
           </div>

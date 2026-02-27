@@ -37,6 +37,7 @@ export default function TermsPage() {
               <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">{t('common.home')}</Link>
               <Link href="/about" className="text-sm text-gray-600 hover:text-gray-900">{t('footer.about')}</Link>
               <LanguageSwitcher />
+              <Link href="/add-listing" className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">{t('common.listYourPG')}</Link>
             </div>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -54,6 +55,7 @@ export default function TermsPage() {
               <div className="px-4 py-1">
                 <LanguageSwitcher />
               </div>
+              <Link href="/add-listing" className="block mx-4 mt-1 text-center bg-primary-500 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors">{t('common.listYourPG')}</Link>
             </div>
           )}
         </div>
@@ -76,8 +78,8 @@ export default function TermsPage() {
         <div className="mt-8 bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
           <h2 className="text-lg font-bold text-gray-900 mb-2">{t('terms.questionsTitle')}</h2>
           <p className="text-gray-600 text-sm">{t('terms.questionsDesc')}</p>
-          <a href="mailto:findmypg@gmail.com" className="text-primary-500 font-medium text-sm hover:underline mt-2 inline-block">
-            findmypg@gmail.com
+          <a href="mailto:homyfind@gmail.com" className="text-primary-500 font-medium text-sm hover:underline mt-2 inline-block">
+            homyfind@gmail.com
           </a>
         </div>
       </main>
