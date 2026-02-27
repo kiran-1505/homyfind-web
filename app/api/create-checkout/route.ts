@@ -7,7 +7,7 @@ import { getPGAdvertisementById } from '@/lib/firestore';
 const ALLOWED_ORIGINS = [
   'https://pg-find.com',
   'https://www.pg-find.com',
-  'https://homyfind.vercel.app',
+  'https://find-my-pg.vercel.app',
   'http://localhost:3000',
 ];
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: 'inr',
             product_data: {
-              name: `HomyFind ${selectedPlan.name}`,
+              name: `Find-My-PG ${selectedPlan.name}`,
               description: `Monthly ${plan} plan for your PG listing`,
             },
             unit_amount: selectedPlan.priceInPaisa,

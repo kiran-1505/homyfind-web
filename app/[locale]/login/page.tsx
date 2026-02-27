@@ -208,9 +208,9 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <Image src="/HomyFind-logo.png" alt="HomyFind" width={48} height={48} className="h-12 w-auto" />
+            <Image src="/find-my-pg-logo.jpg" alt="Find-My-PG" width={48} height={48} className="h-12 w-auto" />
             <span className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent">
-              HomyFind
+              Find-My-PG
             </span>
           </Link>
           <p className="text-gray-500 text-sm">{t('login.subtitle')}</p>

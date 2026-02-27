@@ -131,9 +131,9 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
               <ArrowLeft className="w-5 h-5" />
             </button>
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/HomyFind-logo.png" alt="HomyFind" width={32} height={32} className="h-8 w-auto" />
+              <Image src="/find-my-pg-logo.jpg" alt="Find-My-PG" width={32} height={32} className="h-8 w-auto" />
               <span className="text-lg font-bold bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent">
-                HomyFind
+                Find-My-PG
               </span>
             </Link>
           </div>

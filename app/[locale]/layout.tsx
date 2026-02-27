@@ -14,7 +14,7 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  title: 'HomyFind - Find Your Perfect PG in India',
+  title: 'Find-My-PG - Find Your Perfect PG in India',
   description: 'Search and discover PG accommodations across major Indian cities. Easy, fast, and reliable.',
   keywords: 'PG, paying guest, accommodation, rooms, rent, bangalore, mumbai, delhi',
 };

@@ -104,9 +104,9 @@ export default function HomePage() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 group">
-              <Image src="/HomyFind-logo.png" alt="HomyFind" width={36} height={36} className="h-9 w-auto group-hover:scale-105 transition-transform" />
+              <Image src="/find-my-pg-logo.jpg" alt="Find-My-PG" width={36} height={36} className="h-9 w-auto group-hover:scale-105 transition-transform" />
               <span className="text-xl font-bold bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent">
-                HomyFind
+                Find-My-PG
               </span>
             </Link>
 
@@ -171,6 +171,12 @@ export default function HomePage() {
                   {t('common.login')}
                 </Link>
               )}
+              <Link href="/about" className="block px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50">
+                {t('footer.about')}
+              </Link>
+              <Link href="/contact" className="block px-4 py-2.5 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50">
+                {t('footer.contact')}
+              </Link>
               <div className="px-4 py-1">
                 <LanguageSwitcher />
               </div>
@@ -466,9 +472,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <Image src="/HomyFind-logo.png" alt="HomyFind" width={32} height={32} className="h-8 w-auto" />
+              <Image src="/find-my-pg-logo.jpg" alt="Find-My-PG" width={32} height={32} className="h-8 w-auto" />
               <div>
-                <span className="text-base font-bold text-gray-900">HomyFind</span>
+                <span className="text-base font-bold text-gray-900">Find-My-PG</span>
                 <p className="text-sm text-gray-400">{t('footer.tagline')}</p>
               </div>
             </div>
@@ -494,7 +500,7 @@ export default function HomePage() {
               <Link href="/contact" className="text-gray-500 hover:text-primary-500 transition-colors">{t('footer.contact')}</Link>
               <Link href="/terms" className="text-gray-500 hover:text-primary-500 transition-colors">{t('footer.terms')}</Link>
             </div>
-            <p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} HomyFind. {t('footer.rights')}</p>
+            <p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} Find-My-PG. {t('footer.rights')}</p>
           </div>
         </div>
       </footer>
