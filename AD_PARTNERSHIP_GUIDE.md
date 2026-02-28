@@ -1,4 +1,4 @@
-# How to Approach Companies for Ads on HomyFind
+# How to Approach Companies for Ads on Find-My-PG
 
 ## Before You Approach Anyone — Prepare This First
 
@@ -6,7 +6,7 @@
 Include these details in a simple, clean PDF:
 
 ```
-HOMYFIND — India's PG Search Platform
+FIND-MY-PG — India's PG Search Platform
 
 What we do: Help students & professionals find PGs across India
 Languages: English, Hindi, Kannada, Telugu, Tamil, Malayalam
@@ -32,11 +32,11 @@ Ad Placements Available:
 - Newsletter mention: ₹1,000/edition
 
 Contact: [your email] | [your phone]
-Website: https://homyfind.in
+Website: https://find-my-pg.com
 ```
 
 ### 2. Set Up a Professional Email
-- Use contact@homyfind.in or ads@homyfind.in
+- Use contact@find-my-pg.com or ads@find-my-pg.com
 - Free with Zoho Mail (up to 5 users)
 - Looks much more professional than gmail
 
@@ -115,7 +115,7 @@ Subject: Partnership Opportunity — Reach PG Tenants in [City]
 
 Hi [Name/Team],
 
-I run HomyFind (homyfind.in), a platform that helps students and
+I run Find-My-PG (find-my-pg.com), a platform that helps students and
 working professionals find PG accommodations in [City].
 
 We get [X] monthly visitors, mostly 18-30 year olds who are
@@ -134,18 +134,18 @@ I've attached our media kit with audience details.
 
 Best regards,
 [Your Name]
-HomyFind | homyfind.in
+Find-My-PG | find-my-pg.com
 [Phone Number]
 ```
 
 ### Template 2: Affiliate Partnership Request
 
 ```
-Subject: Affiliate Partnership — HomyFind x [Company Name]
+Subject: Affiliate Partnership — Find-My-PG x [Company Name]
 
 Hi [Name/Team],
 
-HomyFind (homyfind.in) is a PG search platform serving students
+Find-My-PG (find-my-pg.com) is a PG search platform serving students
 and professionals across Indian cities.
 
 Our users frequently need [furniture/internet/food services] when
@@ -164,18 +164,18 @@ Happy to discuss further.
 
 Best regards,
 [Your Name]
-HomyFind | homyfind.in
+Find-My-PG | find-my-pg.com
 ```
 
 ### Template 3: Follow-Up Email (Send after 3-4 days)
 
 ```
-Subject: Re: Partnership Opportunity — HomyFind
+Subject: Re: Partnership Opportunity — Find-My-PG
 
 Hi [Name],
 
 Just following up on my previous email about advertising on
-HomyFind. We recently crossed [X] PG listings in [City] and
+Find-My-PG. We recently crossed [X] PG listings in [City] and
 our traffic is growing [X]% month-over-month.
 
 I'd be happy to offer a 1-week free trial of our banner ad
@@ -196,7 +196,7 @@ Best regards,
 1. **Prepare**: Print 10 copies of your media kit, have your website loaded on phone
 2. **Visit during non-peak hours**: 11 AM - 1 PM or 3 PM - 5 PM
 3. **Ask for the owner/manager**: "Hi, I run a website that helps PG tenants find accommodations in [city]. Many of your customers probably live in PGs nearby. Can I show you something quick?"
-4. **Show your website**: Open HomyFind on your phone, show PG listings in their area
+4. **Show your website**: Open Find-My-PG on your phone, show PG listings in their area
 5. **Make the pitch**: "I can place your ad right here [point to ad spot] so that everyone searching for PGs in this area sees your business. It's only ₹1,500/month."
 6. **Offer a free trial**: "I'll put your ad up for 1 week free. If you get even 1-2 customers from it, we can continue."
 7. **Collect their info**: Get their business name, logo, phone number, and what they want to advertise
@@ -250,7 +250,7 @@ Best regards,
 5. Wait for approval (usually 1-2 weeks for Indian sites)
 6. Once approved, create ad units and place them on your site
 
-### Best Ad Placements for HomyFind
+### Best Ad Placements for Find-My-PG
 - **Between listings**: After every 6th PG card in search results
 - **Listing detail sidebar**: On desktop, right side of PG detail page
 - **Mobile bottom banner**: Sticky banner at bottom on mobile

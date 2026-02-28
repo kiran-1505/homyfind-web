@@ -1,4 +1,4 @@
-# How to Deploy HomyFind — Free & Cost Effective
+# How to Deploy Find-My-PG — Free & Cost Effective
 
 ## Option 1: Vercel (RECOMMENDED — Free)
 
@@ -18,7 +18,7 @@ Vercel is the company that made Next.js. Best free hosting for your stack.
 #### Step 1: Push code to GitHub
 ```bash
 # If not already on GitHub
-git remote add origin https://github.com/YOUR_USERNAME/HomyFind-Web.git
+git remote add origin https://github.com/YOUR_USERNAME/Find-My-PG-Web.git
 git push -u origin main
 ```
 
@@ -29,7 +29,7 @@ git push -u origin main
 
 #### Step 3: Import your project
 1. Click "Add New Project"
-2. Select "HomyFind-Web" from your repositories
+2. Select "Find-My-PG-Web" from your repositories
 3. Vercel auto-detects Next.js — no configuration needed
 
 #### Step 4: Add Environment Variables
@@ -64,15 +64,15 @@ Copy these from your `.env.local` file.
 #### Step 5: Deploy
 1. Click "Deploy"
 2. Wait 1-2 minutes
-3. Your site is live at `https://homyfind-web.vercel.app`
+3. Your site is live at `https://find-my-pg.com`
 
 #### Step 6: Add Custom Domain
-1. Buy a domain: `homyfind.in` (~₹500-800/year from GoDaddy/Namecheap)
-2. In Vercel: Settings → Domains → Add `homyfind.in`
+1. Buy a domain: `find-my-pg.com` (from GoDaddy/Namecheap)
+2. In Vercel: Settings → Domains → Add `find-my-pg.com`
 3. Update your domain's DNS:
    - Add A record: `76.76.21.21`
    - Add CNAME: `cname.vercel-dns.com`
-4. Vercel auto-provisions SSL — your site is live at `https://homyfind.in`
+4. Vercel auto-provisions SSL — your site is live at `https://find-my-pg.com`
 
 ### Auto-Deploy Setup
 Every time you push to GitHub, Vercel automatically deploys:
@@ -121,17 +121,15 @@ git push origin main
 
 | Domain | Estimated Cost | Provider |
 |--------|---------------|----------|
-| homyfind.in | ₹500-800/year | GoDaddy, Namecheap |
-| homyfind.co.in | ₹300-500/year | GoDaddy |
-| homyfind.com | ₹800-1200/year | Namecheap |
+| find-my-pg.com | Purchased | GoDaddy |
 
-**Recommendation**: Buy `homyfind.in` — it's cheap, Indian, and professional.
+**Domain purchased**: `find-my-pg.com` — connected to Vercel via nameservers.
 
 ---
 
 ## Post-Deployment Checklist
 
-- [ ] Website loads correctly on `https://homyfind.in`
+- [ ] Website loads correctly on `https://find-my-pg.com`
 - [ ] All environment variables are set in Vercel
 - [ ] Search works (test with "Bangalore")
 - [ ] Add listing form submits to Firebase (requires login)
@@ -174,7 +172,7 @@ This allows anyone to read and create listings, but only the owner (matching `ow
 1. Go to Google Cloud Console → APIs & Services → Credentials
 2. Click on your Google Maps API key
 3. Under "Application restrictions": Select "HTTP referrers"
-4. Add: `homyfind.in/*` and `*.homyfind.in/*`
+4. Add: `find-my-pg.com/*` and `*.find-my-pg.com/*`
 5. Under "API restrictions": Select "Restrict key" → Only Maps JavaScript API, Places API
 
 ---
@@ -186,7 +184,7 @@ This allows anyone to read and create listings, but only the owner (matching `ow
 | Vercel Hosting | ₹0 |
 | Firebase (Spark) | ₹0 |
 | Google Maps API | ₹0 (within free credit) |
-| Domain (homyfind.in) | ~₹65/month (₹800/year) |
+| Domain (find-my-pg.com) | ~₹65/month |
 | Zoho Email | ₹0 |
 | Google Analytics | ₹0 |
 | **Total** | **~₹65/month** |

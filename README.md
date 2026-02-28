@@ -1,4 +1,4 @@
-# HomyFind - Find Your Perfect PG
+# Find-My-PG - Find Your Perfect PG
 
 > A modern, real-time PG (Paying Guest) accommodation search platform for India. Built with Next.js, Firebase, Stripe, and Google Maps API. Supports 6 Indian languages with verified and premium listing tiers.
 
@@ -92,8 +92,8 @@
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/kiran-1505/homyfind-web.git
-cd HomyFind-Web
+git clone https://github.com/kiran-1505/find-my-pg-web.git
+cd Find-My-PG-Web
 npm install
 ```
 
@@ -134,7 +134,7 @@ ADMIN_API_KEY=your_admin_key
 ### 3. Set Up Firebase
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a project (e.g. `homyfind-app`)
+2. Create a project (e.g. `find-my-pg-app`)
 3. Enable **Firestore Database** (location: `asia-southeast1` recommended for India)
 4. Enable **Authentication** - Turn on Email/Password and Phone sign-in
 5. Enable **Storage** - Set 5MB file size limit
@@ -187,7 +187,7 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Project Structure
 
 ```
-HomyFind-Web/
+Find-My-PG-Web/
 ├── app/
 │   ├── layout.tsx                         # Root layout
 │   ├── [locale]/                          # Locale-based routes (i18n)
@@ -379,7 +379,7 @@ If subscription cancelled --> Webhook downgrades to free plan
 
 ### Custom Domain
 
-1. Purchase domain (e.g. `homyfind.in`)
+1. Purchase domain (e.g. `find-my-pg.com`)
 2. In Vercel Dashboard > Settings > Domains, add your domain
 3. Update DNS records as instructed by Vercel
 
@@ -502,4 +502,4 @@ This project is licensed under the MIT License.
 
 **Built with care for India's PG seekers**
 
-[Live Demo](https://homyfind-web.vercel.app) | [GitHub](https://github.com/kiran-1505/homyfind-web)
+[Live Demo](https://find-my-pg.com) | [GitHub](https://github.com/kiran-1505/find-my-pg-web)

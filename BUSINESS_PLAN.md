@@ -1,4 +1,4 @@
-# HomyFind Business Plan & Monetization Strategy
+# Find-My-PG Business Plan & Monetization Strategy
 
 ## The Problem You're Solving
 - Students and working professionals in India struggle to find PGs
@@ -14,7 +14,7 @@
 | **Google Maps API** | ₹0/month | $200 free credit/month (~₹16,500) — more than enough |
 | **Domain (.in)** | ₹500-800/year | Buy from GoDaddy, Namecheap, or Hostinger |
 | **SSL Certificate** | ₹0 | Vercel provides free SSL |
-| **Email (Zoho Mail)** | ₹0/month | Free plan: 5 users, use contact@homyfind.in |
+| **Email (Zoho Mail)** | ₹0/month | Free plan: 5 users, use contact@find-my-pg.com |
 | **Analytics (Google Analytics)** | ₹0 | Free forever |
 | **Total Monthly Cost** | **₹0-70/month** | Only domain cost (~₹800/year) |
 
@@ -58,7 +58,7 @@ PG owners pay a small monthly fee to get a **"Verified" badge** and top ranking.
 - 10,000 daily visitors = ₹30,000-80,000/month
 - Indian traffic CPC: ₹5-25 per click
 
-**Best ad placements for HomyFind:**
+**Best ad placements for Find-My-PG:**
 1. Between every 6th listing in search results
 2. Sidebar on listing detail page
 3. Below search filters on mobile
@@ -108,7 +108,7 @@ Sell ad space directly to local businesses near PG areas.
 - Add 50-100 PG listings manually in Bangalore (your home city first)
 - Visit PGs in person, take photos, get owner details
 - Share on college WhatsApp groups and social media
-- Create Instagram page: @homyfind
+- Create Instagram page: @findmypg
 
 ### Month 3-4: Grow Organically
 - Expand to 2-3 more cities (Hyderabad, Chennai, Pune)
@@ -141,7 +141,7 @@ Sell ad space directly to local businesses near PG areas.
 
 ### SEO Actions (Free)
 1. Create city-specific landing pages: `/pg-in-bangalore`, `/pg-in-hyderabad`
-2. Add meta titles like "Best PG in Bangalore | Verified & Affordable | HomyFind"
+2. Add meta titles like "Best PG in Bangalore | Verified & Affordable | Find-My-PG"
 3. Submit sitemap to Google Search Console (free)
 4. Create Google My Business profile (free)
 5. Write 2 blog posts/week on PG-related topics
@@ -157,7 +157,7 @@ Sell ad space directly to local businesses near PG areas.
 | MagicBricks | ₹1,000+ for visibility | Brokers charge 1 month rent | We're much cheaper |
 | 99acres | ₹3,000+ premium listing | Broker commissions | We focus only on PG |
 | Flat & Flatmates | Free but limited | None | We have verified owners |
-| **HomyFind** | **Free to list, ₹299 for verified** | **No brokers** | **PG-only, 6 languages, cheapest** |
+| **Find-My-PG** | **Free to list, ₹299 for verified** | **No brokers** | **PG-only, 6 languages, cheapest** |
 
 ---
 

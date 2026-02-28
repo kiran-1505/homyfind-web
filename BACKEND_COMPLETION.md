@@ -40,7 +40,7 @@ These pages are required for Google AdSense approval:
 
 | Page | Route | Content |
 |------|-------|---------|
-| About Us | `/about` | What HomyFind is, your mission |
+| About Us | `/about` | What Find-My-PG is, your mission |
 | Privacy Policy | `/privacy` | Data collection, cookies |
 | Contact Us | `/contact` | Email, phone, form |
 | Terms of Service | `/terms` | Usage rules |
@@ -73,7 +73,7 @@ These pages are required for Google AdSense approval:
 ## Current Project File Structure
 
 ```
-HomyFind-Web/
+Find-My-PG-Web/
 ├── app/
 │   ├── [locale]/
 │   │   ├── page.tsx                    # Home page
@@ -206,5 +206,5 @@ The `isOwner` function checks three identifiers:
 | Firebase (Blaze - pay as you go) | Free (within free limits) |
 | Google Maps API | Free (within $200 free credit) |
 | Stripe | Free (2% only when you receive payments) |
-| Domain (homyfind.in) | ~INR 46/month |
+| Domain (find-my-pg.com) | ~INR 46/month |
 | **Total fixed cost** | **~INR 46/month** |
