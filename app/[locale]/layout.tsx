@@ -2,7 +2,6 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import Script from 'next/script';
 import type { Metadata } from 'next';
 
 type Props = {
@@ -32,11 +31,10 @@ export default async function LocaleLayout({ children, params: { locale } }: Pro
   return (
     <html lang={locale}>
       <head>
-        <Script
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6471889682951602"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
       </head>
       <body>
