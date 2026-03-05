@@ -6,13 +6,11 @@ import { updateListingSchema } from '@/lib/validations';
 const FIRESTORE_PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
 /**
- * Verify ownership by matching the verified user's phone OR email against the listing owner.
+ * Verify ownership strictly by ownerId (Firebase UID).
+ * Phone/email matching was removed to prevent IDOR attacks.
  */
-function isOwner(existing: { ownerId?: string; ownerPhone: string; ownerEmail?: string }, uid: string, phone: string | null, email: string | null): boolean {
-  if (existing.ownerId && existing.ownerId === uid) return true;
-  if (phone && existing.ownerPhone === phone) return true;
-  if (email && existing.ownerEmail && existing.ownerEmail === email) return true;
-  return false;
+function isOwner(existing: { ownerId?: string }, uid: string): boolean {
+  return !!existing.ownerId && existing.ownerId === uid;
 }
 
 /**
@@ -143,7 +141,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    if (!isOwner(existing, user.uid, user.phone, user.email)) {
+    if (!isOwner(existing, user.uid)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized: you do not own this listing' },
         { status: 403 }
@@ -235,7 +233,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    if (!isOwner(existing, user.uid, user.phone, user.email)) {
+    if (!isOwner(existing, user.uid)) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized: you do not own this listing' },
         { status: 403 }

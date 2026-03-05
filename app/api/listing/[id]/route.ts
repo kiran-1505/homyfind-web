@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPGAdvertisementById } from '@/lib/firestore';
-import { firebaseAdToPGListing } from '@/utils/transformers';
+import { firebaseAdToPublicListing } from '@/utils/transformers';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,16 +15,8 @@ export async function GET(
     if (!listingId.startsWith('google-') && !listingId.startsWith('mock-') && !listingId.startsWith('fsq-') && !listingId.startsWith('osm-')) {
       const ad = await getPGAdvertisementById(listingId);
       if (ad) {
-        const listing = firebaseAdToPGListing(ad);
-        // Remove sensitive PII from public response
-        return NextResponse.json({
-          success: true,
-          data: {
-            ...listing,
-            ownerPhone: '', // Redacted — contact via listing owner
-            ownerEmail: '', // Redacted — contact via listing owner
-          },
-        });
+        const listing = firebaseAdToPublicListing(ad);
+        return NextResponse.json({ success: true, data: listing });
       }
     }
 

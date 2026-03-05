@@ -135,12 +135,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const ownerPhone = user.phone;
-    const ownerEmail = user.email;
-    const isOwner =
-      (existing.ownerId && existing.ownerId === user.uid) ||
-      (ownerPhone && existing.ownerPhone === ownerPhone) ||
-      (ownerEmail && existing.ownerEmail && existing.ownerEmail === ownerEmail);
+    const isOwner = !!existing.ownerId && existing.ownerId === user.uid;
 
     if (!isOwner) {
       return NextResponse.json(

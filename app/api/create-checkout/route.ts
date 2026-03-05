@@ -5,10 +5,10 @@ import { getPGAdvertisementById } from '@/lib/firestore';
 
 // Allowed origins for Stripe redirect URLs
 const ALLOWED_ORIGINS = [
-  'https://pg-find.com',
-  'https://www.pg-find.com',
+  'https://find-my-pg.com',
+  'https://www.find-my-pg.com',
   'https://find-my-pg.vercel.app',
-  'http://localhost:3000',
+  ...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000'] : []),
 ];
 
 export async function POST(request: NextRequest) {
@@ -55,9 +55,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isOwner =
-      (user.phone && listing.ownerPhone === user.phone) ||
-      (user.email && listing.ownerEmail && listing.ownerEmail === user.email);
+    const isOwner = !!listing.ownerId && listing.ownerId === user.uid;
 
     if (!isOwner) {
       return NextResponse.json(

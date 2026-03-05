@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PGListing } from '@/types';
 import { DEFAULT_LOCATION } from '@/constants';
 import { searchQuerySchema } from '@/lib/validations';
-import { firebaseAdToPGListing } from '@/utils/transformers';
+import { firebaseAdToPublicListing } from '@/utils/transformers';
 import { generateMockData } from '@/utils/mock-data';
 
 export const dynamic = 'force-dynamic';
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     const firebasePromise = (async () => {
       const { searchPGAdvertisements } = await import('@/lib/firestore');
       const ads = await searchPGAdvertisements(location);
-      return ads.map(firebaseAdToPGListing);
+      return ads.map(firebaseAdToPublicListing);
     })();
 
     const googleMapsPromise = firebaseOnly

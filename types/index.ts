@@ -33,7 +33,7 @@ export interface PGListing {
   availableRooms: number;
   ownerId: string;
   ownerName: string;
-  ownerPhone: string;
+  ownerPhone?: string;
   ownerEmail?: string;
   googleMapsLink?: string;
   verified: boolean;

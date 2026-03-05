@@ -206,11 +206,15 @@ function buildSearchTokens(
 }
 
 /**
- * Add a new PG advertisement to Firebase
+ * Add a new PG advertisement to Firebase using Admin SDK.
+ * Uses Admin SDK to bypass Firestore security rules — all validation
+ * is enforced in the API route (Zod schema + auth checks) before this is called.
  */
 export async function addPGAdvertisement(pgData: Omit<PGAdvertisement, 'id' | 'createdAt' | 'updatedAt' | 'verified' | 'verificationPlan' | 'cityLower'>): Promise<string> {
   try {
-    await ensureAuth();
+    const { getAdminDb } = await import('@/lib/firebase-admin');
+    const { FieldValue } = await import('firebase-admin/firestore');
+    const adminDb = getAdminDb();
 
     const advertisementData = {
       ...pgData,
@@ -219,11 +223,11 @@ export async function addPGAdvertisement(pgData: Omit<PGAdvertisement, 'id' | 'c
       searchTokens: buildSearchTokens(pgData.city, pgData.area, pgData.address, pgData.nearbyLandmark, pgData.pgName),
       verified: false,
       verificationPlan: 'free' as const,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(getDb(), 'pg_advertisements'), advertisementData);
+    const docRef = await adminDb.collection('pg_advertisements').add(advertisementData);
     console.log('PG Advertisement added with ID:', docRef.id);
     return docRef.id;
   } catch (error) {
@@ -276,6 +280,10 @@ export async function searchPGAdvertisements(location: string): Promise<PGAdvert
     return [];
   }
 
+  // Hard cap per sub-query and total results to prevent full database dumps
+  const PER_QUERY_LIMIT = 50;
+  const MAX_TOTAL_RESULTS = 100;
+
   try {
     // Auth is required for Firestore reads when security rules need request.auth != null.
     // Force auth and fail loudly so we know when it breaks.
@@ -290,6 +298,7 @@ export async function searchPGAdvertisements(location: string): Promise<PGAdvert
     let queryErrors = 0;
 
     const addUnique = (ad: PGAdvertisement) => {
+      if (advertisements.length >= MAX_TOTAL_RESULTS) return;
       if (ad.id && !seenIds.has(ad.id)) {
         seenIds.add(ad.id);
         advertisements.push(ad);
@@ -300,7 +309,7 @@ export async function searchPGAdvertisements(location: string): Promise<PGAdvert
 
     // 1. Primary search on cityLower (exact match)
     try {
-      const q = query(col, where('cityLower', '==', searchLower));
+      const q = query(col, where('cityLower', '==', searchLower), firestoreLimit(PER_QUERY_LIMIT));
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((docSnap) => {
         addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
@@ -313,8 +322,9 @@ export async function searchPGAdvertisements(location: string): Promise<PGAdvert
     // 2. City aliases (e.g. Bangalore <> Bengaluru)
     const aliases = CITY_ALIASES[searchLower] || [];
     for (const alias of aliases) {
+      if (advertisements.length >= MAX_TOTAL_RESULTS) break;
       try {
-        const aliasQ = query(col, where('cityLower', '==', alias));
+        const aliasQ = query(col, where('cityLower', '==', alias), firestoreLimit(PER_QUERY_LIMIT));
         const aliasSnapshot = await getDocs(aliasQ);
         aliasSnapshot.forEach((docSnap) => {
           addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
@@ -326,34 +336,39 @@ export async function searchPGAdvertisements(location: string): Promise<PGAdvert
     }
 
     // 2b. Area-based search (e.g. "Indiranagar", "Koramangala")
-    try {
-      const areaQ = query(col, where('areaLower', '==', searchLower));
-      const areaSnapshot = await getDocs(areaQ);
-      areaSnapshot.forEach((docSnap) => {
-        addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
-      });
-    } catch (err) {
-      queryErrors++;
-      console.error('[Firestore] areaLower query FAILED:', err);
+    if (advertisements.length < MAX_TOTAL_RESULTS) {
+      try {
+        const areaQ = query(col, where('areaLower', '==', searchLower), firestoreLimit(PER_QUERY_LIMIT));
+        const areaSnapshot = await getDocs(areaQ);
+        areaSnapshot.forEach((docSnap) => {
+          addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
+        });
+      } catch (err) {
+        queryErrors++;
+        console.error('[Firestore] areaLower query FAILED:', err);
+      }
     }
 
     // 3. Token-based search: area, locality, and PG name (always run so name search works)
-    try {
-      const tokenQ = query(col, where('searchTokens', 'array-contains', searchLower));
-      const tokenSnapshot = await getDocs(tokenQ);
-      tokenSnapshot.forEach((docSnap) => {
-        addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
-      });
-    } catch (err) {
-      queryErrors++;
-      console.error('[Firestore] searchTokens query FAILED:', err);
+    if (advertisements.length < MAX_TOTAL_RESULTS) {
+      try {
+        const tokenQ = query(col, where('searchTokens', 'array-contains', searchLower), firestoreLimit(PER_QUERY_LIMIT));
+        const tokenSnapshot = await getDocs(tokenQ);
+        tokenSnapshot.forEach((docSnap) => {
+          addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
+        });
+      } catch (err) {
+        queryErrors++;
+        console.error('[Firestore] searchTokens query FAILED:', err);
+      }
     }
 
     // 3b. Multi-word search: try each word as token (e.g. "Sunshine PG" -> "sunshine")
     const words = searchLower.split(/[\s,]+/).filter(w => w.length >= 2);
     for (const word of words) {
+      if (advertisements.length >= MAX_TOTAL_RESULTS) break;
       try {
-        const wordTokenQ = query(col, where('searchTokens', 'array-contains', word));
+        const wordTokenQ = query(col, where('searchTokens', 'array-contains', word), firestoreLimit(PER_QUERY_LIMIT));
         const wordTokenSnap = await getDocs(wordTokenQ);
         wordTokenSnap.forEach((docSnap) => {
           addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
@@ -365,29 +380,32 @@ export async function searchPGAdvertisements(location: string): Promise<PGAdvert
     }
 
     // 4. Legacy: exact city match for docs without cityLower
-    try {
-      const legacyQ = query(col, where('city', '==', location));
-      const legacySnapshot = await getDocs(legacyQ);
-      legacySnapshot.forEach((docSnap) => {
-        addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
-      });
-      for (const alias of aliases) {
-        const titleAlias = alias.charAt(0).toUpperCase() + alias.slice(1);
-        const legacyAliasQ = query(col, where('city', '==', titleAlias));
-        const legacyAliasSnapshot = await getDocs(legacyAliasQ);
-        legacyAliasSnapshot.forEach((docSnap) => {
+    if (advertisements.length < MAX_TOTAL_RESULTS) {
+      try {
+        const legacyQ = query(col, where('city', '==', location), firestoreLimit(PER_QUERY_LIMIT));
+        const legacySnapshot = await getDocs(legacyQ);
+        legacySnapshot.forEach((docSnap) => {
           addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
         });
+        for (const alias of aliases) {
+          if (advertisements.length >= MAX_TOTAL_RESULTS) break;
+          const titleAlias = alias.charAt(0).toUpperCase() + alias.slice(1);
+          const legacyAliasQ = query(col, where('city', '==', titleAlias), firestoreLimit(PER_QUERY_LIMIT));
+          const legacyAliasSnapshot = await getDocs(legacyAliasQ);
+          legacyAliasSnapshot.forEach((docSnap) => {
+            addUnique(docToPGAdvertisement(docSnap.id, docSnap.data()));
+          });
+        }
+      } catch (err) {
+        queryErrors++;
+        console.error('[Firestore] legacy city query FAILED:', err);
       }
-    } catch (err) {
-      queryErrors++;
-      console.error('[Firestore] legacy city query FAILED:', err);
     }
 
     if (queryErrors > 0) {
       console.error(`[Firestore] WARNING: ${queryErrors} queries failed! Check Firestore security rules & auth. Found ${advertisements.length} ads despite errors.`);
     }
-    console.log(`[Firestore] Found ${advertisements.length} advertisements`);
+    console.log(`[Firestore] Found ${advertisements.length} advertisements (capped at ${MAX_TOTAL_RESULTS})`);
     return advertisements;
   } catch (error) {
     console.error('[Firestore] Search failed (returning []):', error);
@@ -397,54 +415,40 @@ export async function searchPGAdvertisements(location: string): Promise<PGAdvert
 
 /**
  * Backfill searchTokens for existing documents that don't have them.
- * Call once from an admin route or manually to migrate old data.
+ * Uses Admin SDK since this is called from an admin-only endpoint.
  * Processes in batches to avoid memory issues in serverless environments.
  */
 export async function backfillSearchTokens(): Promise<number> {
-  await ensureAuth();
+  const { getAdminDb } = await import('@/lib/firebase-admin');
+  const adminDb = getAdminDb();
   const BATCH_SIZE = 100;
   let updated = 0;
-  let lastDoc = null;
 
-  // Process in batches
-  while (true) {
-    let q;
-    if (lastDoc) {
-      // Note: for simplicity we re-query all and skip — Firestore doesn't have easy cursor-based pagination without orderBy
-      break; // Single pass is sufficient for most datasets
-    } else {
-      q = query(collection(getDb(), 'pg_advertisements'), firestoreLimit(BATCH_SIZE));
-    }
+  const snapshot = await adminDb.collection('pg_advertisements').limit(BATCH_SIZE).get();
+  if (snapshot.empty) return 0;
 
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) break;
-
-    for (const docSnap of querySnapshot.docs) {
-      const data = docSnap.data();
-      const needsTokens = !data.searchTokens || !Array.isArray(data.searchTokens) || data.searchTokens.length === 0;
-      const area = (data.area as string) || '';
-      const needsAreaLower = area && !data.areaLower;
-      if (needsTokens || needsAreaLower) {
-        const updates: Record<string, unknown> = {};
-        if (needsTokens) {
-          const tokens = buildSearchTokens(
-            (data.city as string) || '',
-            area,
-            (data.address as string) || '',
-            (data.nearbyLandmark as string) || '',
-            (data.pgName as string) || ''
-          );
-          updates.searchTokens = tokens;
-          if (!data.cityLower) updates.cityLower = ((data.city as string) || '').toLowerCase().trim();
-        }
-        if (needsAreaLower) updates.areaLower = area.toLowerCase().trim();
-        await updateDoc(doc(getDb(), 'pg_advertisements', docSnap.id), updates);
-        updated++;
+  for (const docSnap of snapshot.docs) {
+    const data = docSnap.data();
+    const needsTokens = !data.searchTokens || !Array.isArray(data.searchTokens) || data.searchTokens.length === 0;
+    const area = (data.area as string) || '';
+    const needsAreaLower = area && !data.areaLower;
+    if (needsTokens || needsAreaLower) {
+      const updates: Record<string, unknown> = {};
+      if (needsTokens) {
+        const tokens = buildSearchTokens(
+          (data.city as string) || '',
+          area,
+          (data.address as string) || '',
+          (data.nearbyLandmark as string) || '',
+          (data.pgName as string) || ''
+        );
+        updates.searchTokens = tokens;
+        if (!data.cityLower) updates.cityLower = ((data.city as string) || '').toLowerCase().trim();
       }
-      lastDoc = docSnap;
+      if (needsAreaLower) updates.areaLower = area.toLowerCase().trim();
+      await adminDb.collection('pg_advertisements').doc(docSnap.id).update(updates);
+      updated++;
     }
-
-    if (querySnapshot.docs.length < BATCH_SIZE) break;
   }
 
   console.log(`Backfilled searchTokens for ${updated} documents`);

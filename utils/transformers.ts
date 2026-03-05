@@ -2,8 +2,21 @@ import { PGListing } from '@/types';
 import type { PGAdvertisement } from '@/lib/firestore';
 
 /**
+ * Transform for PUBLIC responses — strips owner PII (phone/email).
+ * Use this for search results and public listing endpoints.
+ */
+export function firebaseAdToPublicListing(ad: PGAdvertisement): PGListing {
+  const listing = firebaseAdToPGListing(ad);
+  return {
+    ...listing,
+    ownerPhone: '',
+    ownerEmail: '',
+  };
+}
+
+/**
  * Transform a Firebase PGAdvertisement into the canonical PGListing shape.
- * Database (Firestore) ads are always shown as verified and tagged for high-priority ordering.
+ * WARNING: Includes PII (ownerPhone/ownerEmail). Only use for authenticated owner views.
  */
 export function firebaseAdToPGListing(ad: PGAdvertisement): PGListing {
   return {

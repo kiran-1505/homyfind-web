@@ -1,9 +1,10 @@
 /**
  * Server-side authentication verification for API routes.
- * Verifies Firebase ID tokens without requiring firebase-admin SDK.
- * Uses the Firebase Auth REST API to validate tokens.
+ * Uses Firebase Admin SDK to properly verify ID token signatures.
  */
 import { NextRequest } from 'next/server';
+import crypto from 'crypto';
+import { getAdminAuthInstance } from '@/lib/firebase-admin';
 
 export interface VerifiedUser {
   uid: string;
@@ -12,12 +13,8 @@ export interface VerifiedUser {
 }
 
 /**
- * Verify a Firebase ID token from the Authorization header.
+ * Verify a Firebase ID token from the Authorization header using Admin SDK.
  * Returns the verified user info or null if invalid.
- *
- * Usage in API routes:
- *   const user = await verifyAuthToken(request);
- *   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
  */
 export async function verifyAuthToken(request: NextRequest): Promise<VerifiedUser | null> {
   try {
@@ -26,44 +23,21 @@ export async function verifyAuthToken(request: NextRequest): Promise<VerifiedUse
       return null;
     }
 
-    const idToken = authHeader.slice(7); // Remove 'Bearer ' prefix
+    const idToken = authHeader.slice(7);
     if (!idToken) return null;
 
-    const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-    if (!apiKey) {
-      console.error('Firebase API key not configured for token verification');
-      return null;
-    }
-
-    // Use Firebase Auth REST API to verify the ID token
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken }),
-      }
-    );
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    const user = data.users?.[0];
-
-    if (!user) return null;
+    const decodedToken = await getAdminAuthInstance().verifyIdToken(idToken);
 
     // Extract phone number (remove +91 prefix for 10-digit format)
     let phone: string | null = null;
-    if (user.phoneNumber) {
-      phone = user.phoneNumber.replace(/^\+91/, '');
+    if (decodedToken.phone_number) {
+      phone = decodedToken.phone_number.replace(/^\+91/, '');
     }
 
     return {
-      uid: user.localId,
+      uid: decodedToken.uid,
       phone,
-      email: user.email || null,
+      email: decodedToken.email || null,
     };
   } catch (error) {
     console.error('Token verification failed:', error);
@@ -73,7 +47,7 @@ export async function verifyAuthToken(request: NextRequest): Promise<VerifiedUse
 
 /**
  * Verify admin API key from Authorization header.
- * Used for admin-only endpoints like backfill.
+ * Uses timing-safe comparison to prevent timing attacks.
  */
 export function verifyAdminKey(request: NextRequest): boolean {
   const adminKey = process.env.ADMIN_API_KEY;
@@ -87,5 +61,11 @@ export function verifyAdminKey(request: NextRequest): boolean {
     return false;
   }
 
-  return authHeader.slice(7) === adminKey;
+  const provided = authHeader.slice(7);
+  if (provided.length !== adminKey.length) return false;
+
+  return crypto.timingSafeEqual(
+    Buffer.from(provided),
+    Buffer.from(adminKey)
+  );
 }
