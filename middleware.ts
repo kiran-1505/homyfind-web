@@ -10,34 +10,8 @@ const intlMiddleware = createMiddleware(routing);
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
 const MAX_ENTRIES = 10000;
 
-/**
- * Daily per-IP quota for expensive endpoints that trigger paid API calls.
- * Limits total searches per IP per day to prevent billing abuse.
- */
-const dailyQuota = new Map<string, { count: number; resetTime: number }>();
-const DAILY_SEARCH_QUOTA = 100; // max searches per IP per day
-const DAILY_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
-
-function checkDailyQuota(ip: string): boolean {
-  const now = Date.now();
-  const key = `daily:${ip}`;
-  const entry = dailyQuota.get(key);
-
-  if (!entry || now > entry.resetTime) {
-    dailyQuota.set(key, { count: 1, resetTime: now + DAILY_WINDOW });
-    return true;
-  }
-
-  if (entry.count >= DAILY_SEARCH_QUOTA) return false;
-  entry.count++;
-  return true;
-}
-
-/** Per-endpoint rate limits (requests per window) */
+/** Per-endpoint rate limits (requests per minute) */
 const RATE_LIMITS: Record<string, { windowMs: number; max: number }> = {
-  '/api/search-realtime': { windowMs: 60_000, max: 10 },
-  '/api/maps-photo': { windowMs: 60_000, max: 30 },
-  '/api/listing/': { windowMs: 60_000, max: 20 },
   '/api/create-checkout': { windowMs: 60_000, max: 5 },
   '/api/add-advertisement': { windowMs: 60_000, max: 10 },
   '/api/owner/update-listing': { windowMs: 60_000, max: 20 },
@@ -69,22 +43,8 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const ip = getClientIp(request);
     const now = Date.now();
-    const pathname = request.nextUrl.pathname;
-
-    // Daily quota for expensive endpoints that trigger paid external API calls
-    if (pathname.startsWith('/api/search-realtime') || pathname.startsWith('/api/maps-photo') || pathname.startsWith('/api/listing/')) {
-      if (!checkDailyQuota(ip)) {
-        return addSecurityHeaders(
-          NextResponse.json(
-            { success: false, error: 'Daily request limit reached. Please try again tomorrow.' },
-            { status: 429 }
-          )
-        );
-      }
-    }
-
-    const { windowMs, max } = getRateConfig(pathname);
-    const rateLimitKey = `${ip}:${pathname}`;
+    const { windowMs, max } = getRateConfig(request.nextUrl.pathname);
+    const rateLimitKey = `${ip}:${request.nextUrl.pathname}`;
     const entry = rateLimit.get(rateLimitKey);
 
     if (!entry || now > entry.resetTime) {
