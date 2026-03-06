@@ -78,9 +78,8 @@ export function middleware(request: NextRequest) {
     return addSecurityHeaders(NextResponse.next());
   }
 
-  // All other routes: locale detection + security headers
-  const response = intlMiddleware(request);
-  return addSecurityHeaders(response as NextResponse);
+  // All other routes: locale detection (security headers via next.config.js)
+  return intlMiddleware(request);
 }
 
 /**
