@@ -38,7 +38,7 @@ export const SHARING_OPTIONS = [
 export const GENDER_OPTIONS = ['Male', 'Female', 'Any'] as const;
 
 // Cache settings
-export const GOOGLE_MAPS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+export const GOOGLE_MAPS_CACHE_TTL = 30 * 60 * 1000; // 30 minutes — longer TTL to reduce paid API calls
 
 // Pricing defaults for generated/transformed listings
 export const BASE_PRICE = 8000;

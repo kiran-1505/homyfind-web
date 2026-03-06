@@ -7,8 +7,7 @@ import SearchFilters from '@/components/SearchFilters';
 import { Home, ChevronLeft, ChevronRight, Shield, Users, IndianRupee, Plus, Menu, X, MapPin, Building2, Sparkles, LogIn, LayoutDashboard } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
-import { LISTINGS_PER_PAGE, DEFAULT_LOCATION } from '@/constants';
-import { safeSetLocalStorage } from '@/utils';
+import { DEFAULT_LOCATION, LISTINGS_PER_PAGE } from '@/constants';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,74 +16,54 @@ export default function HomePage() {
   const t = useTranslations();
   const { isAuthenticated } = useAuth();
   const [listings, setListings] = useState<PGListing[]>([]);
-  const [allListings, setAllListings] = useState<PGListing[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isRealData, setIsRealData] = useState(false);
   const [dataSource, setDataSource] = useState<string>('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentFilters, setCurrentFilters] = useState<FilterOptions | undefined>();
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchListings(undefined, abortController.signal);
+    fetchListings(undefined, 1, abortController.signal);
     return () => abortController.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * LISTINGS_PER_PAGE;
-    const endIndex = startIndex + LISTINGS_PER_PAGE;
-    setListings(allListings.slice(startIndex, endIndex));
-  }, [currentPage, allListings]);
-
-  const totalPages = Math.ceil(allListings.length / LISTINGS_PER_PAGE);
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    fetchListings(currentFilters, page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const fetchListings = async (filters?: FilterOptions, signal?: AbortSignal) => {
+  const fetchListings = async (filters?: FilterOptions, page = 1, signal?: AbortSignal) => {
     setLoading(true);
-    setCurrentPage(1);
     try {
       const queryParams = new URLSearchParams();
-      if (filters?.location) {
-        queryParams.append('location', filters.location);
-      } else {
-        queryParams.append('location', DEFAULT_LOCATION);
+      queryParams.append('location', filters?.location || DEFAULT_LOCATION);
+      queryParams.append('page', String(page));
+
+      // Send filters to server
+      if (filters?.maxRent) queryParams.append('maxRent', String(filters.maxRent));
+      if (filters?.sharingOption) queryParams.append('sharingOption', String(filters.sharingOption));
+      if (filters?.gender) queryParams.append('gender', filters.gender);
+      if (filters?.foodIncluded !== null && filters?.foodIncluded !== undefined) {
+        queryParams.append('foodIncluded', String(filters.foodIncluded));
       }
 
       const response = await fetch(`/api/search-realtime?${queryParams}`, { signal });
       const data = await response.json();
 
       if (data.success) {
-        let filteredListings = data.data;
-        safeSetLocalStorage('pgListings', JSON.stringify(filteredListings));
+        setListings(data.data);
+        setTotalCount(data.count || 0);
+        setTotalPages(data.totalPages || 1);
         setIsRealData(data.isRealData || false);
         setDataSource(data.message || '');
-
-        if (filters) {
-          if (filters.maxRent) {
-            filteredListings = filteredListings.filter((l: PGListing) => l.rent <= filters.maxRent!);
-          }
-          if (filters.sharingOption) {
-            filteredListings = filteredListings.filter((l: PGListing) => l.sharingOption === filters.sharingOption);
-          }
-          if (filters.gender) {
-            filteredListings = filteredListings.filter((l: PGListing) =>
-              l.preferredGender === filters.gender || l.preferredGender === 'Any'
-            );
-          }
-          if (filters.foodIncluded !== null) {
-            filteredListings = filteredListings.filter((l: PGListing) => l.foodIncluded === filters.foodIncluded);
-          }
-        }
-
-        setAllListings(filteredListings);
       }
     } catch (error) {
-      // Ignore abort errors (expected during React strict mode cleanup)
       if (error instanceof DOMException && error.name === 'AbortError') return;
       console.error('Error fetching listings:', error);
     } finally {
@@ -93,7 +72,9 @@ export default function HomePage() {
   };
 
   const handleSearch = (filters: FilterOptions) => {
-    fetchListings(filters);
+    setCurrentFilters(filters);
+    setCurrentPage(1);
+    fetchListings(filters, 1);
   };
 
   return (
@@ -261,14 +242,14 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              {loading ? t('common.searching') : allListings.length > 0 ? t('listings.pgsFound', { count: allListings.length }) : t('listings.pgListings')}
+              {loading ? t('common.searching') : totalCount > 0 ? t('listings.pgsFound', { count: totalCount }) : t('listings.pgListings')}
             </h2>
-            {!loading && allListings.length > LISTINGS_PER_PAGE && (
+            {!loading && totalPages > 1 && (
               <p className="text-sm text-gray-500 mt-1">
                 {t('listings.showing', {
                   start: ((currentPage - 1) * LISTINGS_PER_PAGE) + 1,
-                  end: Math.min(currentPage * LISTINGS_PER_PAGE, allListings.length),
-                  total: allListings.length
+                  end: ((currentPage - 1) * LISTINGS_PER_PAGE) + listings.length,
+                  total: totalCount
                 })}
               </p>
             )}

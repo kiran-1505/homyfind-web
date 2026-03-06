@@ -56,21 +56,19 @@ interface GooglePlaceDetails {
 const searchCache = new Map<string, { data: PGListing[]; timestamp: number }>();
 
 /**
- * Multiple search queries to maximize PG discovery.
- * Each query targets different terminology used for PG accommodations in India.
+ * Search queries for PG discovery. Limited to 3 to control Google Maps API costs.
+ * Each query triggers a paid Text Search API call (~$2.50/1000 requests).
  */
 const SEARCH_QUERIES = [
   'PG paying guest accommodation in',
   'hostel accommodation in',
-  'guest house lodge in',
   'co-living space in',
-  'working women hostel in',
-  'boys girls hostel in',
 ];
 
 /**
  * Run a single Google Maps text search and return raw GooglePlace results.
- * Follows up to 2 next_page_tokens for maximum results.
+ * Only fetches the first page (20 results) to control API costs.
+ * Each additional page is a separate billed API call.
  */
 async function runSingleGoogleQuery(
   query: string,
@@ -84,24 +82,7 @@ async function runSingleGoogleQuery(
     return [];
   }
 
-  let results: GooglePlace[] = data.results || [];
-
-  // Follow pagination (Google returns up to 60 results across 3 pages)
-  let nextPageToken = data.next_page_token;
-  let pageCount = 1;
-  while (nextPageToken && pageCount < 3) {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    const nextUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?pagetoken=${nextPageToken}&key=${apiKey}`;
-    const nextResponse = await fetch(nextUrl);
-    const nextData = await nextResponse.json();
-    if (nextData.status === 'OK' && nextData.results) {
-      results = [...results, ...nextData.results];
-    }
-    nextPageToken = nextData.next_page_token;
-    pageCount++;
-  }
-
-  return results;
+  return data.results || [];
 }
 
 /**
@@ -109,7 +90,7 @@ async function runSingleGoogleQuery(
  * for maximum coverage. Results are deduplicated by place_id.
  */
 export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGListing[]> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
     console.log('Google Maps API key not configured');
@@ -239,7 +220,7 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
  * The Place Details API returns up to 10 photos (vs Text Search which returns only 1).
  */
 export async function getPlaceDetails(placeId: string): Promise<PGListing | null> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
     return null;

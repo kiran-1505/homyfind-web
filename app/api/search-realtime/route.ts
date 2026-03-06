@@ -1,12 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PGListing } from '@/types';
-import { DEFAULT_LOCATION } from '@/constants';
+import { DEFAULT_LOCATION, LISTINGS_PER_PAGE } from '@/constants';
 import { searchQuerySchema } from '@/lib/validations';
 import { firebaseAdToPublicListing } from '@/utils/transformers';
 import { generateMockData } from '@/utils/mock-data';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+/** Apply server-side filters to listings */
+function applyFilters(listings: PGListing[], params: URLSearchParams): PGListing[] {
+  let filtered = listings;
+
+  const maxRent = params.get('maxRent');
+  if (maxRent) {
+    const max = parseInt(maxRent, 10);
+    if (!isNaN(max)) filtered = filtered.filter(l => l.rent <= max);
+  }
+
+  const sharingOption = params.get('sharingOption');
+  if (sharingOption) {
+    const sharing = parseInt(sharingOption, 10);
+    if (!isNaN(sharing)) filtered = filtered.filter(l => l.sharingOption === sharing);
+  }
+
+  const gender = params.get('gender');
+  if (gender && ['Male', 'Female', 'Any'].includes(gender)) {
+    filtered = filtered.filter(l => l.preferredGender === gender || l.preferredGender === 'Any');
+  }
+
+  const food = params.get('foodIncluded');
+  if (food === 'true') filtered = filtered.filter(l => l.foodIncluded);
+  if (food === 'false') filtered = filtered.filter(l => !l.foodIncluded);
+
+  return filtered;
+}
+
+/** Paginate results server-side */
+function paginate(listings: PGListing[], params: URLSearchParams): { page: number; totalPages: number; data: PGListing[] } {
+  const limit = Math.min(parseInt(params.get('limit') || String(LISTINGS_PER_PAGE), 10), 50);
+  const page = Math.max(parseInt(params.get('page') || '1', 10), 1);
+  const start = (page - 1) * limit;
+  return {
+    page,
+    totalPages: Math.ceil(listings.length / limit),
+    data: listings.slice(start, start + limit),
+  };
+}
 
 /**
  * Cross-source deduplication: removes listings that likely refer to the same
@@ -133,22 +173,30 @@ export async function GET(request: NextRequest) {
         return (b.rating || 0) - (a.rating || 0);
       });
 
+      // Apply server-side filters
+      const filtered = applyFilters(deduplicated, searchParams);
+
+      // Paginate
+      const { page, totalPages, data: pageData } = paginate(filtered, searchParams);
+
       const timeMs = Date.now() - startTime;
       console.log(
-        `Search completed in ${(timeMs / 1000).toFixed(2)}s - ${deduplicated.length} total listings (${combinedListings.length} before dedup)`
+        `Search completed in ${(timeMs / 1000).toFixed(2)}s - ${filtered.length} results (${deduplicated.length} before filters, ${combinedListings.length} before dedup)`
       );
 
       return NextResponse.json({
         success: true,
-        data: deduplicated,
-        count: deduplicated.length,
+        data: pageData,
+        count: filtered.length,
+        page,
+        totalPages,
         source: 'all-sources',
         sources: {
           firebase: firebaseListings.length,
           googleMaps: googleMapsListings.length,
         },
         ...(Object.keys(sourceErrors).length > 0 && { sourceErrors }),
-        message: `Found ${deduplicated.length} PG listings`,
+        message: `Found ${filtered.length} PG listings`,
         timestamp: new Date().toISOString(),
         isRealData: true,
       });
@@ -156,11 +204,15 @@ export async function GET(request: NextRequest) {
 
     // FALLBACK: No real data from any source — use sample data
     console.log('No real data found from any source, using sample data');
+    const mockData = generateMockData(location, 30);
+    const { page, totalPages, data: pageData } = paginate(mockData, searchParams);
 
     return NextResponse.json({
       success: true,
-      data: generateMockData(location, 30),
-      count: 30,
+      data: pageData,
+      count: mockData.length,
+      page,
+      totalPages,
       source: 'sample-data',
       message: `Showing sample data for ${location}. Add your Google Maps API key for real listings.`,
       isRealData: false,
