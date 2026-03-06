@@ -6,6 +6,7 @@ import { MapPin, Star, Users, Utensils, Home, ChevronLeft, ChevronRight, Heart, 
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { useImageCarousel } from '@/hooks/useImageCarousel';
+import { safeParseJSON, safeSetLocalStorage } from '@/utils';
 import { AMENITY_KEYS } from '@/constants';
 import Image from 'next/image';
 
@@ -50,6 +51,12 @@ export default function PGCard({ listing }: PGCardProps) {
   }, []);
 
   const handleViewDetails = () => {
+    const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings')) || [];
+    const exists = allListings.find((l) => l.id === listing.id);
+    if (!exists) {
+      allListings.push(listing);
+      safeSetLocalStorage('pgListings', JSON.stringify(allListings));
+    }
     router.push(`/listing/${listing.id}`);
   };
 
