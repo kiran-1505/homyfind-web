@@ -4,6 +4,18 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Fallback rewrites: catch locale-less paths when middleware rewrite doesn't fire on Vercel Edge
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: '/', destination: '/en' },
+        { source: '/login', destination: '/en/login' },
+        { source: '/add-listing', destination: '/en/add-listing' },
+        { source: '/owner/:path*', destination: '/en/owner/:path*' },
+        { source: '/listing/:path*', destination: '/en/listing/:path*' },
+      ],
+    };
+  },
   async headers() {
     return [
       {
