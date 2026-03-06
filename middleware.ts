@@ -126,9 +126,11 @@ export function middleware(request: NextRequest) {
     return addSecurityHeaders(NextResponse.next(), request);
   }
 
-  // All other routes: locale detection + security headers
-  const response = intlMiddleware(request);
-  return addSecurityHeaders(response as NextResponse, request);
+  // All other routes: locale detection and routing
+  // NOTE: Do NOT modify the intlMiddleware response — adding headers breaks
+  // the internal rewrite on Vercel Edge Runtime. Security headers for page
+  // routes are applied via next.config.js `headers()` instead.
+  return intlMiddleware(request);
 }
 
 /**
