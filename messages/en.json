@@ -327,6 +327,9 @@
     "under15000": "Under 15,000",
     "under20000": "Under 20,000"
   },
+  "safety": {
+    "banner": "Be aware of frauds! Never pay money before physically visiting the PG."
+  },
   "error": {
     "title": "Something went wrong",
     "description": "An unexpected error occurred. Please try again.",
