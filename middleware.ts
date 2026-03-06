@@ -4,14 +4,6 @@ import { routing } from './i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
 
-/** Allowed origins for CORS — only your domains */
-const CORS_ORIGINS = new Set([
-  'https://find-my-pg.com',
-  'https://www.find-my-pg.com',
-  'https://find-my-pg.vercel.app',
-  ...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000'] : []),
-]);
-
 // NOTE: In-memory rate limiting resets on Vercel serverless cold starts.
 // For production-grade rate limiting, migrate to @upstash/ratelimit + @upstash/redis.
 // See: https://upstash.com/docs/oss/sdks/ts/ratelimit/overview
@@ -86,7 +78,7 @@ export function middleware(request: NextRequest) {
           NextResponse.json(
             { success: false, error: 'Daily request limit reached. Please try again tomorrow.' },
             { status: 429 }
-          ), request
+          )
         );
       }
     }
@@ -110,7 +102,7 @@ export function middleware(request: NextRequest) {
         }
       }
       rateLimit.set(rateLimitKey, { count: 1, resetTime: now + windowMs });
-      return addSecurityHeaders(NextResponse.next(), request);
+      return addSecurityHeaders(NextResponse.next());
     }
 
     if (entry.count >= max) {
@@ -118,36 +110,23 @@ export function middleware(request: NextRequest) {
         NextResponse.json(
           { success: false, error: 'Too many requests. Please try again later.' },
           { status: 429 }
-        ), request
+        )
       );
     }
 
     entry.count++;
-    return addSecurityHeaders(NextResponse.next(), request);
+    return addSecurityHeaders(NextResponse.next());
   }
 
-  // All other routes: locale detection and routing
-  // NOTE: Do NOT modify the intlMiddleware response — adding headers breaks
-  // the internal rewrite on Vercel Edge Runtime. Security headers for page
-  // routes are applied via next.config.js `headers()` instead.
-  return intlMiddleware(request);
+  // All other routes: locale detection + security headers
+  const response = intlMiddleware(request);
+  return addSecurityHeaders(response as NextResponse);
 }
 
 /**
- * Security + CORS headers applied to ALL routes (API + pages).
+ * Security headers applied to ALL routes (API + pages).
  */
-function addSecurityHeaders(response: NextResponse, request?: NextRequest): NextResponse {
-  // CORS: only allow requests from our domains
-  if (request) {
-    const origin = request.headers.get('origin');
-    if (origin && CORS_ORIGINS.has(origin)) {
-      response.headers.set('Access-Control-Allow-Origin', origin);
-    }
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    response.headers.set('Access-Control-Max-Age', '86400');
-  }
-
+function addSecurityHeaders(response: NextResponse): NextResponse {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
