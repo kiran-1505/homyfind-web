@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { PGListing, SearchFilters as FilterOptions } from '@/types';
 import PGCard from '@/components/PGCard';
 import SearchFilters from '@/components/SearchFilters';
-import { Home, ChevronLeft, ChevronRight, Shield, Users, IndianRupee, Plus, Menu, X, MapPin, Building2, Sparkles, LogIn, LayoutDashboard } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, Shield, Users, IndianRupee, Plus, Menu, X, MapPin, Building2, Sparkles, LogIn, LayoutDashboard, AlertTriangle } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { LISTINGS_PER_PAGE, DEFAULT_LOCATION } from '@/constants';
@@ -191,6 +191,16 @@ export default function HomePage() {
           )}
         </div>
       </header>
+
+      {/* Safety Warning Banner */}
+      <div className="bg-amber-50 border-b border-amber-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
+          <div className="flex items-center justify-center gap-2 text-sm text-amber-800">
+            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+            <p className="font-medium">{t('safety.banner')}</p>
+          </div>
+        </div>
+      </div>
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-500 via-primary-600 to-primary-800">
