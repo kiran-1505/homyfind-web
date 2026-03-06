@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import Script from 'next/script';
 import { routing } from '@/i18n/routing';
 import type { Metadata } from 'next';
 
@@ -77,13 +78,18 @@ export default async function LocaleLayout({ children, params: { locale } }: Pro
   return (
     <html lang={locale}>
       <head>
-        <script
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6471889682951602"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
-        <script
+      </head>
+      <body>
+        <Script
+          id="schema-website"
           type="application/ld+json"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
@@ -103,8 +109,10 @@ export default async function LocaleLayout({ children, params: { locale } }: Pro
             }),
           }}
         />
-        <script
+        <Script
+          id="schema-organization"
           type="application/ld+json"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
@@ -121,8 +129,6 @@ export default async function LocaleLayout({ children, params: { locale } }: Pro
             }),
           }}
         />
-      </head>
-      <body>
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
