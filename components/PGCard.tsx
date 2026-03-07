@@ -6,7 +6,6 @@ import { MapPin, Star, Users, Utensils, Home, ChevronLeft, ChevronRight, Heart, 
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { useImageCarousel } from '@/hooks/useImageCarousel';
-import { safeParseJSON, safeSetLocalStorage } from '@/utils';
 import { AMENITY_KEYS } from '@/constants';
 import Image from 'next/image';
 
@@ -25,9 +24,11 @@ function shouldLoadImage(idx: number, currentIndex: number, total: number): bool
 
 interface PGCardProps {
   listing: PGListing;
+  /** Index in the grid; first 6 cards load images eagerly, rest lazy. */
+  cardIndex?: number;
 }
 
-export default function PGCard({ listing }: PGCardProps) {
+export default function PGCard({ listing, cardIndex = 0 }: PGCardProps) {
   const router = useRouter();
   const t = useTranslations();
   const [liked, setLiked] = useState(false);
@@ -51,12 +52,6 @@ export default function PGCard({ listing }: PGCardProps) {
   }, []);
 
   const handleViewDetails = () => {
-    const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings')) || [];
-    const exists = allListings.find((l) => l.id === listing.id);
-    if (!exists) {
-      allListings.push(listing);
-      safeSetLocalStorage('pgListings', JSON.stringify(allListings));
-    }
     router.push(`/listing/${listing.id}`);
   };
 
@@ -105,7 +100,7 @@ export default function PGCard({ listing }: PGCardProps) {
                       onLoad={idx === currentIndex ? onImageLoad : undefined}
                       onError={() => handleImageError(idx)}
                       unoptimized
-                      loading={idx === 0 ? 'eager' : 'lazy'}
+                      loading={cardIndex < 6 && idx === 0 ? 'eager' : 'lazy'}
                     />
                   ) : (
                     <div className="w-full h-full bg-gray-100" />

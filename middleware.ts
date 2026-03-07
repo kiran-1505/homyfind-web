@@ -38,8 +38,33 @@ function getClientIp(request: NextRequest): string {
   return 'unknown';
 }
 
+/** Allowed CORS origin — set to your production domain only (e.g. https://find-my-pg.com). */
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'https://find-my-pg.com';
+
+/**
+ * Apply strict CORS: only allow requests from CORS_ORIGIN.
+ * For API routes, sets Access-Control-Allow-Origin only when Origin matches.
+ */
+function addCorsHeaders(request: NextRequest, response: NextResponse): NextResponse {
+  const origin = request.headers.get('origin');
+  if (origin && origin === CORS_ORIGIN) {
+    response.headers.set('Access-Control-Allow-Origin', CORS_ORIGIN);
+  }
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.headers.set('Access-Control-Max-Age', '86400');
+  return response;
+}
+
 export function middleware(request: NextRequest) {
-  // API routes: rate limiting + security headers
+  // Preflight: respond to OPTIONS with CORS and 204
+  if (request.method === 'OPTIONS') {
+    const res = NextResponse.next();
+    addCorsHeaders(request, res);
+    return new NextResponse(null, { status: 204, headers: res.headers });
+  }
+
+  // API routes: rate limiting + security headers + CORS
   if (request.nextUrl.pathname.startsWith('/api/')) {
     const ip = getClientIp(request);
     const now = Date.now();
@@ -62,20 +87,23 @@ export function middleware(request: NextRequest) {
         }
       }
       rateLimit.set(rateLimitKey, { count: 1, resetTime: now + windowMs });
-      return addSecurityHeaders(NextResponse.next());
+      const res = addSecurityHeaders(NextResponse.next());
+      return addCorsHeaders(request, res);
     }
 
     if (entry.count >= max) {
-      return addSecurityHeaders(
+      const res = addSecurityHeaders(
         NextResponse.json(
           { success: false, error: 'Too many requests. Please try again later.' },
           { status: 429 }
         )
       );
+      return addCorsHeaders(request, res);
     }
 
     entry.count++;
-    return addSecurityHeaders(NextResponse.next());
+    const res = addSecurityHeaders(NextResponse.next());
+    return addCorsHeaders(request, res);
   }
 
   // All other routes: locale detection (security headers via next.config.js)

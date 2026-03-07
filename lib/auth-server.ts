@@ -62,10 +62,9 @@ export function verifyAdminKey(request: NextRequest): boolean {
   }
 
   const provided = authHeader.slice(7);
-  if (provided.length !== adminKey.length) return false;
+  const keyBuf = Buffer.from(adminKey, 'utf8');
+  const providedBuf = Buffer.from(provided, 'utf8');
+  if (keyBuf.length !== providedBuf.length) return false;
 
-  return crypto.timingSafeEqual(
-    Buffer.from(provided),
-    Buffer.from(adminKey)
-  );
+  return crypto.timingSafeEqual(keyBuf, providedBuf);
 }

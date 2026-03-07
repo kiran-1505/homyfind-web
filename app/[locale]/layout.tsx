@@ -29,6 +29,11 @@ export const metadata: Metadata = {
     'paying guest near me', 'pg accommodation near me',
   ],
   metadataBase: new URL('https://find-my-pg.com'),
+  icons: {
+    icon: '/find-my-pg-logo.jpg',
+    shortcut: '/find-my-pg-logo.jpg',
+    apple: '/find-my-pg-logo.jpg',
+  },
   alternates: {
     canonical: '/',
     languages: {

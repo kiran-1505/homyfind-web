@@ -8,7 +8,6 @@ import { Home, ChevronLeft, ChevronRight, Shield, Users, IndianRupee, Plus, Menu
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { LISTINGS_PER_PAGE, DEFAULT_LOCATION } from '@/constants';
-import { safeSetLocalStorage } from '@/utils';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,83 +16,64 @@ export default function HomePage() {
   const t = useTranslations();
   const { isAuthenticated } = useAuth();
   const [listings, setListings] = useState<PGListing[]>([]);
-  const [allListings, setAllListings] = useState<PGListing[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [isRealData, setIsRealData] = useState(false);
   const [dataSource, setDataSource] = useState<string>('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [lastFilters, setLastFilters] = useState<FilterOptions | undefined>(undefined);
 
   useEffect(() => {
     const abortController = new AbortController();
-    fetchListings(undefined, abortController.signal);
+    fetchListings(undefined, 1, abortController.signal);
     return () => abortController.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * LISTINGS_PER_PAGE;
-    const endIndex = startIndex + LISTINGS_PER_PAGE;
-    setListings(allListings.slice(startIndex, endIndex));
-  }, [currentPage, allListings]);
-
-  const totalPages = Math.ceil(allListings.length / LISTINGS_PER_PAGE);
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    fetchListings(lastFilters, page);
   };
 
-  const fetchListings = async (filters?: FilterOptions, signal?: AbortSignal) => {
+  const fetchListings = async (filters?: FilterOptions, page = 1, signal?: AbortSignal) => {
     setLoading(true);
-    setCurrentPage(1);
+    if (page === 1) setCurrentPage(1);
     try {
       const queryParams = new URLSearchParams();
-      if (filters?.location) {
-        queryParams.append('location', filters.location);
-      } else {
-        queryParams.append('location', DEFAULT_LOCATION);
-      }
+      queryParams.set('location', filters?.location || DEFAULT_LOCATION);
+      queryParams.set('page', String(page));
+      queryParams.set('limit', String(LISTINGS_PER_PAGE));
+      if (filters?.maxRent != null) queryParams.set('maxRent', String(filters.maxRent));
+      if (filters?.sharingOption != null) queryParams.set('sharingOption', String(filters.sharingOption));
+      if (filters?.gender) queryParams.set('gender', filters.gender);
+      if (filters?.foodIncluded !== null && filters?.foodIncluded !== undefined) queryParams.set('foodIncluded', String(filters.foodIncluded));
 
       const response = await fetch(`/api/search-realtime?${queryParams}`, { signal });
       const data = await response.json();
 
       if (data.success) {
-        let filteredListings = data.data;
-        safeSetLocalStorage('pgListings', JSON.stringify(filteredListings));
+        setListings(data.data);
+        setTotalCount(data.totalCount ?? 0);
+        setTotalPages(data.totalPages ?? 1);
+        if (page === 1) setCurrentPage(1);
+        else setCurrentPage(page);
         setIsRealData(data.isRealData || false);
         setDataSource(data.message || '');
-
-        if (filters) {
-          if (filters.maxRent) {
-            filteredListings = filteredListings.filter((l: PGListing) => l.rent <= filters.maxRent!);
-          }
-          if (filters.sharingOption) {
-            filteredListings = filteredListings.filter((l: PGListing) => l.sharingOption === filters.sharingOption);
-          }
-          if (filters.gender) {
-            filteredListings = filteredListings.filter((l: PGListing) =>
-              l.preferredGender === filters.gender || l.preferredGender === 'Any'
-            );
-          }
-          if (filters.foodIncluded !== null) {
-            filteredListings = filteredListings.filter((l: PGListing) => l.foodIncluded === filters.foodIncluded);
-          }
-        }
-
-        setAllListings(filteredListings);
+        setLastFilters(filters);
       }
+      setLoading(false);
     } catch (error) {
-      // Ignore abort errors (expected during React strict mode cleanup)
       if (error instanceof DOMException && error.name === 'AbortError') return;
       console.error('Error fetching listings:', error);
-    } finally {
       setLoading(false);
     }
   };
 
   const handleSearch = (filters: FilterOptions) => {
-    fetchListings(filters);
+    fetchListings(filters, 1);
   };
 
   return (
@@ -271,14 +251,14 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              {loading ? t('common.searching') : allListings.length > 0 ? t('listings.pgsFound', { count: allListings.length }) : t('listings.pgListings')}
+              {loading ? t('common.searching') : totalCount > 0 ? t('listings.pgsFound', { count: totalCount }) : t('listings.pgListings')}
             </h2>
-            {!loading && allListings.length > LISTINGS_PER_PAGE && (
+            {!loading && totalCount > LISTINGS_PER_PAGE && (
               <p className="text-sm text-gray-500 mt-1">
                 {t('listings.showing', {
                   start: ((currentPage - 1) * LISTINGS_PER_PAGE) + 1,
-                  end: Math.min(currentPage * LISTINGS_PER_PAGE, allListings.length),
-                  total: allListings.length
+                  end: Math.min(currentPage * LISTINGS_PER_PAGE, totalCount),
+                  total: totalCount
                 })}
               </p>
             )}
@@ -322,8 +302,8 @@ export default function HomePage() {
           </div>
         ) : listings.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {listings.map((listing) => (
-              <PGCard key={listing.id} listing={listing} />
+            {listings.map((listing, index) => (
+              <PGCard key={listing.id} listing={listing} cardIndex={index} />
             ))}
           </div>
         ) : (
