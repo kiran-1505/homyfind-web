@@ -109,7 +109,7 @@ async function runSingleGoogleQuery(
  * for maximum coverage. Results are deduplicated by place_id.
  */
 export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGListing[]> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
     console.log('Google Maps API key not configured');
@@ -239,7 +239,7 @@ export async function fetchFromGoogleMapsPlaces(location: string): Promise<PGLis
  * The Place Details API returns up to 10 photos (vs Text Search which returns only 1).
  */
 export async function getPlaceDetails(placeId: string): Promise<PGListing | null> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
     return null;

@@ -6,7 +6,6 @@ import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { PGListing } from '@/types';
 import { useImageCarousel } from '@/hooks/useImageCarousel';
-import { safeParseJSON } from '@/utils';
 import { AMENITY_KEYS } from '@/constants';
 import {
   MapPin, Star, Users, Utensils, Home, Phone, Mail,
@@ -38,46 +37,16 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
   useEffect(() => {
     const isGoogleListing = params.id.startsWith('google-');
 
-    // For non-Google listings, try localStorage cache first (it has full data)
-    if (!isGoogleListing) {
-      const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings'));
-      if (allListings) {
-        const found = allListings.find((l) => l.id === params.id);
-        if (found) {
-          setListing(found);
-          setLoading(false);
-          return;
-        }
-      }
-    }
-
-    // For Google listings, show cached data immediately (1 photo) but then
-    // fetch Place Details API to get ALL photos (up to 10)
-    if (isGoogleListing) {
-      const allListings = safeParseJSON<PGListing[]>(localStorage.getItem('pgListings'));
-      if (allListings) {
-        const found = allListings.find((l) => l.id === params.id);
-        if (found) {
-          setListing(found); // Show immediately with 1 photo
-          setLoading(false);
-        }
-      }
-    }
-
-    // Always fetch from API for Google listings (to get all photos),
-    // and for any listing not found in localStorage
+    // Always fetch from API (no client-side storage of search results)
     fetch(`/api/listing/${params.id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {
           setListing((prev) => {
-            if (!prev) return data.data;
-            // For Google listings: merge — keep any existing data but update images
-            if (isGoogleListing && data.data.images && data.data.images.length > (prev.images?.length || 0)) {
+            // For Google listings: merge if we had partial data and API returns more images
+            if (prev && isGoogleListing && data.data.images && data.data.images.length > (prev.images?.length || 0)) {
               return { ...prev, ...data.data };
             }
-            // For fresh fetches (no previous data), use API response
-            if (!prev.id) return data.data;
             return data.data;
           });
         }

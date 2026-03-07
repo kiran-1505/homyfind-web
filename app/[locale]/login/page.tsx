@@ -72,10 +72,12 @@ export default function LoginPage() {
       setConfirmationResult(result);
       setPhase('otp');
     } catch (err) {
-      console.error('Error sending OTP:', err);
-      const firebaseError = err as { code?: string };
+      const firebaseError = err as { code?: string; message?: string };
+      console.error('Error sending OTP:', firebaseError.code, firebaseError.message, err);
       if (firebaseError.code === 'auth/too-many-requests') {
         setError(t('login.tooManyAttempts'));
+      } else if (firebaseError.code === 'auth/invalid-phone-number') {
+        setError(t('login.invalidPhone'));
       } else {
         setError(t('login.verificationFailed'));
       }
