@@ -30,9 +30,9 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL('https://find-my-pg.com'),
   icons: {
-    icon: '/find-my-pg-logo.jpg',
-    shortcut: '/find-my-pg-logo.jpg',
-    apple: '/find-my-pg-logo.jpg',
+    icon: '/Find-My-PG%20logo%20design.svg',
+    shortcut: '/Find-My-PG%20logo%20design.svg',
+    apple: '/Find-My-PG%20logo%20design.svg',
   },
   alternates: {
     canonical: '/',
