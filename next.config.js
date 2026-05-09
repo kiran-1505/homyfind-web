@@ -5,6 +5,11 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Fallback rewrites: catch locale-less paths when middleware rewrite doesn't fire on Vercel Edge
+  async redirects() {
+    return [
+      { source: '/privacy-policy', destination: '/privacy', permanent: true },
+    ];
+  },
   async rewrites() {
     return {
       beforeFiles: [
