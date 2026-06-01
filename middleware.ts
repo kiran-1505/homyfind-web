@@ -16,6 +16,7 @@ const RATE_LIMITS: Record<string, { windowMs: number; max: number }> = {
   '/api/add-advertisement': { windowMs: 60_000, max: 10 },
   '/api/owner/update-listing': { windowMs: 60_000, max: 20 },
   '/api/admin/': { windowMs: 60_000, max: 5 },
+  '/api/search-realtime': { windowMs: 60_000, max: 30 }, // limit to protect Google Maps API quota
   default: { windowMs: 60_000, max: 60 },
 };
 

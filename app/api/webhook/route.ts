@@ -3,7 +3,10 @@ import stripe from '@/lib/stripe';
 import { getAdminDb } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
-// Simple in-memory idempotency cache (prevents duplicate event processing)
+// Simple in-memory idempotency cache (prevents duplicate event processing within the same instance).
+// NOTE: On Vercel serverless, each cold start is a fresh instance — this cache won't deduplicate
+// events across instances. For production-grade deduplication, use Upstash Redis or store
+// processed event IDs in Firestore. For now, Stripe's own retry logic makes duplicates rare.
 const processedEvents = new Set<string>();
 const MAX_PROCESSED_EVENTS = 1000;
 

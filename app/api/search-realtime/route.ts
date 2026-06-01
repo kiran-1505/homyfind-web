@@ -200,7 +200,7 @@ export async function GET(request: NextRequest) {
           firebase: firebaseListings.length,
           googleMaps: googleMapsListings.length,
         },
-        ...(Object.keys(sourceErrors).length > 0 && { sourceErrors }),
+        // sourceErrors intentionally omitted from response to avoid leaking internal details
         message: `Found ${totalCount} PG listings`,
         timestamp: new Date().toISOString(),
         isRealData: true,

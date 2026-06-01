@@ -22,17 +22,22 @@ export async function POST(request: NextRequest) {
 
     const validated = result.data;
 
-    // If user is authenticated, link listing to their account so it appears in dashboard
-    let ownerId: string | undefined;
+    // Require authentication — prevents spam listings from anonymous users
+    const authUser = await verifyAuthToken(request);
+    if (!authUser) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required to add a listing' },
+        { status: 401 }
+      );
+    }
+
+    // Link listing to authenticated user's account so it appears in dashboard
+    let ownerId: string | undefined = authUser.uid;
     let ownerPhone = validated.ownerPhone;
     let ownerEmail = validated.ownerEmail || '';
-    const authUser = await verifyAuthToken(request);
-    if (authUser) {
-      ownerId = authUser.uid;
-      // Use normalized phone/email from auth so getListingsByOwnerPhone/Email find this listing
-      if (authUser.phone) ownerPhone = authUser.phone;
-      if (authUser.email) ownerEmail = authUser.email;
-    }
+    // Use normalized phone/email from auth so getListingsByOwnerPhone/Email find this listing
+    if (authUser.phone) ownerPhone = authUser.phone;
+    if (authUser.email) ownerEmail = authUser.email;
 
     const docId = await addPGAdvertisement({
       pgName: validated.pgName,
@@ -116,11 +121,15 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Validate each image is a valid URL string
+    // Validate each image is a Firebase Storage URL only (prevents external/malicious URLs)
+    const ALLOWED_IMAGE_HOSTS = [
+      'https://firebasestorage.googleapis.com',
+      'https://homyfind-app.firebasestorage.app',
+    ];
     for (const img of images) {
-      if (typeof img !== 'string' || (!img.startsWith('https://') && !img.startsWith('http://'))) {
+      if (typeof img !== 'string' || !ALLOWED_IMAGE_HOSTS.some(host => img.startsWith(host))) {
         return NextResponse.json(
-          { success: false, error: 'All images must be valid URLs' },
+          { success: false, error: 'All images must be valid Firebase Storage URLs' },
           { status: 400 }
         );
       }
